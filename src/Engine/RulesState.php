@@ -7,7 +7,12 @@
 
 namespace Drupal\rules\Engine;
 
+use Drupal\Core\Language\LanguageInterface;
 use Drupal\Core\Plugin\Context\ContextInterface;
+use Drupal\Core\TypedData\ComplexDataInterface;
+use Drupal\Core\TypedData\ListInterface;
+use Drupal\Core\TypedData\TranslatableInterface;
+use Drupal\Component\Utility\String;
 
 /**
  * The rules evaluation state.
@@ -77,6 +82,55 @@ class RulesState {
       throw new RulesEvaluationException("Unable to get variable $name, it is not defined.");
     }
     return $this->variables[$name];
+  }
+
+  /**
+   * Returns a value as specified in the selector.
+   *
+   * @param string $selector
+   *   The selector string, e.g. "node:author:mail".
+   * @param string $langcode
+   *   (optional) The language code used to get the argument value if the
+   *   argument value should be translated. Defaults to
+   *   LanguageInterface::LANGCODE_NOT_SPECIFIED.
+   *
+   * @return \Drupal\Core\TypedData\TypedDataInterface
+   *   The variable wrapped as typed data.
+   *
+   * @throws RulesEvaluationException
+   *   Throws a RulesEvaluationException in case the selector cannot be applied.
+   */
+  public function applyDataSelector($selector, $langcode = LanguageInterface::LANGCODE_NOT_SPECIFIED) {
+    $parts = explode(':', $selector, 2);
+    $context = $this->getVariable($parts[0]);
+    if (count($parts) == 1) {
+      //print "booom\n";
+      return $context->getContextData();
+    }
+    $typed_data = $context->getContextData();
+    try {
+      foreach (explode(':', $parts[1]) as $name) {
+        if ($typed_data instanceof ListInterface || $typed_data instanceof ComplexDataInterface) {
+          // Make sure we are using the right language.
+          if ($typed_data instanceof TranslatableInterface) {
+            if ($typed_data->hasTranslation($langcode)) {
+              $typed_data = $typed_data->getTranslation($langcode);
+            }
+            // @todo What if the requested translation does not exist? Currenlty
+            // we just ignore that and continue with the current object.
+          }
+          $typed_data = $typed_data->get($name);
+        }
+        else {
+          throw new RulesEvaluationException("Unable to apply data selector $selector. The specified variable is not a list or a complex structure: $name.");
+        }
+      }
+    }
+    catch (\InvalidArgumentException $e) {
+      // In case of an exception, re-throw it.
+      throw new RulesEvaluationException(String::format("Unable to apply data selector $selector: %error", array('%error' => $e->getMessage())));
+    }
+    return $typed_data;
   }
 
 }
