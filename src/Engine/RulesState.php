@@ -104,7 +104,6 @@ class RulesState {
     $parts = explode(':', $selector, 2);
     $context = $this->getVariable($parts[0]);
     if (count($parts) == 1) {
-      //print "booom\n";
       return $context->getContextData();
     }
     $typed_data = $context->getContextData();
