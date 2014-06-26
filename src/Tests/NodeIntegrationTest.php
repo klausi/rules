@@ -72,9 +72,15 @@ class NodeIntegrationTest extends RulesDrupalTestBase {
       'node' => new ContextDefinition('entity:node', 'Node'),
     ]]);
 
+    // Test that the long detailed data selector works.
     $rule->addCondition($this->rulesExpressionManager->createInstance('rules_condition', [
       'condition_id' => 'rules_test_string_condition',
-      'parameter_mapping' => ['text:select' => 'node:uid:0:entity:value:name:0:value'],
+      'parameter_mapping' => ['text:select' => 'node:uid:0:entity:name:0:value'],
+    ]));
+    // Test that the shortened data selector without list indices.
+    $rule->addCondition($this->rulesExpressionManager->createInstance('rules_condition', [
+      'condition_id' => 'rules_test_string_condition',
+      'parameter_mapping' => ['text:select' => 'node:uid:entity:name:value'],
     ]));
 
     $rule->addAction($this->createRulesAction('rules_test_log'));
