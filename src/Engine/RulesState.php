@@ -7,12 +7,13 @@
 
 namespace Drupal\rules\Engine;
 
+use Drupal\Component\Utility\String;
 use Drupal\Core\Language\LanguageInterface;
 use Drupal\Core\Plugin\Context\ContextInterface;
 use Drupal\Core\TypedData\ComplexDataInterface;
+use Drupal\Core\TypedData\DataReferenceInterface;
 use Drupal\Core\TypedData\ListInterface;
 use Drupal\Core\TypedData\TranslatableInterface;
-use Drupal\Component\Utility\String;
 
 /**
  * The rules evaluation state.
@@ -103,12 +104,15 @@ class RulesState {
   public function applyDataSelector($selector, $langcode = LanguageInterface::LANGCODE_NOT_SPECIFIED) {
     $parts = explode(':', $selector, 2);
     $context = $this->getVariable($parts[0]);
-    if (count($parts) == 1) {
-      return $context->getContextData();
-    }
     $typed_data = $context->getContextData();
+    if (count($parts) == 1) {
+      return $typed_data;
+    }
+    $current_selector = $parts[0];
     try {
       foreach (explode(':', $parts[1]) as $name) {
+        $current_selector .= ":$name";
+
         if ($typed_data instanceof ListInterface || $typed_data instanceof ComplexDataInterface) {
           // Make sure we are using the right language.
           if ($typed_data instanceof TranslatableInterface) {
@@ -120,14 +124,20 @@ class RulesState {
           }
           $typed_data = $typed_data->get($name);
         }
+        elseif ($typed_data instanceof DataReferenceInterface) {
+          $typed_data = $typed_data->getTarget();
+          if ($typed_data === NULL) {
+            throw new RulesEvaluationException("Unable to apply data selector $current_selector. The specified reference is NULL: $name.");
+          }
+        }
         else {
-          throw new RulesEvaluationException("Unable to apply data selector $selector. The specified variable is not a list or a complex structure: $name.");
+          throw new RulesEvaluationException("Unable to apply data selector $current_selector. The specified variable is not a list or a complex structure: $name.");
         }
       }
     }
     catch (\InvalidArgumentException $e) {
       // In case of an exception, re-throw it.
-      throw new RulesEvaluationException(String::format("Unable to apply data selector $selector: %error", array('%error' => $e->getMessage())));
+      throw new RulesEvaluationException(String::format("Unable to apply data selector $current_selector: %error", array('%error' => $e->getMessage())));
     }
     return $typed_data;
   }
