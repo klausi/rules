@@ -91,7 +91,7 @@ class RulesState {
    * Returns a value as specified in the selector.
    *
    * @param string $selector
-   *   The selector string, e.g. "node:author:mail".
+   *   The selector string, e.g. "node:uid:entity:mail:value".
    * @param string $langcode
    *   (optional) The language code used to get the argument value if the
    *   argument value should be translated. Defaults to
