@@ -80,7 +80,9 @@ class RulesState {
    */
   public function getVariable($name) {
     if (!array_key_exists($name, $this->variables)) {
-      throw new RulesEvaluationException("Unable to get variable $name, it is not defined.");
+      throw new RulesEvaluationException(String::format('Unable to get variable @name, it is not defined.', [
+        '@name' => $name,
+      ]));
     }
     return $this->variables[$name];
   }
@@ -115,7 +117,9 @@ class RulesState {
       if ($typed_data instanceof DataReferenceInterface) {
         $typed_data = $typed_data->getTarget();
         if ($typed_data === NULL) {
-          throw new RulesEvaluationException("Unable to apply data selector $current_selector. The specified reference is NULL.");
+          throw new RulesEvaluationException(String::format('Unable to apply data selector @current_selector. The specified reference is NULL.', [
+            '@current_selector' => $current_selector,
+          ]));
         }
       }
 
@@ -143,11 +147,17 @@ class RulesState {
         }
         catch (\InvalidArgumentException $e) {
           // In case of an exception, re-throw it.
-          throw new RulesEvaluationException(String::format("Unable to apply data selector $current_selector: %error", array('%error' => $e->getMessage())));
+          throw new RulesEvaluationException(String::format('Unable to apply data selector @current_selector: @error', [
+            '@current_selector' => $current_selector,
+            '@error' => $e->getMessage(),
+          ]));
         }
       }
       else {
-        throw new RulesEvaluationException("Unable to apply data selector $current_selector. The specified variable is not a list or a complex structure: $name.");
+        throw new RulesEvaluationException(String::format('Unable to apply data selector @current_selector. The specified variable is not a list or a complex structure: @name.', [
+          '@current_selector' => $current_selector,
+          '@name' => $name,
+        ]));
       }
     }
 
