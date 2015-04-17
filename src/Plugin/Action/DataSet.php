@@ -21,7 +21,7 @@ use Drupal\Component\Utility\String;
  *   context = {
  *     "data" = @ContextDefinition("any",
  *       label = @Translation("Value"),
- *       description = @Translation("Specifies the data to be modified using a data selector, e.g. "node:author:name".")
+ *       description = @Translation("Specifies the data to be modified using a data selector, e.g. 'node:author:name'.")
  *     ),
  *     "value" = @ContextDefinition("any",
  *       label = @Translation("Value"),
