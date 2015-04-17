@@ -12,6 +12,8 @@ use Drupal\rules\Core\RulesActionBase;
 use Drupal\Component\Utility\String;
 
 /**
+ * Provides a 'Data set' action.
+ *
  * @Action(
  *   id = "rules_data_set",
  *   label = @Translation("Set data"),
@@ -52,4 +54,5 @@ class DataSet extends RulesActionBase {
       $this->setProvidedValue('data', $value);
     }
   }
+
 }
