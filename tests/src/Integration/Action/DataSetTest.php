@@ -8,6 +8,8 @@
 namespace Drupal\Tests\rules\Integration\Action;
 
 use Drupal\Core\TypedData\TypedDataManager;
+use Drupal\Core\TypedData\Plugin\DataType\StringData;
+use Drupal\Core\TypedData;
 use Drupal\Tests\rules\Integration\RulesIntegrationTestBase;
 
 
@@ -42,11 +44,17 @@ class DataSetTest extends RulesIntegrationTestBase {
   }
 
   /**
-   * Test data_set VariableTypeEqual.
+   * Test data_set PrimitiveTypeEqual.
+   *
+   * Result is equal than replacement value.
+   * Original value is updated to replacement value.
+   *
+   * @todo Make primitive part of TypedDataManager class.
+   * @todo Test original value == result||replacement.
    *
    * @covers ::execute
    */
-  public function testVariableTypeEqual() {
+  public function testPrimitiveTypeEqual() {
     // Setup.
     $original_value = (string) "Test";
     $replacement_value = (string) "Test";
@@ -63,64 +71,103 @@ class DataSetTest extends RulesIntegrationTestBase {
   }
 
   /**
-   * Test data_set variable exception where variable is of different type.
+   * Test data_set PrimitiveTypeEqualFalse.
    *
-   * @expectedException: \Drupal\rules\Exception\RulesEvaluationException
-   * @expectedExceptionMessage Types are not equal
+   * Result is FALSE when original and replacement variables are of a different
+   * type.
+   *
+   * @todo Make primitives part of TypedDataManager class.
    *
    * @covers ::execute
    */
-  public function testVariableTypeEqualException() {
+  public function testPrimitiveTypeEqualFalse() {
     // Setup.
     $original_value = (string) "Test";
     $replacement_value = (int) 1;
+    $expected_result = FALSE;
 
     // Run action.
     $this->action->setContextValue('original_value', $original_value)
       ->setContextValue('replacement_value', $replacement_value);
     $this->action->execute();
+
+    // Validate.
+    $result = $this->action->getProvidedContext('result')->getContextValue();
+    $this->assertEquals($result, $expected_result);
   }
 
   /**
-   * Test data_set entity.
+   * Test data_set TypedDataManagerEqual.
    *
-   * @covers ::execute
+   * Result is equal than replacement value.
+   * Original value is updated to replacement value.
+   *
+   * @todo Mock complex TypedDataManager field like telephone data-type.
+   * @todo Test original value == result||replacement.
+   * @todo Make this test work.
+   *
+   * @covers ::executes
    */
-  public function testEntity() {
-    $original_value = $this->getMock('Drupal\Core\Entity\EntityInterface');
+  public function testTypedDataManager() {
+    $original_value = "a TypedDataManager complex field";
+    $replacement_value = "a TypedDataManager complex field";
 
-
-    $replacement_value = $this->getMock('Drupal\Core\Entity\EntityInterface');
-
-    $this->assertEquals('OK', 'OK');
+    $this->assertEquals('Not working', 'Not working');
   }
 
   /**
-   * Test data_set entity exception where entity of different type.
+   * Test data_set TypedDataManagerEqualFalse.
+   *
+   * Result is FALSE when original and replacement variables are of a different
+   * type.
+   *
+   * @todo Mock complex TypedDataManager field like telephone data-type.
+   * @todo Make this test work.
    *
    * @covers ::execute
    */
-  public function testEntityException() {
-    $this->assertNotEquals('OK', 'Exception');
+  public function testTypedDataManagerFalse() {
+    $original_value = "a TypedDataManager complex field";
+    $replacement_value = "a TypedDataManager complex field";
+
+    $this->assertEquals('Not working', 'Not working');
   }
 
   /**
-   * Test data_set referenced entity where parent entity must be updated too.
+   * Test data_set testTypedDataManagerParent.
    *
-   * @covers ::execute
+   * Result is equal than replacement value.
+   * Original value is updated to replacement value.
+   *
+   * @todo Mock complex TypedDataManager field like telephone data-type.
+   * @todo Test original value == result||replacement.
+   * @todo Make this test work.
+   *
+   * @covers ::executes
    */
-  public function testEntityParent() {
-    $this->assertEquals('OK', 'OK');
+  public function testTypedDataManagerParent() {
+    $original_value = "a TypedDataManager complex field with a parent (an entity)";
+    $replacement_value = "a TypedDataManager complex field with a parent (an entity)";
+
+    $this->assertEquals('Not working', 'Not working');
   }
 
   /**
-   * Test data_set referenced entity exception where parent entity that must be
-   * updated too is not updated.
+   * Test data_set testTypedDataManagerParentFalse.
+   *
+   * Result is FALSE when original and replacement variables are of a different
+   * type.
+   *
+   * @todo Mock complex TypedDataManager field like telephone data-type.
+   * @todo Make this test work.
    *
    * @covers ::execute
    */
-  public function testEntityParentException() {
-    $this->assertNotEquals('OK', 'Exception');
+  public function testTypedDataManagerParentFalse() {
+    $original_value = "a TypedDataManager complex field with a parent (an entity)";
+    $replacement_value = "a TypedDataManager complex field with a parent (an entity)";
+
+    $this->assertEquals('Not working', 'Not working');
   }
 
 }
