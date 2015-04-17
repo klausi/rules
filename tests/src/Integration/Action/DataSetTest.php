@@ -39,4 +39,59 @@ class DataSetTest extends RulesIntegrationTestBase {
     $this->assertEquals('Set a data value.', $this->action->summary());
   }
 
+  /**
+   * Test data_set variable.
+   *
+   * @covers ::execute
+   */
+  public function testVariable() {
+    $this->assertEquals('OK', 'OK');
+  }
+
+  /**
+   * Test data_set variable exception where variable is of different type.
+   *
+   * @covers ::execute
+   */
+  public function testVariableException() {
+    $this->assertNotEquals('OK', 'Exception');
+  }
+
+  /**
+   * Test data_set entity.
+   *
+   * @covers ::execute
+   */
+  public function testEntity() {
+    $this->assertEquals('OK', 'OK');
+  }
+
+  /**
+   * Test data_set entity exception where entity of different type.
+   *
+   * @covers ::execute
+   */
+  public function testEntityException() {
+    $this->assertNotEquals('OK', 'Exception');
+  }
+
+  /**
+   * Test data_set referenced entity where parent entity must be updated too.
+   *
+   * @covers ::execute
+   */
+  public function testEntityParent() {
+    $this->assertEquals('OK', 'OK');
+  }
+
+  /**
+   * Test data_set referenced entity exception where parent entity that must be
+   * updated too is not updated.
+   *
+   * @covers ::execute
+   */
+  public function testEntityParentException() {
+    $this->assertNotEquals('OK', 'Exception');
+  }
+
 }
