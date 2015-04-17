@@ -22,11 +22,11 @@ use Drupal\rules\Exception\RulesEvaluationException;
  *   label = @Translation("Set data"),
  *   category = @Translation("Data"),
  *   context = {
- *     "data" = @ContextDefinition("any",
+ *     "original_value" = @ContextDefinition("any",
  *       label = @Translation("Value"),
  *       description = @Translation("Specifies the data to be modified using a data selector, e.g. 'node:author:name'.")
  *     ),
- *     "value" = @ContextDefinition("any",
+ *     "replacement_value" = @ContextDefinition("any",
  *       label = @Translation("Value"),
  *       description = @Translation("The new value to set for the specified data.")
  *     )
@@ -52,58 +52,23 @@ class DataSet extends RulesActionBase {
 
   /**
    * {@inheritdoc}
+   *
+   * @todo Add selector to save data exception.
    */
   public function execute() {
-    $data = $this->getContextValue('data');
-    $value = $this->getContextValue('value');
+    $original_value = $this->getContext('original_value');
+    $replacement_value = $this->getContext('replacement_value');
 
-////    $result = $value;
-//    if ($data instanceof Entity && $value instanceof Entity) {
-//
-//    }
-
-//    // This shoudn't work. And probably doesn't.
-//    if ($data instanceof Entity && $value instanceof Entity) {
-//      try {
-//        // Update the value first then save changes, if possible.
-//        $data->set($value);
-//      }
-//      catch (EntityStorageException $e) {
-//        throw new RulesEvaluationException('Unable to modify data "@selector": ' . $e->getMessage(), array('@selector' => $settings['data:select']));
-//      }
-//      // Save changes if a property of a variable has been changed.
-//      if (strpos($element->settings['data:select'], ':') !== FALSE) {
-//        $info = $wrapper->info();
-//        // We always have to save the changes in the parent entity. E.g. when the
-//        // node author is changed, we don't want to save the author but the node.
-//        $state->saveChanges(implode(':', explode(':', $settings['data:select'], -1)), $info['parent']);
-//      }
-//      try {
-//
-//      }
-//      $data->set($value);
-//    }
-//    else {
-//      // A not wrapped variable (e.g. a number) is being updated. Just overwrite
-//      // the variable with the new value.
-//      return array('data' => $value);
-//      $this->setProvidedValue('data', $value);
-//    }
-
-    // Set a variable if of equal type.
-    if (gettype($data) === gettype($value)) {
-      $result = $value;
+    // Both values are equal.
+    if ($original_value->getContextValue() === $replacement_value->getContextValue()) {
+      $this->setProvidedValue('result', $original_value->getContextValue());
+    }
+    // Values are of same type.
+    elseif ($original_value->getContextDefinition() == $replacement_value->getContextDefinition()) {
+      $this->setProvidedValue('result', $original_value->setContextValue($replacement_value->getContextValue()));
     }
     else {
-      throw new RulesEvaluationException('Types are not equal');
-    }
-
-    // Defaults to FALSE.
-    if (isset($result) && $result !== FALSE) {
-      $this->setProvidedValue('result', $result);
-    }
-    else {
-      throw new RulesEvaluationException('Could not finish operation.');
+      $this->setProvidedValue('result', FALSE);
     }
 
   }

@@ -7,6 +7,7 @@
 
 namespace Drupal\Tests\rules\Integration\Action;
 
+use Drupal\Core\TypedData\TypedDataManager;
 use Drupal\Tests\rules\Integration\RulesIntegrationTestBase;
 
 
@@ -41,21 +42,23 @@ class DataSetTest extends RulesIntegrationTestBase {
   }
 
   /**
-   * Test data_set variable.
+   * Test data_set VariableTypeEqual.
    *
    * @covers ::execute
    */
   public function testVariableTypeEqual() {
-    $data = (string) "Test";
-    $value = (string) "Test";
-    $expected_result = $value;
+    // Setup.
+    $original_value = (string) "Test";
+    $replacement_value = (string) "Test";
+    $expected_result = $replacement_value;
 
-    $this->action->setContextValue('data', $data)
-      ->setContextValue('value', $value);
+    // Run action.
+    $this->action->setContextValue('original_value', $original_value)
+      ->setContextValue('replacement_value', $replacement_value);
     $this->action->execute();
 
+    // Validate.
     $result = $this->action->getProvidedContext('result')->getContextValue();
-
     $this->assertEquals($result, $expected_result);
   }
 
@@ -67,12 +70,14 @@ class DataSetTest extends RulesIntegrationTestBase {
    *
    * @covers ::execute
    */
-  public function testVariableTypeException() {
-    $data = (string) "Test";
-    $value = (int) 1;
+  public function testVariableTypeEqualException() {
+    // Setup.
+    $original_value = (string) "Test";
+    $replacement_value = (int) 1;
 
-    $this->action->setContextValue('data', $data)
-      ->setContextValue('value', $value);
+    // Run action.
+    $this->action->setContextValue('original_value', $original_value)
+      ->setContextValue('replacement_value', $replacement_value);
     $this->action->execute();
   }
 
@@ -82,10 +87,10 @@ class DataSetTest extends RulesIntegrationTestBase {
    * @covers ::execute
    */
   public function testEntity() {
-    $data = $this->getMock('Drupal\Core\Entity\EntityInterface');
+    $original_value = $this->getMock('Drupal\Core\Entity\EntityInterface');
 
 
-    $value = $this->getMock('Drupal\Core\Entity\EntityInterface');
+    $replacement_value = $this->getMock('Drupal\Core\Entity\EntityInterface');
 
     $this->assertEquals('OK', 'OK');
   }
