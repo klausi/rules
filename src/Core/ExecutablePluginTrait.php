@@ -17,7 +17,7 @@ trait ExecutablePluginTrait {
   /**
    * {@inheritdoc}
    */
-  private function getLabelValue() {
+  protected function getLabelValue() {
     $definition = $this->getPluginDefinition();
     if (empty($definition['label'])) {
       throw new InvalidPluginDefinitionException('The label is not defined.');
