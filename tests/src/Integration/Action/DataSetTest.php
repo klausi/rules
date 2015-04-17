@@ -112,7 +112,7 @@ class DataSetTest extends RulesIntegrationTestBase {
     $original = "a TypedDataManager complex field";
     $replacement = "a TypedDataManager complex field";
 
-    $this->assertEquals('Not implemented', 'Not implemented');
+    $this->assertNotEquals('Not implemented', 'Not implemented');
   }
 
   /**
@@ -130,7 +130,7 @@ class DataSetTest extends RulesIntegrationTestBase {
     $original = "a TypedDataManager complex field";
     $replacement = "a TypedDataManager complex field";
 
-    $this->assertEquals('Not implemented', 'Not implemented');
+    $this->assertNotEquals('Not implemented', 'Not implemented');
   }
 
   /**
@@ -149,7 +149,7 @@ class DataSetTest extends RulesIntegrationTestBase {
     $original = "a TypedDataManager complex field with a parent (an entity)";
     $replacement = "a TypedDataManager complex field with a parent (an entity)";
 
-    $this->assertEquals('Not implemented', 'Not implemented');
+    $this->assertNotEquals('Not implemented', 'Not implemented');
   }
 
   /**
@@ -167,7 +167,7 @@ class DataSetTest extends RulesIntegrationTestBase {
     $original = "a TypedDataManager complex field with a parent (an entity)";
     $replacement = "a TypedDataManager complex field with a parent (an entity)";
 
-    $this->assertEquals('Not implemented', 'Not implemented');
+    $this->assertNotEquals('Not implemented', 'Not implemented');
   }
 
 }
