@@ -21,11 +21,11 @@ use Drupal\Component\Utility\String;
  *   label = @Translation("Set data"),
  *   category = @Translation("Data"),
  *   context = {
- *     "original_value" = @ContextDefinition("any",
+ *     "original" = @ContextDefinition("any",
  *       label = @Translation("Value"),
  *       description = @Translation("Specifies the data to be modified using a data selector, e.g. 'node:author:name'.")
  *     ),
- *     "replacement_value" = @ContextDefinition("any",
+ *     "replacement" = @ContextDefinition("any",
  *       label = @Translation("Value"),
  *       description = @Translation("The new value to set for the specified data.")
  *     )
@@ -58,22 +58,33 @@ class DataSet extends RulesActionBase {
    * @todo Add selector to save data exception.
    */
   public function execute() {
-    $original_value = $this->getContext('original_value');
-    $replacement_value = $this->getContext('replacement_value');
+    $original = $this->getContext('original');
+    $original_value = $original->getContextValue();
+
+    $replacement = $this->getContext('replacement');
+    $replacement_value = $replacement->getContextValue();
+
 
     // Both values are equal.
-    if ($original_value->getContextValue() === $replacement_value->getContextValue()) {
-      $this->setProvidedValue('result', $original_value->getContextValue());
+    if ($original_value === $replacement_value) {
+      $this->setProvidedValue('result', $original_value);
     }
 
     // Primitives of same type.
-    if (is_scalar($original_value->getContextValue()) && is_scalar($replacement_value->getContextValue()) && gettype($original_value->getContextValue()) == gettype($replacement_value->getContextValue())) {
-      $this->setProvidedValue('result', $original_value->getContextValue());
+    if (is_scalar($original_value) && is_scalar($replacement_value) && gettype($original_value) == gettype($replacement_value)) {
+
+      // Both values are equal.
+      if ($original_value === $replacement_value) {
+        $this->setProvidedValue('result', $original_value);
+      }
+      else {
+        $this->setProvidedValue('result', FALSE);
+      }
     }
 
     // TypedDataManager values of same type.
-    elseif ($original_value->getContextDefinition() == $replacement_value->getContextDefinition()) {
-      $this->setProvidedValue('result', $original_value->setContextValue($replacement_value->getContextValue()));
+    elseif ($original->getContextDefinition() == $replacement->getContextDefinition()) {
+      $this->setProvidedValue('result', $original->setContextValue($replacement_value));
     }
 
 

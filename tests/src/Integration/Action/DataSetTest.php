@@ -56,13 +56,13 @@ class DataSetTest extends RulesIntegrationTestBase {
    */
   public function testPrimitiveTypeEqual() {
     // Setup.
-    $original_value = (string) "Test";
-    $replacement_value = (string) "Test";
-    $expected_result = $replacement_value;
+    $original = (string) "Test";
+    $replacement = (string) "Test";
+    $expected_result = $replacement;
 
     // Run action.
-    $this->action->setContextValue('original_value', $original_value)
-      ->setContextValue('replacement_value', $replacement_value);
+    $this->action->setContextValue('original', $original)
+      ->setContextValue('replacement', $replacement);
     $this->action->execute();
 
     // Validate.
@@ -82,13 +82,13 @@ class DataSetTest extends RulesIntegrationTestBase {
    */
   public function testPrimitiveTypeEqualFalse() {
     // Setup.
-    $original_value = (string) "Test";
-    $replacement_value = (int) 1;
+    $original = (string) "Test";
+    $replacement = (int) 1;
     $expected_result = FALSE;
 
     // Run action.
-    $this->action->setContextValue('original_value', $original_value)
-      ->setContextValue('replacement_value', $replacement_value);
+    $this->action->setContextValue('original', $original)
+      ->setContextValue('replacement', $replacement);
     $this->action->execute();
 
     // Validate.
@@ -109,8 +109,8 @@ class DataSetTest extends RulesIntegrationTestBase {
    * @covers ::executes
    */
   public function testTypedDataManager() {
-    $original_value = "a TypedDataManager complex field";
-    $replacement_value = "a TypedDataManager complex field";
+    $original = "a TypedDataManager complex field";
+    $replacement = "a TypedDataManager complex field";
 
     $this->assertEquals('Not working', 'Not working');
   }
@@ -127,8 +127,8 @@ class DataSetTest extends RulesIntegrationTestBase {
    * @covers ::execute
    */
   public function testTypedDataManagerFalse() {
-    $original_value = "a TypedDataManager complex field";
-    $replacement_value = "a TypedDataManager complex field";
+    $original = "a TypedDataManager complex field";
+    $replacement = "a TypedDataManager complex field";
 
     $this->assertEquals('Not working', 'Not working');
   }
@@ -146,8 +146,8 @@ class DataSetTest extends RulesIntegrationTestBase {
    * @covers ::executes
    */
   public function testTypedDataManagerParent() {
-    $original_value = "a TypedDataManager complex field with a parent (an entity)";
-    $replacement_value = "a TypedDataManager complex field with a parent (an entity)";
+    $original = "a TypedDataManager complex field with a parent (an entity)";
+    $replacement = "a TypedDataManager complex field with a parent (an entity)";
 
     $this->assertEquals('Not working', 'Not working');
   }
@@ -164,8 +164,8 @@ class DataSetTest extends RulesIntegrationTestBase {
    * @covers ::execute
    */
   public function testTypedDataManagerParentFalse() {
-    $original_value = "a TypedDataManager complex field with a parent (an entity)";
-    $replacement_value = "a TypedDataManager complex field with a parent (an entity)";
+    $original = "a TypedDataManager complex field with a parent (an entity)";
+    $replacement = "a TypedDataManager complex field with a parent (an entity)";
 
     $this->assertEquals('Not working', 'Not working');
   }
