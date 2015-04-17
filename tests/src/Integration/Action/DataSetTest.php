@@ -9,6 +9,7 @@ namespace Drupal\Tests\rules\Integration\Action;
 
 use Drupal\Tests\rules\Integration\RulesIntegrationTestBase;
 
+
 /**
  * @coversDefaultClass \Drupal\rules\Plugin\Action\DataSet
  * @group rules_actions
@@ -44,17 +45,35 @@ class DataSetTest extends RulesIntegrationTestBase {
    *
    * @covers ::execute
    */
-  public function testVariable() {
-    $this->assertEquals('OK', 'OK');
+  public function testVariableTypeEqual() {
+    $data = (string) "Test";
+    $value = (string) "Test";
+    $expected_result = $value;
+
+    $this->action->setContextValue('data', $data)
+      ->setContextValue('value', $value);
+    $this->action->execute();
+
+    $result = $this->action->getProvidedContext('result')->getContextValue();
+
+    $this->assertEquals($result, $expected_result);
   }
 
   /**
    * Test data_set variable exception where variable is of different type.
    *
+   * @expectedException: \Drupal\rules\Exception\RulesEvaluationException
+   * @expectedExceptionMessage Types are not equal
+   *
    * @covers ::execute
    */
-  public function testVariableException() {
-    $this->assertNotEquals('OK', 'Exception');
+  public function testVariableTypeException() {
+    $data = (string) "Test";
+    $value = (int) 1;
+
+    $this->action->setContextValue('data', $data)
+      ->setContextValue('value', $value);
+    $this->action->execute();
   }
 
   /**
@@ -63,6 +82,11 @@ class DataSetTest extends RulesIntegrationTestBase {
    * @covers ::execute
    */
   public function testEntity() {
+    $data = $this->getMock('Drupal\Core\Entity\EntityInterface');
+
+
+    $value = $this->getMock('Drupal\Core\Entity\EntityInterface');
+
     $this->assertEquals('OK', 'OK');
   }
 
