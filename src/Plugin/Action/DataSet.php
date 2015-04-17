@@ -37,6 +37,13 @@ use Drupal\Component\Utility\String;
 class DataSet extends RulesActionBase {
 
   /**
+   * {@inheritdoc}
+   */
+  public function summary() {
+    return $this->t('Set a data value.');
+  }
+
+  /**
    * Executes the plugin.
    */
   public function execute() {
