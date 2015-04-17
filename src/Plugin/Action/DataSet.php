@@ -29,8 +29,8 @@ use Drupal\Component\Utility\String;
  *     )
  *   },
  *   provides = {
- *     "conversion_result" = @ContextDefinition("any",
- *        label = @Translation("Conversion result")
+ *     "result" = @ContextDefinition("any",
+ *        label = @Translation("Result")
  *      )
  *   }
  * )
