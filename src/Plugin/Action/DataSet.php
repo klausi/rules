@@ -20,10 +20,12 @@ use Drupal\Component\Utility\String;
  *   category = @Translation("Data"),
  *   context = {
  *     "data" = @ContextDefinition("any",
- *       label = @Translation("Value")
+ *       label = @Translation("Value"),
+ *       description = @Translation("Specifies the data to be modified using a data selector, e.g. "node:author:name".")
  *     ),
  *     "value" = @ContextDefinition("any",
- *       label = @Translation("Value")
+ *       label = @Translation("Value"),
+ *       description = @Translation("The new value to set for the specified data.")
  *     )
  *   },
  *   provides = {
@@ -32,7 +34,9 @@ use Drupal\Component\Utility\String;
  *      )
  *   }
  * )
- * @todo Add various input restrictions.
+ * @todo Add various input restrictions: selector on 'data'.
+ * @todo Add 'wrapped' on 'data'.
+ * @todo 'allow NULL' and 'optional' for both 'data' and 'value'.
  */
 class DataSet extends RulesActionBase {
 
@@ -44,7 +48,7 @@ class DataSet extends RulesActionBase {
   }
 
   /**
-   * Executes the plugin.
+   * {@inheritdoc}
    */
   public function execute() {
     $data = $this->getContextValue('value');
