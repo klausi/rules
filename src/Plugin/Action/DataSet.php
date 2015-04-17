@@ -70,20 +70,23 @@ class DataSet extends RulesActionBase {
       $this->setProvidedValue('result', $original_value);
     }
 
-    // Primitives of same type.
-    if (is_scalar($original_value) && is_scalar($replacement_value) && gettype($original_value) == gettype($replacement_value)) {
 
-      // Both values are equal.
-      if ($original_value === $replacement_value) {
-        $this->setProvidedValue('result', $original_value);
+    // Primitives.
+    elseif (is_scalar($original_value) && is_scalar($replacement_value)) {
+
+      // Primitives of same type.
+      if (gettype($original_value) == gettype($replacement_value)) {
+        $this->setProvidedValue('result', $original->setContextValue($replacement_value));
       }
       else {
         $this->setProvidedValue('result', FALSE);
       }
     }
 
+
     // TypedDataManager values of same type.
-    elseif ($original->getContextDefinition() == $replacement->getContextDefinition()) {
+    // @todo: make this work and tested.
+    elseif ('TypedDataManager' == get_class($original) && 'TypedDataManager' == get_class($replacement)) {
       $this->setProvidedValue('result', $original->setContextValue($replacement_value));
     }
 

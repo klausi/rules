@@ -49,7 +49,7 @@ class DataSetTest extends RulesIntegrationTestBase {
    * Result is equal than replacement value.
    * Original value is updated to replacement value.
    *
-   * @todo Make primitive part of TypedDataManager class.
+   * @todo (optional) Make primitive part of TypedDataManager class.
    * @todo Test original value == result||replacement.
    *
    * @covers ::execute
@@ -76,7 +76,7 @@ class DataSetTest extends RulesIntegrationTestBase {
    * Result is FALSE when original and replacement variables are of a different
    * type.
    *
-   * @todo Make primitives part of TypedDataManager class.
+   * @todo (optional) Make primitives part of TypedDataManager class.
    *
    * @covers ::execute
    */
@@ -106,13 +106,13 @@ class DataSetTest extends RulesIntegrationTestBase {
    * @todo Test original value == result||replacement.
    * @todo Make this test work.
    *
-   * @covers ::executes
+   * @covers ::execute
    */
   public function testTypedDataManager() {
     $original = "a TypedDataManager complex field";
     $replacement = "a TypedDataManager complex field";
 
-    $this->assertEquals('Not working', 'Not working');
+    $this->assertEquals('Not implemented', 'Not implemented');
   }
 
   /**
@@ -130,7 +130,7 @@ class DataSetTest extends RulesIntegrationTestBase {
     $original = "a TypedDataManager complex field";
     $replacement = "a TypedDataManager complex field";
 
-    $this->assertEquals('Not working', 'Not working');
+    $this->assertEquals('Not implemented', 'Not implemented');
   }
 
   /**
@@ -143,13 +143,13 @@ class DataSetTest extends RulesIntegrationTestBase {
    * @todo Test original value == result||replacement.
    * @todo Make this test work.
    *
-   * @covers ::executes
+   * @covers ::execute
    */
   public function testTypedDataManagerParent() {
     $original = "a TypedDataManager complex field with a parent (an entity)";
     $replacement = "a TypedDataManager complex field with a parent (an entity)";
 
-    $this->assertEquals('Not working', 'Not working');
+    $this->assertEquals('Not implemented', 'Not implemented');
   }
 
   /**
@@ -167,7 +167,7 @@ class DataSetTest extends RulesIntegrationTestBase {
     $original = "a TypedDataManager complex field with a parent (an entity)";
     $replacement = "a TypedDataManager complex field with a parent (an entity)";
 
-    $this->assertEquals('Not working', 'Not working');
+    $this->assertEquals('Not implemented', 'Not implemented');
   }
 
 }
