@@ -5,14 +5,14 @@ php:
   - 5.5
   - 5.6
   - 7
-  - hhvm
+  - hhvm-nightly
 
 matrix:
   allow_failures:
     # PHP 7 testing is disabled for now since Drupal installation throws
     # errors. See https://www.drupal.org/node/2454439
     - php: 7
-    - php: hhvm
+    - php: hhvm-nightly
 
 mysql:
   database: rules
