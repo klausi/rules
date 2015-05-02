@@ -9,11 +9,10 @@ php:
 
 matrix:
   allow_failures:
-    - php:
-      # PHP 7 testing is disabled for now since Drupal installation throws
-      # errors. See https://www.drupal.org/node/2454439
-      - 7
-      - hhvm
+    # PHP 7 testing is disabled for now since Drupal installation throws
+    # errors. See https://www.drupal.org/node/2454439
+    - php: 7
+    - php: hhvm
 
 mysql:
   database: rules
