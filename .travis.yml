@@ -5,14 +5,16 @@ php:
   - 5.5
   - 5.6
   - 7
-  - hhvm-nightly
+  - hhvm
 
 matrix:
   allow_failures:
     # PHP 7 testing is disabled for now since Drupal installation throws
     # errors. See https://www.drupal.org/node/2454439
     - php: 7
-    - php: hhvm-nightly
+    # We cannot use hhvm-nightly since that does not work in Travis CI's old
+    # Ubuntu 12.04.
+    - php: hhvm
 
 mysql:
   database: rules
