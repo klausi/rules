@@ -20,7 +20,7 @@ trait ExecutablePluginTrait {
   protected function getLabelValue() {
     $definition = $this->getPluginDefinition();
     if (empty($definition['label'])) {
-      throw new InvalidPluginDefinitionException('The label is not defined.');
+      throw new InvalidPluginDefinitionException('The label is not defined for plugin ' . $this->getPluginId() . ' (' . __CLASS__ . ').');
     }
     return $definition['label'];
   }
@@ -29,9 +29,10 @@ trait ExecutablePluginTrait {
    * Get the translated summary from the label annotation.
    *
    * @throws \Drupal\Component\Plugin\Exception\ContextException
-   *  Thrown if a summary was not set.
+   *   Thrown if a summary was not set.
    *
    * @return string
+   *   The summary of the plugin.
    */
   public function summary() {
     return $this->getLabelValue();
