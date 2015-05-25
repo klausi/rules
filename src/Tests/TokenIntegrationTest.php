@@ -19,7 +19,7 @@ class TokenIntegrationTest extends RulesDrupalTestBase {
   /**
    * Tests that date tokens are formatted correctly.
    */
-  public function testSystenDateToken() {
+  public function testSystemDateToken() {
     // Configure a simple rule with one action. and token replacements enabled.
     $action = $this->expressionManager->createInstance('rules_action',
       ContextConfig::create()
