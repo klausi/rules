@@ -73,6 +73,10 @@ class TokenProcessor extends PluginBase implements DataProcessorInterface, Conta
         $data_selector = substr($token, 1, -1);
         try {
           $replacement_data = $rules_state->applyDataSelector($data_selector);
+          // @todo Data type specific formatting should happen here or we might
+          //   invoke the Token API for that. Example: for a date we don't want
+          //   to get the Unix timestamp in seconds but rather a formatted date
+          //   string.
           $replacements[$token] = $replacement_data->getString();
         }
         catch (RulesEvaluationException $exception) {
