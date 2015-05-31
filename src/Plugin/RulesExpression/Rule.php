@@ -62,11 +62,6 @@ class Rule extends ExpressionBase implements RuleInterface, ContainerFactoryPlug
    *   The rules expression plugin manager.
    */
   public function __construct(array $configuration, $plugin_id, $plugin_definition, ExpressionPluginManager $expression_manager) {
-    // @todo: This needs to be removed again and we need to add proper derivative handling for Rules.
-    if (isset($configuration['context_definitions'])) {
-      $plugin_definition['context'] = $this->createContextDefinitions($configuration['context_definitions']);
-    }
-
     parent::__construct($configuration, $plugin_id, $plugin_definition);
 
     $configuration += ['conditions' => [], 'actions' => []];
@@ -87,39 +82,6 @@ class Rule extends ExpressionBase implements RuleInterface, ContainerFactoryPlug
       $plugin_definition,
       $container->get('plugin.manager.rules_expression')
     );
-  }
-
-  /**
-   * Converts a context definition configuration array into an object.
-   *
-   * @todo This should be replaced by some convenience method on the
-   *   ContextDefinition class in core?
-   *
-   * @param array $configuration
-   *   The configuration properties for populating the context definition
-   *   object.
-   *
-   * @return \Drupal\Core\Plugin\Context\ContextDefinitionInterface[]
-   *   A list of context definitions keyed by the context name.
-   */
-  protected function createContextDefinitions(array $configuration) {
-    $context_definitions = [];
-    foreach ($configuration as $context_name => $definition_array) {
-      $definition_array += [
-        'type' => 'any',
-        'label' => NULL,
-        'required' => TRUE,
-        'multiple' => FALSE,
-        'description' => NULL,
-      ];
-
-      $context_definitions[$context_name] = new ContextDefinition(
-        $definition_array['type'], $definition_array['label'],
-        $definition_array['required'], $definition_array['multiple'],
-        $definition_array['description']
-      );
-    }
-    return $context_definitions;
   }
 
   /**
