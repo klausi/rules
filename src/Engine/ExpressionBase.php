@@ -44,6 +44,9 @@ abstract class ExpressionBase extends ContextAwarePluginBase implements Expressi
     if (isset($configuration['context_definitions'])) {
       $plugin_definition['context'] = $this->createContextDefinitions($configuration['context_definitions']);
     }
+    if (isset($configuration['provided_definitions'])) {
+      $plugin_definition['provides'] = $this->createContextDefinitions($configuration['provided_definitions']);
+    }
     parent::__construct($configuration, $plugin_id, $plugin_definition);
   }
 
