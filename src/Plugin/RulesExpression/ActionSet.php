@@ -9,7 +9,7 @@ namespace Drupal\rules\Plugin\RulesExpression;
 
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\rules\Context\ContextConfig;
-use Drupal\rules\Core\RulesActionBase;
+use Drupal\rules\Engine\ActionExpressionBase;
 use Drupal\rules\Engine\ActionExpressionContainerInterface;
 use Drupal\rules\Engine\ActionExpressionInterface;
 use Drupal\rules\Engine\ExpressionInterface;
@@ -27,7 +27,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  *   label = @Translation("Action set")
  * )
  */
-class ActionSet extends RulesActionBase implements ActionExpressionContainerInterface, ContainerFactoryPluginInterface {
+class ActionSet extends ActionExpressionBase implements ActionExpressionContainerInterface, ContainerFactoryPluginInterface {
 
   use RulesExpressionTrait;
 

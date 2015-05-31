@@ -8,7 +8,6 @@
 namespace Drupal\rules\Engine;
 
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
-use Drupal\rules\Core\RulesConditionBase;
 use Drupal\rules\Context\ContextConfig;
 use Drupal\rules\Exception\InvalidExpressionException;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -16,7 +15,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 /**
  * Container for conditions.
  */
-abstract class ConditionExpressionContainer extends RulesConditionBase implements ConditionExpressionContainerInterface, ContainerFactoryPluginInterface {
+abstract class ConditionExpressionContainer extends ConditionExpressionBase implements ConditionExpressionContainerInterface, ContainerFactoryPluginInterface {
 
   use RulesExpressionTrait;
 
