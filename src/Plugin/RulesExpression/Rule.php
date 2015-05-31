@@ -10,14 +10,13 @@ namespace Drupal\rules\Plugin\RulesExpression;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\Core\Plugin\Context\ContextDefinition;
 use Drupal\rules\Context\ContextConfig;
-use Drupal\rules\Engine\ActionExpressionBase;
+use Drupal\rules\Engine\ExpressionBase;
 use Drupal\rules\Engine\ActionExpressionContainerInterface;
 use Drupal\rules\Engine\ActionExpressionInterface;
 use Drupal\rules\Engine\ConditionExpressionContainerInterface;
 use Drupal\rules\Engine\ConditionExpressionInterface;
 use Drupal\rules\Engine\ExpressionInterface;
 use Drupal\rules\Engine\ExpressionPluginManager;
-use Drupal\rules\Engine\RulesExpressionTrait;
 use Drupal\rules\Engine\RulesStateInterface;
 use Drupal\rules\Exception\InvalidExpressionException;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -34,9 +33,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  *   label = @Translation("A rule, executing actions when conditions are met.")
  * )
  */
-class Rule extends ActionExpressionBase implements RuleInterface, ContainerFactoryPluginInterface {
-
-  use RulesExpressionTrait;
+class Rule extends ExpressionBase implements RuleInterface, ContainerFactoryPluginInterface {
 
   /**
    * List of conditions that must be met before actions are executed.
