@@ -7,10 +7,12 @@
 
 namespace Drupal\rules\Engine;
 
+use Drupal\Component\Plugin\Exception\PluginException;
 use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Plugin\DefaultPluginManager;
 use Drupal\Core\Plugin\Discovery\YamlDiscovery;
 use Drupal\Core\Plugin\Factory\ContainerFactory;
+use Drupal\Core\StringTranslation\StringTranslationTrait;
 
 /**
  * Plugin manager for Rules events that can be triggered.
@@ -20,6 +22,8 @@ use Drupal\Core\Plugin\Factory\ContainerFactory;
  * @see \Drupal\rules\Core\RulesEventInterface
  */
 class RulesEventManager extends DefaultPluginManager {
+
+  use StringTranslationTrait;
 
   /**
    * Provides some default values for the definition of all Rules event plugins.
@@ -53,12 +57,28 @@ class RulesEventManager extends DefaultPluginManager {
     //   annotation reader code that converts plugin defintion parts into
     //   objects.
     foreach ($definition['context'] as $context_name => $values) {
-      // We want to call the type key "type", not "value".
-      if (!isset($values['value'])) {
-        $values['value'] = $values['type'];
+      $values += array(
+        'required' => TRUE,
+        'multiple' => FALSE,
+        'default_value' => NULL,
+      );
+      foreach (['label', 'description'] as $key) {
+        if (isset($values[$key])) {
+          // @todo Dynamic translations are bad! But how can specify
+          //   translatable strings in the plugin definition YAML file?
+          $values[$key] = $this->t($values[$key]);
+        }
+        else {
+          $values[$key] = NULL;
+        }
       }
-      $context_annoation = new \Drupal\Core\Annotation\ContextDefinition($values);
-      $definition['context'][$context_name] = $context_annoation->get();
+      if (isset($values['class']) && !in_array('Drupal\Core\Plugin\Context\ContextDefinitionInterface', class_implements($values['class']))) {
+        throw new PluginException('ContextDefinition class must implement \Drupal\Core\Plugin\Context\ContextDefinitionInterface.');
+      }
+      $class = isset($values['class']) ? $values['class'] : 'Drupal\Core\Plugin\Context\ContextDefinition';
+      $definition['context'][$context_name] = new $class(
+        $values['type'], $values['label'], $values['required'],
+        $values['multiple'], $values['description'], $values['default_value']);
     }
   }
 
