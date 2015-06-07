@@ -1,0 +1,14 @@
+<?php
+
+/**
+ * @file
+ * Hook implementations for the Rules module.
+ */
+
+/**
+ * Implements hook_user_login().
+ */
+function rules_user_login($account) {
+  $dispatcher = \Drupal::service('rules.event_dispatcher');
+  $dispatcher->invokeEvent('rules_user_login', $account);
+}
