@@ -14,11 +14,4 @@ use Drupal\Core\Plugin\ContextAwarePluginBase;
  */
 class RulesEvent extends ContextAwarePluginBase implements RulesEventInterface {
 
-  /**
-   * {@inheritdoc}
-   */
-  public function refineContextDefinitions() {
-    // Events do not refine context definitions, so do nothing here.
-  }
-
 }

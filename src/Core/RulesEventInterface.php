@@ -7,7 +7,7 @@
 
 namespace Drupal\rules\Core;
 
-use Drupal\rules\Context\ContextAwarePluginInterface;
+use Drupal\Core\Plugin\ContextAwarePluginInterface;
 
 /**
  * Describes Rules events with their context.
