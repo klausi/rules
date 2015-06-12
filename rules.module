@@ -5,10 +5,13 @@
  * Hook implementations for the Rules module.
  */
 
+use Symfony\Component\EventDispatcher\GenericEvent;
+
 /**
  * Implements hook_user_login().
  */
 function rules_user_login($account) {
-  $dispatcher = \Drupal::service('rules.event_dispatcher');
-  $dispatcher->invokeEvent('rules_user_login', $account);
+  $event = new GenericEvent($account);
+  $event_dispatcher = \Drupal::service('event_dispatcher');
+  $event_dispatcher->dispatch('rules_user_login', $event);
 }
