@@ -67,7 +67,25 @@ class GenericEventSubscriber implements EventSubscriberInterface {
 
     // @todo This is just a placeholder for now so that we can test this
     //   invocation. Should be reaction_rule once we have that.
-    $this->entityManager->getStorage('rules_component');
+    $storage = $this->entityManager->getStorage('rules_reaction_rule');
+    $configs = $storage->loadByProperties(['event' => $event_name]);
+    foreach ($configs as $rules_config) {
+      $reaction_rule = $rules_config->getExpression();
+      $subject = $event->getSubject();
+      $context_names = array_keys($reaction_rule->getContextDefinitions());
+
+      // Set the subject as the first context of the rule.
+      if ($subject) {
+        $context_name = array_shift($context_names);
+        $reaction_rule->setContextValue($context_name, $subject);
+      }
+      // Set the rest of arguments as further context values on the rule.
+      foreach ($event->getArguments() as $name => $value) {
+        $reaction_rule->setContextValue($name, $value);
+      }
+
+      $reaction_rule->execute();
+    }
   }
 
 }
