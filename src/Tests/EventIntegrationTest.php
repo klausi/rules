@@ -55,6 +55,8 @@ class EventIntegrationTest extends RulesDrupalTestBase {
 
     // Rebuild the container so that the newly configured event gets picked up.
     $this->kernel->rebuildContainer();
+    // The logger instance has changed, refresh it.
+    $this->logger = $this->container->get('logger.channel.rules');
 
     $account = $this->container->get('current_user');
     // Invoke the hook manually which should trigger the rule.

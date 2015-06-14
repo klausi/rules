@@ -41,21 +41,22 @@ class GenericEventSubscriber implements EventSubscriberInterface {
     $events = [];
     $callback = ['onRulesEvent', 100];
 
-    // @todo this does not work, the plugins are simply not ready at this point.
-    //   Try using the state system next.
-    try {
-      $storage = \Drupal::entityManager()->getStorage('rules_reaction_rule');
-    }
-    catch (\Drupal\Component\Plugin\Exception\PluginNotFoundException $e) {
-      // This can be called early and in case our reaction rule entity type does
-      // not exist yet we just return no events.
+    // If there is no state service there is nothing we can do here.
+    if (!\Drupal::hasService('state')) {
       return [];
     }
 
-    $registered_event_names = $storage->getRegisteredEvents();
-
-    foreach ($registered_event_names as $event_name) {
-      $events[$event_name][] = $callback;
+    // Since we cannot access the reaction rule config storage here we have to
+    // use the state system to provide registered Rules events. The Reaction
+    // Rule storage is responsible for keeping the registered events up to date
+    // in the state system.
+    // @see \Drupal\rules\Entity\ReactionRuleStorage
+    $state = \Drupal::state();
+    $registered_event_names = $state->get('rules.registered_events');
+    if (!empty($registered_event_names)) {
+      foreach ($registered_event_names as $event_name) {
+        $events[$event_name][] = $callback;
+      }
     }
     return $events;
   }
