@@ -37,13 +37,22 @@ class GenericEventSubscriber implements EventSubscriberInterface {
    * {@inheritdoc}
    */
   public static function getSubscribedEvents() {
-    // Can we read config here and get the list of active reaction rules with
-    // their event names?
+    // Register this listener for every event that is used by a reaction rule.
     $events = [];
     $callback = ['onRulesEvent', 100];
-    // @todo The 'rules_user_login' event is hard-coded here, but this should
-    //   be a list of active configured reation rule events.
-    $registered_event_names = ['rules_user_login'];
+
+    // @todo this does not work, the plugins are simply not ready at this point.
+    //   Try using the state system next.
+    try {
+      $storage = \Drupal::entityManager()->getStorage('rules_reaction_rule');
+    }
+    catch (\Drupal\Component\Plugin\Exception\PluginNotFoundException $e) {
+      // This can be called early and in case our reaction rule entity type does
+      // not exist yet we just return no events.
+      return [];
+    }
+
+    $registered_event_names = $storage->getRegisteredEvents();
 
     foreach ($registered_event_names as $event_name) {
       $events[$event_name][] = $callback;
@@ -60,15 +69,12 @@ class GenericEventSubscriber implements EventSubscriberInterface {
    *   The vent name.
    */
   public function onRulesEvent(GenericEvent $event, $event_name) {
-    // 1. Load reaction rule config entities by $event_name.
-    // 2. For each entity get reaction rule expression.
-    // 3. Set context value from $event into the rule expression.
-    // 4. Execute reaction rule.
-
-    // @todo This is just a placeholder for now so that we can test this
-    //   invocation. Should be reaction_rule once we have that.
+    // Load reaction rule config entities by $event_name.
     $storage = $this->entityManager->getStorage('rules_reaction_rule');
+    // @todo Only load active reaction rules here.
     $configs = $storage->loadByProperties(['event' => $event_name]);
+
+    // Loop over all rules and execute them.
     foreach ($configs as $rules_config) {
       $reaction_rule = $rules_config->getExpression();
       $subject = $event->getSubject();

@@ -53,7 +53,11 @@ class EventIntegrationTest extends RulesDrupalTestBase {
     ]);
     $config_entity->save();
 
+    // Rebuild the container so that the newly configured event gets picked up.
+    $this->kernel->rebuildContainer();
+
     $account = $this->container->get('current_user');
+    // Invoke the hook manually which should trigger the rule.
     rules_user_login($account);
 
     // Test that the action in the rule logged something.

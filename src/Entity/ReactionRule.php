@@ -15,6 +15,9 @@ use Drupal\Core\Config\Entity\ConfigEntityBase;
  * @ConfigEntityType(
  *   id = "rules_reaction_rule",
  *   label = @Translation("Reaction Rule"),
+ *   handlers = {
+ *     "storage" = "Drupal\rules\Entity\ReactionRuleStorage"
+ *   },
  *   admin_permission = "administer rules",
  *   config_prefix = "reaction",
  *   entity_keys = {
@@ -164,6 +167,13 @@ class ReactionRule extends ConfigEntityBase {
    */
   public function getTag() {
     return $this->tag;
+  }
+
+  /**
+   * Returns the event on which this rule will trigger.
+   */
+  public function getEvent() {
+    return $this->event;
   }
 
   /**
