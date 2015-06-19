@@ -67,7 +67,7 @@ class ReactionRuleStorage extends ConfigEntityStorage {
    * @return string[]
    *   The list of event names keyed by event name.
    */
-  public function getRegisteredEvents() {
+  protected function getRegisteredEvents() {
     $events = [];
     foreach ($this->loadMultiple() as $rules_config) {
       $event = $rules_config->getEvent();
@@ -82,17 +82,28 @@ class ReactionRuleStorage extends ConfigEntityStorage {
    * {@inheritdoc}
    */
   public function save(EntityInterface $entity) {
-    parent::save($entity);
+    $return = parent::save($entity);
 
     // Update the state of registered events.
-    // @todo How and where can we manage the list of registered events
-    // efficiently? Use a cache clearing method?
-    $event = $entity->getEvent();
-    $registered_events = $this->stateService->get('rules.registered_events', []);
-    if (!isset($registered_events[$event])) {
-      $registered_events[$event] = $event;
-      $this->stateService->set('rules.registered_events', $registered_events);
-    }
+    // @todo Should we trigger a container rebuild here as well? Might be a bit
+    // expensive on every save?
+    $this->stateService->set('rules.registered_events', $this->getRegisteredEvents());
+
+    return $return;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function delete(array $entities) {
+    $return = parent::delete($entities);
+
+    // Update the state of registered events.
+    // @todo Should we trigger a container rebuild here as well? Might be a bit
+    // expensive on every delete?
+    $this->stateService->set('rules.registered_events', $this->getRegisteredEvents());
+
+    return $return;
   }
 
 }
