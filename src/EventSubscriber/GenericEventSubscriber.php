@@ -67,7 +67,7 @@ class GenericEventSubscriber implements EventSubscriberInterface {
    * @param \Symfony\Component\EventDispatcher\GenericEvent $event
    *   The event object containing context for the event.
    * @param string $event_name
-   *   The vent name.
+   *   The event name.
    */
   public function onRulesEvent(GenericEvent $event, $event_name) {
     // Load reaction rule config entities by $event_name.
