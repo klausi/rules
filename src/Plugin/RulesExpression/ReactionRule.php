@@ -12,11 +12,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\rules\Engine\RulesEventManager;
 
 /**
- * Provides a rule, executing actions when conditions are met.
- *
- * Actions added to a rule can also be rules themselves, so it is possible to
- * nest several rules into one rule. This is the functionality of so called
- * "rule sets" in Drupal 7.
+ * Provides a reaction rule that can be configured with an event context.
  *
  * @RulesExpression(
  *   id = "rules_reaction_rule",
