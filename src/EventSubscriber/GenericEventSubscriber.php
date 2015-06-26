@@ -41,7 +41,9 @@ class GenericEventSubscriber implements EventSubscriberInterface {
     $events = [];
     $callback = ['onRulesEvent', 100];
 
-    // If there is no state service there is nothing we can do here.
+    // If there is no state service there is nothing we can do here. This static
+    // method could be called early when the container is built, so the state
+    // service might no always be available.
     if (!\Drupal::hasService('state')) {
       return [];
     }
