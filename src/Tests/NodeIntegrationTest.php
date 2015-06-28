@@ -252,6 +252,7 @@ class NodeIntegrationTest extends RulesDrupalTestBase {
     $rule->execute();
 
     $this->assertEqual('new title', $node->getTitle());
+    $this->assertNotNull($node->id(), 'Node ID is set, which means that the node has been auto-saved.');
   }
 
 }

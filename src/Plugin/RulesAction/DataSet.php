@@ -28,11 +28,7 @@ use Drupal\rules\Core\RulesActionBase;
  *   }
  * )
  * @todo Add various input restrictions: selector on 'data'.
- * @todo Add 'wrapped' on 'data'.
  * @todo 'allow NULL' and 'optional' for both 'data' and 'value'.
- *
- * @todo Use TypedDataManager to compare value types.
- * @todo Save parent (entity where fields belong to) if set.
  */
 class DataSet extends RulesActionBase {
 
@@ -49,6 +45,22 @@ class DataSet extends RulesActionBase {
   public function execute() {
     $typed_data = $this->getContext('data')->getContextData();
     $typed_data->setValue($this->getContextValue('value'));
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function autoSaveContext() {
+    // Saving is done at the root of the typed data tree, for example on the
+    // entity level.
+    $typed_data = $this->getContext('data')->getContextData();
+    $root = $typed_data->getRoot();
+    $value = $root->getValue();
+    // Only save things that are objects and have a save() method.
+    if (is_object($value) && method_exists($value, 'save')) {
+      return ['data'];
+    }
+    return [];
   }
 
 }
