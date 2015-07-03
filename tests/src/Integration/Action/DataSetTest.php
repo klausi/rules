@@ -52,6 +52,19 @@ class DataSetTest extends RulesIntegrationTestBase {
     $this->action->execute();
 
     $this->assertSame('replacement', $this->action->getContextValue('data'));
+    $this->assertSame([], $this->action->autoSaveContext());
+  }
+
+  /**
+   * Tests that a variable can be set to NULL.
+   */
+  public function testSetToNull() {
+    // We don't need to set the 'value' context, it is NULL by default.
+    $this->action->setContextValue('data', 'original');
+    $this->action->execute();
+
+    $this->assertNull($this->action->getContextValue('data'));
+    $this->assertSame([], $this->action->autoSaveContext());
   }
 
 }

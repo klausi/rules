@@ -23,12 +23,13 @@ use Drupal\rules\Core\RulesActionBase;
  *     ),
  *     "value" = @ContextDefinition("any",
  *       label = @Translation("Value"),
- *       description = @Translation("The new value to set for the specified data.")
+ *       description = @Translation("The new value to set for the specified data."),
+ *       required = FALSE
  *     )
  *   }
  * )
  * @todo Add various input restrictions: selector on 'data'.
- * @todo 'allow NULL' and 'optional' for both 'data' and 'value'.
+ * @todo 'allow NULL' for both 'data' and 'value'?
  */
 class DataSet extends RulesActionBase {
 
