@@ -5,7 +5,7 @@ rules_reaction_add_action:
   route_name: entity.rules_reaction.add_form
   title: 'Add reaction rule'
   appears_on:
-    - stub.rules_reaction.collection
+    - entity.rules_reaction.collection
 
 # Rules component related actions.
 rules_component_add_action:

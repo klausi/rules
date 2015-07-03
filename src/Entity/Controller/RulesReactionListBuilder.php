@@ -37,11 +37,9 @@ class RulesReactionListBuilder extends ConfigEntityListBuilder {
    * {@inheritdoc}
    */
   public function buildRow(EntityInterface $entity) {
-    /* @var $entity \Drupal\rules\Entity\RulesComponent */
+    /* @var $entity \Drupal\rules\Entity\ReactionRule */
     $row['id'] = $entity->id();
     $row['label'] = $this->getLabel($entity);
-    // @todo: maybe link somewhere
-    /* $entity->link($this->getLabel($entity)) */
     $row['description'] = $entity->getDescription();
     $row['tag'] = $entity->getTag();
     return $row + parent::buildRow($entity);
