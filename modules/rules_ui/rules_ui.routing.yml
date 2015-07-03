@@ -24,15 +24,15 @@ rules.ui.settings:
 
 
 ### Rules Reactions
-stub.rules_reaction.collection:
+entity.rules_reaction.collection:
   path: '/admin/config/workflow/rules/reactions'
   defaults:
-    _controller: 'Drupal\rules\Stub\RulesReactionStub::notImplemented'
+    _entity_list: 'rules_reaction_rule'
     _title: 'Reaction rules'
   requirements:
     _permission: 'administer rules+administer rules reactions'
 
-stub.rules_reaction.add_form:
+entity.rules_reaction.add_form:
   path: '/admin/config/workflow/rules/reactions/add'
   defaults:
     _controller: 'Drupal\rules\Stub\RulesReactionStub::notImplemented'
@@ -40,7 +40,7 @@ stub.rules_reaction.add_form:
   requirements:
     _permission: 'administer rules+administer rules reactions'
 
-stub.rules_reaction.edit_form:
+entity.rules_reaction.edit_form:
   path: '/admin/config/workflow/rules/reactions/edit/{rules_reaction}'
   defaults:
     _controller: 'Drupal\rules\Stub\RulesReactionStub::notImplemented'
@@ -48,7 +48,7 @@ stub.rules_reaction.edit_form:
   requirements:
     _permission: 'administer rules+administer rules reactions'
 
-stub.rules_reaction.delete_form:
+entity.rules_reaction.delete_form:
   path: '/admin/config/workflow/rules/reactions/delete/{rules_reaction}'
   defaults:
     _controller: 'Drupal\rules\Stub\RulesReactionStub::notImplemented'

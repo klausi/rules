@@ -2,7 +2,7 @@
 
 # Rules reaction related actions.
 rules_reaction_add_action:
-  route_name: stub.rules_reaction.add_form
+  route_name: entity.rules_reaction.add_form
   title: 'Add reaction rule'
   appears_on:
     - stub.rules_reaction.collection

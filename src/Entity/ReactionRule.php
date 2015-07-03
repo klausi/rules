@@ -16,7 +16,13 @@ use Drupal\Core\Config\Entity\ConfigEntityBase;
  *   id = "rules_reaction_rule",
  *   label = @Translation("Reaction Rule"),
  *   handlers = {
- *     "storage" = "Drupal\rules\Entity\ReactionRuleStorage"
+ *     "storage" = "Drupal\rules\Entity\ReactionRuleStorage",
+ *     "list_builder" = "Drupal\rules\Entity\Controller\RulesReactionListBuilder",
+ *     "form" = {
+ *        "add" = "\Drupal\rules\Entity\RulesReactionAddForm",
+ *        "edit" = "\Drupal\rules\Entity\RulesReactiontEditForm",
+ *        "delete" = "\Drupal\rules\Entity\RulesReactionDeleteForm"
+ *      }
  *   },
  *   admin_permission = "administer rules",
  *   config_prefix = "reaction",
@@ -35,6 +41,10 @@ use Drupal\Core\Config\Entity\ConfigEntityBase;
  *     "core",
  *     "expression_id",
  *     "configuration",
+ *   },
+ *   links = {
+ *     "edit-form" = "/admin/config/workflow/rules/reactions/edit/{rules_reaction_rule}",
+ *     "delete-form" = "/admin/config/workflow/rules/components/delete/{rules_reaction_rule}"
  *   }
  * )
  */
