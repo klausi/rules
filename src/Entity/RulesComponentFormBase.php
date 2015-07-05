@@ -18,13 +18,6 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 abstract class RulesComponentFormBase extends EntityForm {
 
   /**
-   * The rules component entity.
-   *
-   * @var \Drupal\rules\Entity\RulesComponent
-   */
-  protected $entity;
-
-  /**
    * The RulesComponent storage.
    *
    * @var \Drupal\Core\Entity\EntityStorageInterface
