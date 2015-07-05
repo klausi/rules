@@ -24,7 +24,7 @@ rules.ui.settings:
 
 
 ### Rules Reactions
-entity.rules_reaction.collection:
+entity.rules_reaction_rule.collection:
   path: '/admin/config/workflow/rules/reactions'
   defaults:
     _entity_list: 'rules_reaction_rule'
@@ -32,7 +32,7 @@ entity.rules_reaction.collection:
   requirements:
     _permission: 'administer rules+administer rules reactions'
 
-entity.rules_reaction.add_form:
+entity.rules_reaction_rule.add_form:
   path: '/admin/config/workflow/rules/reactions/add'
   defaults:
     _entity_form: 'rules_reaction_rule.add'
@@ -40,16 +40,16 @@ entity.rules_reaction.add_form:
   requirements:
     _permission: 'administer rules+administer rules reactions'
 
-entity.rules_reaction.edit_form:
-  path: '/admin/config/workflow/rules/reactions/edit/{rules_reaction}'
+entity.rules_reaction_rule.edit_form:
+  path: '/admin/config/workflow/rules/reactions/edit/{rules_reaction_rule}'
   defaults:
     _entity_form: 'rules_reaction_rule.edit'
     _title: 'Edit reaction rule'
   requirements:
     _permission: 'administer rules+administer rules reactions'
 
-entity.rules_reaction.delete_form:
-  path: '/admin/config/workflow/rules/reactions/delete/{rules_reaction}'
+entity.rules_reaction_rule.delete_form:
+  path: '/admin/config/workflow/rules/reactions/delete/{rules_reaction_rule}'
   defaults:
     _entity_form: 'rules_reaction_rule.delete'
     _title: 'Delete reaction rule'

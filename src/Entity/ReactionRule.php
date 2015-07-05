@@ -19,9 +19,9 @@ use Drupal\Core\Config\Entity\ConfigEntityBase;
  *     "storage" = "Drupal\rules\Entity\ReactionRuleStorage",
  *     "list_builder" = "Drupal\rules\Entity\Controller\RulesReactionListBuilder",
  *     "form" = {
- *        "add" = "\Drupal\rules\Entity\RulesReactionAddForm",
- *        "edit" = "\Drupal\rules\Entity\RulesReactiontEditForm",
- *        "delete" = "\Drupal\rules\Entity\RulesReactionDeleteForm"
+ *        "add" = "\Drupal\rules\Entity\ReactionRuleAddForm",
+ *        "edit" = "\Drupal\rules\Entity\ReactionRuleEditForm",
+ *        "delete" = "\Drupal\rules\Entity\ReactionRuleDeleteForm"
  *      }
  *   },
  *   admin_permission = "administer rules",
