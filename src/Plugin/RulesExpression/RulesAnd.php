@@ -8,7 +8,6 @@
 namespace Drupal\rules\Plugin\RulesExpression;
 
 use Drupal\rules\Engine\ConditionExpressionContainer;
-use Drupal\rules\Engine\RulesState;
 use Drupal\rules\Engine\RulesStateInterface;
 
 /**
@@ -16,7 +15,8 @@ use Drupal\rules\Engine\RulesStateInterface;
  *
  * @RulesExpression(
  *   id = "rules_and",
- *   label = @Translation("Condition set (AND)")
+ *   label = @Translation("Condition set (AND)"),
+ *   form = "\Drupal\rules\Form\Expression\ConditionContainerForm"
  * )
  */
 class RulesAnd extends ConditionExpressionContainer {

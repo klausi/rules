@@ -30,7 +30,12 @@ class ReactionRuleForm implements ExpressionFormInterface {
    * {@inheritdoc}
    */
   public function form(array $form, FormStateInterface $form_state) {
-    //$form['event']['#markup'] = 'hello';
+    $conditions_form_handler = $this->rule->getConditions()->getFormHandler();
+    $form = $conditions_form_handler->form($form, $form_state);
+
+    //$actions_form_handler = $this->rule->getActions()->getFormHandler();
+    //$form = $actions_form_handler->form($form, $form_state);
+
     return $form;
   }
 
