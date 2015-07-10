@@ -34,4 +34,12 @@ interface ExpressionInterface extends ExecutableInterface, ContextAwarePluginInt
    */
   public function executeWithState(RulesStateInterface $state);
 
+  /**
+   * Returns the form handling class for this expression.
+   *
+   * @return \Drupal\rules\Form\Expression\ExpressionFormInterface|null
+   *   The form handling object if there is one, NULL otherwise.
+   */
+  public function getFormHandler();
+
 }
