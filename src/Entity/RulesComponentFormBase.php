@@ -26,16 +26,6 @@ abstract class RulesComponentFormBase extends EntityForm {
       '#required' => TRUE,
     ];
 
-    // @todo enter a real tag field here.
-    $form['tag'] = [
-      '#type' => 'textfield',
-      '#title' => $this->t('Tag'),
-      '#default_value' => $this->entity->getTag(),
-      '#description' => t('Enter a tag here'),
-      '#required' => TRUE,
-    ];
-
-
     $form['id'] = [
       '#type' => 'machine_name',
       '#description' => t('A unique machine-readable name. Can only contain lowercase letters, numbers, and underscores.'),
@@ -48,6 +38,15 @@ abstract class RulesComponentFormBase extends EntityForm {
       ],
     ];
 
+    // @todo enter a real tag field here.
+    $form['tag'] = [
+      '#type' => 'textfield',
+      '#title' => $this->t('Tag'),
+      '#default_value' => $this->entity->getTag(),
+      '#description' => t('Enter a tag here'),
+      '#required' => TRUE,
+    ];
+
     $form['description'] = [
       '#type' => 'textarea',
       '#default_value' => $this->entity->getDescription(),
@@ -57,4 +56,19 @@ abstract class RulesComponentFormBase extends EntityForm {
 
     return parent::form($form, $form_state);
   }
+
+  /**
+   * Machine name exists callback.
+   *
+   * @param string $id
+   *   The machine name ID.
+   *
+   * @return bool
+   *   TRUE if an entity with the same name already exists, FALSE otherwise.
+   */
+  public function exists($id) {
+    $type = $this->entity->getEntityTypeId();
+    return (bool) $this->entityManager->getStorage($type)->load($id);
+  }
+
 }
