@@ -21,7 +21,7 @@ use Drupal\Core\Config\Entity\ConfigEntityBase;
  *     "form" = {
  *        "add" = "\Drupal\rules\Entity\ReactionRuleAddForm",
  *        "edit" = "\Drupal\rules\Entity\ReactionRuleEditForm",
- *        "delete" = "\Drupal\rules\Entity\ReactionRuleDeleteForm"
+ *        "delete" = "\Drupal\Core\Entity\EntityDeleteForm"
  *      }
  *   },
  *   admin_permission = "administer rules",
@@ -43,6 +43,7 @@ use Drupal\Core\Config\Entity\ConfigEntityBase;
  *     "configuration",
  *   },
  *   links = {
+ *     "collection" = "/admin/config/workflow/rules/reactions",
  *     "edit-form" = "/admin/config/workflow/rules/reactions/edit/{rules_reaction_rule}",
  *     "delete-form" = "/admin/config/workflow/rules/reactions/delete/{rules_reaction_rule}"
  *   }

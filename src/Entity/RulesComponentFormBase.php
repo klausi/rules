@@ -8,40 +8,12 @@
 namespace Drupal\rules\Entity;
 
 use Drupal\Core\Entity\EntityForm;
-use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Form\FormStateInterface;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Provides the base form for rules add and edit forms.
  */
 abstract class RulesComponentFormBase extends EntityForm {
-
-  /**
-   * The RulesComponent storage.
-   *
-   * @var \Drupal\Core\Entity\EntityStorageInterface
-   */
-  protected $storage = NULL;
-
-  /**
-   * Constructs a new ActionAddForm.
-   *
-   * @param \Drupal\Core\Entity\EntityStorageInterface $storage
-   *   The rules_component storage.
-   */
-  public function __construct(EntityStorageInterface $storage) {
-    $this->storage = $storage;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public static function create(ContainerInterface $container) {
-    return new static(
-      $container->get('entity.manager')->getStorage('rules_component')
-    );
-  }
 
   /**
    * {@inheritdoc}
