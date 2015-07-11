@@ -42,4 +42,21 @@ interface ExpressionInterface extends ExecutableInterface, ContextAwarePluginInt
    */
   public function getFormHandler();
 
+  /**
+   * Returns the root expression if this expression is nested.
+   *
+   * @return \Drupal\rules\Engine\ExpressionInterface
+   *   The root expression or $this if the expression is the root element
+   *   itself.
+   */
+  public function getRoot();
+
+  /**
+   * Set the root expression for this expression if it is nested.
+   *
+   * @param \Drupal\rules\Engine\ExpressionInterface $root
+   *   The root expression object.
+   */
+  public function setRoot(ExpressionInterface $root);
+
 }

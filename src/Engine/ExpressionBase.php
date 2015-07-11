@@ -26,6 +26,13 @@ abstract class ExpressionBase extends ContextAwarePluginBase implements Expressi
   protected $configuration;
 
   /**
+   * The root expression if this object is nested.
+   *
+   * @var \Drupal\rules\Engine\ExpressionInterface
+   */
+  protected $root;
+
+  /**
    * Overrides the parent constructor to populate context definitions.
    *
    * Expression plugins can be configured to have arbitrary context definitions.
@@ -124,6 +131,23 @@ abstract class ExpressionBase extends ContextAwarePluginBase implements Expressi
       $class_name = $this->pluginDefinition['form'];
       return new $class_name($this);
     }
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getRoot() {
+    if (isset($this->root)) {
+      return $this->root;
+    }
+    return $this;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function setRoot(ExpressionInterface $root) {
+    $this->root = $root;
   }
 
 }

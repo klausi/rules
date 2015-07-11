@@ -179,4 +179,12 @@ class Rule extends ExpressionBase implements RuleInterface, ContainerFactoryPlug
     return $configuration;
   }
 
+  /**
+   * {@inheritdoc}
+   */
+  public function getIterator() {
+    // Just pass up the actions for iterating over.
+    return $this->actions->getIterator();
+  }
+
 }

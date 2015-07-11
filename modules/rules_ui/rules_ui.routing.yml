@@ -80,3 +80,11 @@ entity.rules_component.delete_form:
     _admin_route: TRUE
   requirements:
     _permission: 'administer rules+administer rules components'
+
+rules_ui.condition.add:
+  path: '/admin/config/workflow/rules/reactions/{rules_reaction_rule}/add/{rules_condition_offset}'
+  requirements:
+    _permission: 'administer rules+administer rules reactions'
+  defaults:
+    _title: 'Add condition'
+    _form: '\Drupal\rules\From\AddConditionForm'

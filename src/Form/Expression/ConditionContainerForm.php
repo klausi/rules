@@ -45,16 +45,16 @@ class ConditionContainerForm implements ExpressionFormInterface {
       '#empty' => t('None'),
     );
 
-    $cell['colspan'] = 3;
-    $cell['data']['#attributes']['class'][] = 'rules-operations-add';
-    $cell['data']['#attributes']['class'][] = 'action-links';
-    $cell['data']['#links']['add_condition'] = array(
-      'title' => t('Add condition'),
-      'url' => Url::fromRoute('rules.ui.condition.add', []),
-      'query' => drupal_get_destination(),
-    );
-    $form['conditions']['table']['#rows'][] = array('data' => array($cell), 'class' => array('rules-elements-add'));
-
+    $form['add_condition'] = [
+      '#theme' => 'menu_local_action',
+      '#link' => [
+        'title' => $this->t('Add condition'),
+        'url' => Url::fromRoute('rules_ui.condition.add', [
+          'rules_reaction_rule' => $this->conditionContainer->getRoot()->getPluginId(),
+          'rules_condition_offset' => count($this->conditionContainer->getIterator()) + 1,
+        ]),
+      ],
+    ];
 
     return $form;
   }
