@@ -7,10 +7,10 @@
 
 namespace Drupal\Tests\rules\Unit;
 
-use Drupal\Core\TypedData\DataDefinition;
-use Drupal\Core\TypedData\Plugin\DataType\Any;
+use Drupal\rules\Engine\ActionExpressionInterface;
 use Drupal\rules\Engine\ConditionExpressionInterface;
 use Drupal\rules\Engine\RulesStateInterface;
+use Drupal\rules\Engine\ExpressionPluginManagerInterface;
 use Drupal\Tests\UnitTestCase;
 use Prophecy\Argument;
 
@@ -43,7 +43,7 @@ abstract class RulesUnitTestBase extends UnitTestCase {
   /**
    * The mocked expression manager object.
    *
-   * @var \Drupal\rules\Engine\ExpressionPluginManager
+   * @var \Drupal\rules\Engine\ExpressionPluginManager|\Prophecy\Prophecy\ProphecyInterface
    */
   protected $expressionManager;
 
@@ -64,136 +64,9 @@ abstract class RulesUnitTestBase extends UnitTestCase {
     $this->falseConditionExpression->executeWithState(
       Argument::type(RulesStateInterface::class))->willReturn(FALSE);
 
-    $this->testActionExpression = $this->prophesize(\Drupal\rules\Engine\ActionExpressionInterface::class);
+    $this->testActionExpression = $this->prophesize(ActionExpressionInterface::class);
 
-    $this->expressionManager = $this->getMockBuilder('Drupal\rules\Engine\ExpressionPluginManager')
-      ->disableOriginalConstructor()
-      ->getMock();
-  }
-
-  /**
-   * Creates a typed data mock with a given value.
-   *
-   * @param mixed $value
-   *   The value to set in the mocked typed data object.
-   *
-   * @return \PHPUnit_Framework_MockObject_MockObject|\Drupal\Core\TypedData\TypedDataInterface
-   *   The mocked typed data object with the given value set.
-   */
-  protected function getMockTypedData($value) {
-    $typed_data = $this->getMock('Drupal\Core\TypedData\TypedDataInterface');
-
-    $typed_data->expects($this->any())
-      ->method('getValue')
-      ->will($this->returnValue($value));
-
-    return $typed_data;
-  }
-
-  /**
-   * Creates a typed data manager with the basic data type methods mocked.
-   *
-   * @param array $methods
-   *   (optional) The methods to mock.
-   *
-   * @return \PHPUnit_Framework_MockObject_MockObject|\Drupal\Core\TypedData\TypedDataManager
-   *   The mocked typed data manager
-   *
-   * @see \Drupal\Core\TypedData\TypedDataManager
-   */
-  protected function getMockTypedDataManager(array $methods = []) {
-    $methods += ['createDataDefinition', 'createListDataDefinition', 'createInstance'];
-
-    $typed_data_manager = $this->getMockBuilder('Drupal\Core\TypedData\TypedDataManager')
-      ->setMethods($methods)
-      ->disableOriginalConstructor()
-      ->getMock();
-
-    // These can be overridden in the test implementation to return more
-    // specific data definitions.
-    $typed_data_manager->expects($this->any())
-      ->method('createDataDefinition')
-      ->with($this->anything())
-      ->will($this->returnCallback(function ($data) {
-        return DataDefinition::create($data);
-      }));
-
-    $typed_data_manager->expects($this->any())
-      ->method('createListDataDefinition')
-      ->with($this->anything())
-      ->will($this->returnCallback(function ($data) {
-        return DataDefinition::create($data);
-      }));
-
-    $typed_data_manager->expects($this->any())
-      ->method('createInstance')
-      ->with($this->anything())
-      ->will($this->returnCallback(function ($definition, $configuration) {
-        // We don't care for validation in our condition plugin tests. Therefore
-        // we wrap all the data in a simple 'any' data type. That way we can use
-        // all the data setters and getters without running into any problems or
-        // needless complexity and mocking.
-        // @see \Drupal\Core\TypedData\TypedDataManager::createInstance.
-        return new Any($definition, $configuration['name'], $configuration['parent']);
-      }));
-
-    return $typed_data_manager;
-  }
-
-  /**
-   * Creates a string translation with the basic translation methods mocked.
-   *
-   * @return \PHPUnit_Framework_MockObject_MockObject|\Drupal\Core\StringTranslation\TranslationInterface
-   *   The mocked string translation.
-   *
-   * @see \Drupal\Core\StringTranslation\TranslationInterface
-   */
-  protected function getMockStringTranslation() {
-    $string_translation = $this->getMock('Drupal\Core\StringTranslation\TranslationInterface');
-    $string_translation->expects($this->any())
-      ->method('translate')
-      ->will($this->returnCallback(function ($string) {
-        return $string;
-      }));
-
-    $string_translation->expects($this->any())
-      ->method('formatPlural')
-      ->will($this->returnCallback(function($count, $one, $multiple) {
-        return $count == 1 ? $one : str_replace('@count', $count, $multiple);
-      }));
-
-    return $string_translation;
-  }
-
-  /**
-   * Creates a rule with the basic plugin methods mocked.
-   *
-   * @param array $methods
-   *   (optional) The methods to mock.
-   *
-   * @return \Drupal\rules\Plugin\RulesExpression\RuleInterface
-   *   The mocked rule.
-   */
-  protected function getMockRule(array $methods = []) {
-    $methods += ['getPluginId', 'getBasePluginId', 'getDerivativeId', 'getPluginDefinition'];
-
-    $rule = $this->getMockBuilder('Drupal\rules\Plugin\RulesExpression\Rule')
-      ->setMethods($methods)
-      ->disableOriginalConstructor()
-      ->getMock();
-
-    $this->expectsGetPluginId($rule, 'rules_rule')
-      ->expectsGetDerivativeId($rule, NULL)
-      ->expectsGetBasePluginId($rule, 'rules_rule')
-      ->expectsGetPluginDefinition($rule, 'rules_rule', 'A rule, executing actions when conditions are met.');
-
-    // Set the condition container that would otherwise get initialized in the
-    // constructor.
-    $rule->setConditions($this->getMockAnd());
-    // Same for the actions container.
-    $rule->setActions($this->getMockActionSet());
-
-    return $rule;
+    $this->expressionManager = $this->prophesize(ExpressionPluginManagerInterface::class);
   }
 
   /**
