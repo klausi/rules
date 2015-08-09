@@ -2,7 +2,7 @@
 
 /**
  * @file
- * Contains \Drupal\rules\Core\RulesPluginTrait.
+ * Contains \Drupal\rules\Core\ExecutablePluginTrait.
  */
 
 namespace Drupal\rules\Core;
@@ -10,7 +10,7 @@ namespace Drupal\rules\Core;
 use Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException;
 
 /**
- * Offers common methods for context plugin implementers.
+ * Offers common methods for executable plugins.
  */
 trait ExecutablePluginTrait {
 
