@@ -7,6 +7,7 @@
 
 namespace Drupal\rules\Tests;
 
+use Drupal\rules\Context\ContextDefinition;
 use Drupal\rules\Context\ContextConfig;
 
 /**
@@ -37,12 +38,8 @@ class DataProcessorTest extends RulesDrupalTestBase {
 
     $rule = $this->expressionManager->createRule([
       'context_definitions' => [
-        'message' => [
-          'type' => 'string',
-        ],
-        'type' => [
-          'type' => 'string',
-        ],
+        'message' => ContextDefinition::create('string')->toArray(),
+        'type' => ContextDefinition::create('string')->toArray(),
       ],
     ]);
     $rule->setContextValue('message', 1);
@@ -53,7 +50,7 @@ class DataProcessorTest extends RulesDrupalTestBase {
     $messages = drupal_set_message();
     // The original value was 1 and the processor adds 1, so the result should
     // be 2.
-    $this->assertEqual($messages['status'][0]['message'], '2');
+    $this->assertEqual((string) $messages['status'][0], '2');
   }
 
 }

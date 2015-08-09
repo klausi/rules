@@ -11,7 +11,7 @@ use Drupal\Core\Entity\ContentEntityType;
 use Drupal\Tests\rules\Integration\RulesEntityIntegrationTestBase;
 
 /**
- * @coversDefaultClass \Drupal\rules\Plugin\Action\EntityCreate
+ * @coversDefaultClass \Drupal\rules\Plugin\RulesAction\EntityCreate
  * @group rules_actions
  */
 class EntityCreateTest extends RulesEntityIntegrationTestBase {
@@ -95,7 +95,7 @@ class EntityCreateTest extends RulesEntityIntegrationTestBase {
         $this->getStringTranslationStub(),
         $this->getClassResolverStub(),
         $this->typedDataManager,
-        $this->getMock('Drupal\Core\KeyValueStore\KeyValueStoreInterface'),
+        $this->getMock('Drupal\Core\KeyValueStore\KeyValueFactoryInterface'),
         $this->getMock('Symfony\Component\EventDispatcher\EventDispatcherInterface')
       ])
       ->getMock();

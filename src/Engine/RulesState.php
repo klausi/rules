@@ -83,6 +83,13 @@ class RulesState implements RulesStateInterface {
   /**
    * {@inheritdoc}
    */
+  public function hasVariable($name) {
+    return array_key_exists($name, $this->variables);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function applyDataSelector($selector, $langcode = LanguageInterface::LANGCODE_NOT_SPECIFIED) {
     $parts = explode(':', $selector, 2);
     $context = $this->getVariable($parts[0]);
@@ -162,7 +169,9 @@ class RulesState implements RulesStateInterface {
       // something here.
       if ($typed_data) {
         // Things that can be saved must have a save() method, right?
-        $typed_data->getValue()->save();
+        // Saving is always done at the root of the typed data tree, for example
+        // on the entity level.
+        $typed_data->getRoot()->getValue()->save();
       }
     }
   }

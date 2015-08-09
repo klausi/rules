@@ -10,7 +10,7 @@ namespace Drupal\Tests\rules\Integration\Action;
 use Drupal\Tests\rules\Integration\RulesEntityIntegrationTestBase;
 
 /**
- * @coversDefaultClass \Drupal\rules\Plugin\Action\EntityFetchById
+ * @coversDefaultClass \Drupal\rules\Plugin\RulesAction\EntityFetchById
  * @group rules_actions
  */
 class EntityFetchByIdTest extends RulesEntityIntegrationTestBase {
@@ -39,7 +39,7 @@ class EntityFetchByIdTest extends RulesEntityIntegrationTestBase {
         $this->getStringTranslationStub(),
         $this->getClassResolverStub(),
         $this->typedDataManager,
-        $this->getMock('Drupal\Core\KeyValueStore\KeyValueStoreInterface'),
+        $this->getMock('Drupal\Core\KeyValueStore\KeyValueFactoryInterface'),
         $this->getMock('Symfony\Component\EventDispatcher\EventDispatcherInterface')
       ])
       ->getMock();

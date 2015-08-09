@@ -39,13 +39,10 @@ class NodeIsStickyTest extends RulesEntityIntegrationTestBase {
    */
   public function testConditionEvaluation() {
     $node = $this->getMock('Drupal\node\NodeInterface');
-    $node->expects($this->at(0))
-      ->method('isSticky')
-      ->will($this->returnValue(TRUE));
 
-    $node->expects($this->at(1))
+    $node->expects($this->exactly(2))
       ->method('isSticky')
-      ->will($this->returnValue(FALSE));
+      ->will($this->onConsecutiveCalls(TRUE, FALSE));
 
     // Set the node context value.
     $this->condition->setContextValue('node', $node);

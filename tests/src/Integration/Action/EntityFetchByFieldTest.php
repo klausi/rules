@@ -10,7 +10,7 @@ namespace Drupal\Tests\rules\Integration\Action;
 use Drupal\Tests\rules\Integration\RulesEntityIntegrationTestBase;
 
 /**
- * @coversDefaultClass \Drupal\rules\Plugin\Action\EntityFetchByField
+ * @coversDefaultClass \Drupal\rules\Plugin\RulesAction\EntityFetchByField
  * @group rules_actions
  */
 class EntityFetchByFieldTest extends RulesEntityIntegrationTestBase {
@@ -40,7 +40,7 @@ class EntityFetchByFieldTest extends RulesEntityIntegrationTestBase {
         $this->getStringTranslationStub(),
         $this->getClassResolverStub(),
         $this->typedDataManager,
-        $this->getMock('Drupal\Core\KeyValueStore\KeyValueStoreInterface'),
+        $this->getMock('Drupal\Core\KeyValueStore\KeyValueFactoryInterface'),
         $this->getMock('Symfony\Component\EventDispatcher\EventDispatcherInterface')
       ])
       ->getMock();

@@ -10,7 +10,7 @@ namespace Drupal\Tests\rules\Integration\Action;
 use Drupal\Tests\rules\Integration\RulesEntityIntegrationTestBase;
 
 /**
- * @coversDefaultClass \Drupal\rules\Plugin\Action\UserBlock
+ * @coversDefaultClass \Drupal\rules\Plugin\RulesAction\UserBlock
  * @group rules_actions
  */
 class UserBlockTest extends RulesEntityIntegrationTestBase {
@@ -83,6 +83,8 @@ class UserBlockTest extends RulesEntityIntegrationTestBase {
     $this->action->setContextValue('user', $user);
 
     $this->action->execute();
+
+    $this->assertEquals($this->action->autoSaveContext(), ['user'], 'Action returns the user context name for auto saving.');
   }
 
   /**
@@ -102,6 +104,8 @@ class UserBlockTest extends RulesEntityIntegrationTestBase {
     $this->action->setContextValue('user', $user);
 
     $this->action->execute();
+
+    $this->assertEquals($this->action->autoSaveContext(), [], 'Action returns nothing for auto saving since the user has not been altered.');
   }
 
 
@@ -122,6 +126,8 @@ class UserBlockTest extends RulesEntityIntegrationTestBase {
     $this->action->setContextValue('user', $user);
 
     $this->action->execute();
+
+    $this->assertEquals($this->action->autoSaveContext(), [], 'Action returns nothing for auto saving since the user has not been altered.');
   }
 
   /**
@@ -141,6 +147,8 @@ class UserBlockTest extends RulesEntityIntegrationTestBase {
     $this->action->setContextValue('user', $user);
 
     $this->action->execute();
+
+    $this->assertEquals($this->action->autoSaveContext(), [], 'Action returns nothing for auto saving since the user has not been altered.');
   }
 
   /**
