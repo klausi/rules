@@ -11,6 +11,9 @@ use Drupal\rules\Context\ContextDefinition;
 use Drupal\rules\Engine\ExpressionPluginManager;
 use Drupal\rules\Engine\RulesStateInterface;
 use Drupal\rules\Plugin\RulesExpression\Rule;
+use Drupal\rules\Plugin\RulesExpression\RulesAnd;
+use Drupal\rules\Plugin\RulesExpression\RulesOr;
+use Drupal\rules\Plugin\RulesExpression\ActionSet;
 use Prophecy\Argument;
 
 /**
@@ -48,10 +51,10 @@ class RuleTest extends RulesUnitTestBase {
 
     $this->expressionManager = $this->prophesize(ExpressionPluginManager::class);
 
-    $this->conditions = $this->getMockAnd();
+    $this->conditions = new RulesAnd([], 'rules_and', [], $this->expressionManager->reveal());
     $this->expressionManager->createInstance('rules_and', [])->willReturn($this->conditions);
 
-    $this->actions = $this->getMockActionSet();
+    $this->actions = new ActionSet([], 'rules_action_set', [], $this->expressionManager->reveal());
     $this->expressionManager->createInstance('rules_action_set', [])->willReturn($this->actions);
 
     $this->rule = new Rule([], 'rules_rule', [], $this->expressionManager->reveal());
@@ -74,11 +77,11 @@ class RuleTest extends RulesUnitTestBase {
    * @covers ::getConditions
    */
   public function testSetConditionsGetConditions() {
-    $or = $this->getMockOr();
+    $or = new RulesOr([], 'rules_or', [], $this->expressionManager->reveal());
     $this->rule->setConditions($or);
     $this->assertSame($or, $this->rule->getConditions());
 
-    $and = $this->getMockAnd();
+    $and = new RulesAnd([], 'rules_and', [], $this->expressionManager->reveal());
     $this->rule->setConditions($and);
     $this->assertSame($and, $this->rule->getConditions());
   }
@@ -90,7 +93,7 @@ class RuleTest extends RulesUnitTestBase {
    * @covers ::getActions
    */
   public function testSetActionsGetActions() {
-    $action_set = $this->getMockActionSet();
+    $action_set = new ActionSet([], '', [], $this->expressionManager->reveal());
     $this->rule->setActions($action_set);
     $this->assertSame($action_set, $this->rule->getActions());
   }
@@ -173,8 +176,8 @@ class RuleTest extends RulesUnitTestBase {
     $nested = new Rule([], 'rules_rule', [], $this->expressionManager->reveal());
     // We need to replace the action and conditon container to not have the same
     // instances as in the outer rule.
-    $nested->setConditions($this->getMockAnd());
-    $nested->setActions($this->getMockActionSet());
+    $nested->setConditions(new RulesAnd([], 'rules_and', [], $this->expressionManager->reveal()));
+    $nested->setActions(new ActionSet([], 'rules_action_set', [], $this->expressionManager->reveal()));
 
     $nested->addExpressionObject($this->trueConditionExpression->reveal())
       ->addExpressionObject($this->testActionExpression->reveal());

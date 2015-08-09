@@ -65,8 +65,8 @@ class ActionSetTest extends RulesUnitTestBase {
     $this->testActionExpression->executeWithState(
       Argument::type(RulesStateInterface::class))->shouldBeCalledTimes(2);
 
-    $inner = $this->getMockActionSet()
-      ->addExpressionObject($this->testActionExpression->reveal());
+    $inner = new ActionSet([], '', [], $this->expressionManager->reveal());
+    $inner->addExpressionObject($this->testActionExpression->reveal());
 
     $this->actionSet->addExpressionObject($this->testActionExpression->reveal())
       ->addExpressionObject($inner)
