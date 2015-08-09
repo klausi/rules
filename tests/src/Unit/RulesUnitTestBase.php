@@ -9,7 +9,10 @@ namespace Drupal\Tests\rules\Unit;
 
 use Drupal\Core\TypedData\DataDefinition;
 use Drupal\Core\TypedData\Plugin\DataType\Any;
+use Drupal\rules\Engine\ConditionExpressionInterface;
+use Drupal\rules\Engine\RulesStateInterface;
 use Drupal\Tests\UnitTestCase;
+use Prophecy\Argument;
 
 /**
  * Helper class with mock objects.
@@ -19,7 +22,7 @@ abstract class RulesUnitTestBase extends UnitTestCase {
   /**
    * A mocked condition that always evaluates to TRUE.
    *
-   * @var \Drupal\rules\Engine\ConditionExpressionInterface
+   * @var \Drupal\rules\Engine\ConditionExpressionInterface|\Prophecy\Prophecy\ProphecyInterface
    */
   protected $trueConditionExpression;
 
@@ -50,19 +53,11 @@ abstract class RulesUnitTestBase extends UnitTestCase {
   public function setUp() {
     parent::setUp();
 
-    $this->trueConditionExpression = $this->getMock('Drupal\rules\Engine\ConditionExpressionInterface');
+    $this->trueConditionExpression = $this->prophesize(ConditionExpressionInterface::class);
 
-    $this->trueConditionExpression->expects($this->any())
-      ->method('execute')
-      ->will($this->returnValue(TRUE));
-
-    $this->trueConditionExpression->expects($this->any())
-      ->method('executeWithState')
-      ->will($this->returnValue(TRUE));
-
-    $this->trueConditionExpression->expects($this->any())
-      ->method('evaluate')
-      ->will($this->returnValue(TRUE));
+    $this->trueConditionExpression->execute()->willReturn(TRUE);
+    $this->trueConditionExpression->executeWithState(
+      Argument::type(RulesStateInterface::class))->willReturn(TRUE);
 
     $this->falseConditionExpression = $this->getMock('Drupal\rules\Engine\ConditionExpressionInterface');
 

@@ -8,6 +8,7 @@
 namespace Drupal\Tests\rules\Unit;
 
 use Drupal\rules\Context\ContextDefinition;
+use Drupal\rules\Engine\ExpressionPluginManager;
 use Drupal\rules\Plugin\RulesExpression\Rule;
 
 /**
@@ -19,7 +20,7 @@ class RuleTest extends RulesUnitTestBase {
   /**
    * The rules expression plugin manager.
    *
-   * @var \Drupal\rules\Engine\ExpressionPluginManager
+   * @var \Drupal\rules\Engine\ExpressionPluginManager|\Prophecy\Prophecy\ProphecyInterface
    */
   protected $expressionManager;
 
@@ -50,23 +51,15 @@ class RuleTest extends RulesUnitTestBase {
   public function setUp() {
     parent::setUp();
 
-    $this->expressionManager = $this->getMockBuilder('Drupal\rules\Engine\ExpressionPluginManager')
-      ->disableOriginalConstructor()
-      ->getMock();
+    $this->expressionManager = $this->prophesize(ExpressionPluginManager::class);
 
     $this->conditions = $this->getMockAnd();
-    $this->expressionManager->expects($this->at(0))
-      ->method('createInstance')
-      ->with('rules_and')
-      ->will($this->returnValue($this->conditions));
+    $this->expressionManager->createInstance('rules_and', [])->willReturn($this->conditions);
 
     $this->actions = $this->getMockActionSet();
-    $this->expressionManager->expects($this->at(1))
-      ->method('createInstance')
-      ->with('rules_action_set')
-      ->will($this->returnValue($this->actions));
+    $this->expressionManager->createInstance('rules_action_set', [])->willReturn($this->actions);
 
-    $this->rule = new Rule([], 'rules_rule', [], $this->expressionManager);
+    $this->rule = new Rule([], 'rules_rule', [], $this->expressionManager->reveal());
   }
 
   /**
@@ -118,7 +111,7 @@ class RuleTest extends RulesUnitTestBase {
       ->method('executeWithState');
 
     $this->rule
-      ->addExpressionObject($this->trueConditionExpression)
+      ->addExpressionObject($this->trueConditionExpression->reveal())
       ->addExpressionObject($this->testActionExpression)
       ->execute();
   }
@@ -150,8 +143,8 @@ class RuleTest extends RulesUnitTestBase {
       ->method('executeWithState');
 
     $this->rule
-      ->addExpressionObject($this->trueConditionExpression)
-      ->addExpressionObject($this->trueConditionExpression)
+      ->addExpressionObject($this->trueConditionExpression->reveal())
+      ->addExpressionObject($this->trueConditionExpression->reveal())
       ->addExpressionObject($this->testActionExpression)
       ->execute();
   }
@@ -167,7 +160,7 @@ class RuleTest extends RulesUnitTestBase {
       ->method('execute');
 
     $this->rule
-      ->addExpressionObject($this->trueConditionExpression)
+      ->addExpressionObject($this->trueConditionExpression->reveal())
       ->addExpressionObject($this->falseConditionExpression)
       ->addExpressionObject($this->testActionExpression)
       ->execute();
@@ -183,11 +176,11 @@ class RuleTest extends RulesUnitTestBase {
       ->method('executeWithState');
 
     $nested = $this->getMockRule()
-      ->addExpressionObject($this->trueConditionExpression)
+      ->addExpressionObject($this->trueConditionExpression->reveal())
       ->addExpressionObject($this->testActionExpression);
 
     $this->rule
-      ->addExpressionObject($this->trueConditionExpression)
+      ->addExpressionObject($this->trueConditionExpression->reveal())
       ->addExpressionObject($nested)
       ->execute();
   }
@@ -202,7 +195,7 @@ class RuleTest extends RulesUnitTestBase {
           ->setLabel('node')
           ->toArray()
       ],
-    ], 'rules_rule', [], $this->expressionManager);
+    ], 'rules_rule', [], $this->expressionManager->reveal());
     $context_definition = $rule->getContextDefinition('node');
     $this->assertSame($context_definition->getDataType(), 'entity:node');
   }
@@ -217,7 +210,7 @@ class RuleTest extends RulesUnitTestBase {
           ->setLabel('node')
           ->toArray()
       ],
-    ], 'rules_rule', [], $this->expressionManager);
+    ], 'rules_rule', [], $this->expressionManager->reveal());
     $provided_definition = $rule->getProvidedContextDefinition('node');
     $this->assertSame($provided_definition->getDataType(), 'entity:node');
   }

@@ -7,7 +7,9 @@
 
 namespace Drupal\Tests\rules\Unit;
 
+use Drupal\rules\Engine\RulesStateInterface;
 use Drupal\rules\Plugin\RulesExpression\RulesOr;
+use Prophecy\Argument;
 
 /**
  * @coversDefaultClass \Drupal\rules\Plugin\RulesExpression\RulesOr
@@ -36,10 +38,10 @@ class RulesOrTest extends RulesUnitTestBase {
    */
   public function testOneCondition() {
     // The method on the test condition must be called once.
-    $this->trueConditionExpression->expects($this->once())
-      ->method('executeWithState');
+    $this->trueConditionExpression->executeWithState(
+      Argument::type(RulesStateInterface::class))->shouldBeCalledTimes(1);
 
-    $this->or->addExpressionObject($this->trueConditionExpression);
+    $this->or->addExpressionObject($this->trueConditionExpression->reveal());
     $this->assertTrue($this->or->execute(), 'Single condition returns TRUE.');
   }
 
@@ -59,12 +61,12 @@ class RulesOrTest extends RulesUnitTestBase {
    */
   public function testTwoConditions() {
     // The method on the test condition must be called once.
-    $this->trueConditionExpression->expects($this->once())
-      ->method('executeWithState');
+    $this->trueConditionExpression->executeWithState(
+      Argument::type(RulesStateInterface::class))->shouldBeCalledTimes(1);
 
     $this->or
-      ->addExpressionObject($this->trueConditionExpression)
-      ->addExpressionObject($this->trueConditionExpression);
+      ->addExpressionObject($this->trueConditionExpression->reveal())
+      ->addExpressionObject($this->trueConditionExpression->reveal());
 
     $this->assertTrue($this->or->execute(), 'Two conditions returns TRUE.');
   }

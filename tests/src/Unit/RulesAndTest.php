@@ -7,7 +7,9 @@
 
 namespace Drupal\Tests\rules\Unit;
 
+use Drupal\rules\Engine\RulesStateInterface;
 use Drupal\rules\Plugin\RulesExpression\RulesAnd;
+use Prophecy\Argument;
 
 /**
  * @coversDefaultClass \Drupal\rules\Plugin\RulesExpression\RulesAnd
@@ -36,10 +38,9 @@ class RulesAndTest extends RulesUnitTestBase {
    */
   public function testOneCondition() {
     // The method on the test condition must be called once.
-    $this->trueConditionExpression->expects($this->once())
-      ->method('executeWithState');
-
-    $this->and->addExpressionObject($this->trueConditionExpression);
+    $this->trueConditionExpression->executeWithState(
+      Argument::type(RulesStateInterface::class))->shouldBeCalledTimes(1);
+    $this->and->addExpressionObject($this->trueConditionExpression->reveal());
     $this->assertTrue($this->and->execute(), 'Single condition returns TRUE.');
   }
 
@@ -58,13 +59,13 @@ class RulesAndTest extends RulesUnitTestBase {
    * Tests two true conditions.
    */
   public function testTwoConditions() {
-    // The method on the test condition must be called once.
-    $this->trueConditionExpression->expects($this->exactly(2))
-      ->method('executeWithState');
+    // The method on the test condition must be called twice.
+    $this->trueConditionExpression->executeWithState(
+      Argument::type(RulesStateInterface::class))->shouldBeCalledTimes(2);
 
     $this->and
-      ->addExpressionObject($this->trueConditionExpression)
-      ->addExpressionObject($this->trueConditionExpression);
+      ->addExpressionObject($this->trueConditionExpression->reveal())
+      ->addExpressionObject($this->trueConditionExpression->reveal());
 
     $this->assertTrue($this->and->execute(), 'Two conditions returns TRUE.');
   }
