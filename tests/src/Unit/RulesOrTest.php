@@ -75,13 +75,13 @@ class RulesOrTest extends RulesUnitTestBase {
    * Tests two false conditions.
    */
   public function testTwoFalseConditions() {
-    // The method on the test condition must be called once.
-    $this->falseConditionExpression->expects($this->exactly(2))
-      ->method('executeWithState');
+    // The method on the test condition must be called twice.
+    $this->falseConditionExpression->executeWithState(
+      Argument::type(RulesStateInterface::class))->shouldBeCalledTimes(2);
 
     $this->or
-      ->addExpressionObject($this->falseConditionExpression)
-      ->addExpressionObject($this->falseConditionExpression);
+      ->addExpressionObject($this->falseConditionExpression->reveal())
+      ->addExpressionObject($this->falseConditionExpression->reveal());
 
     $this->assertFalse($this->or->execute(), 'Two false conditions return FALSE.');
   }

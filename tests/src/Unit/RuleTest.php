@@ -9,7 +9,9 @@ namespace Drupal\Tests\rules\Unit;
 
 use Drupal\rules\Context\ContextDefinition;
 use Drupal\rules\Engine\ExpressionPluginManager;
+use Drupal\rules\Engine\RulesStateInterface;
 use Drupal\rules\Plugin\RulesExpression\Rule;
+use Prophecy\Argument;
 
 /**
  * @coversDefaultClass \Drupal\rules\Plugin\RulesExpression\Rule
@@ -107,12 +109,12 @@ class RuleTest extends RulesUnitTestBase {
    */
   public function testActionExecution() {
     // The method on the test action must be called once.
-    $this->testActionExpression->expects($this->once())
-      ->method('executeWithState');
+    $this->testActionExpression->executeWithState(
+      Argument::type(RulesStateInterface::class))->shouldBeCalledTimes(1);
 
     $this->rule
       ->addExpressionObject($this->trueConditionExpression->reveal())
-      ->addExpressionObject($this->testActionExpression)
+      ->addExpressionObject($this->testActionExpression->reveal())
       ->execute();
   }
 
@@ -123,12 +125,12 @@ class RuleTest extends RulesUnitTestBase {
    */
   public function testConditionFails() {
     // The execute method on the action must never be called.
-    $this->testActionExpression->expects($this->never())
-      ->method('execute');
+    $this->testActionExpression->executeWithState(
+      Argument::type(RulesStateInterface::class))->shouldNotBeCalled();
 
     $this->rule
-      ->addExpressionObject($this->falseConditionExpression)
-      ->addExpressionObject($this->testActionExpression)
+      ->addExpressionObject($this->falseConditionExpression->reveal())
+      ->addExpressionObject($this->testActionExpression->reveal())
       ->execute();
   }
 
@@ -139,13 +141,13 @@ class RuleTest extends RulesUnitTestBase {
    */
   public function testTwoConditionsTrue() {
     // The method on the test action must be called once.
-    $this->testActionExpression->expects($this->once())
-      ->method('executeWithState');
+    $this->testActionExpression->executeWithState(
+      Argument::type(RulesStateInterface::class))->shouldBeCalledTimes(1);
 
     $this->rule
       ->addExpressionObject($this->trueConditionExpression->reveal())
       ->addExpressionObject($this->trueConditionExpression->reveal())
-      ->addExpressionObject($this->testActionExpression)
+      ->addExpressionObject($this->testActionExpression->reveal())
       ->execute();
   }
 
@@ -156,13 +158,13 @@ class RuleTest extends RulesUnitTestBase {
    */
   public function testTwoConditionsFalse() {
     // The execute method on the action must never be called.
-    $this->testActionExpression->expects($this->never())
-      ->method('execute');
+    $this->testActionExpression->executeWithState(
+      Argument::type(RulesStateInterface::class))->shouldNotBeCalled();
 
     $this->rule
       ->addExpressionObject($this->trueConditionExpression->reveal())
-      ->addExpressionObject($this->falseConditionExpression)
-      ->addExpressionObject($this->testActionExpression)
+      ->addExpressionObject($this->falseConditionExpression->reveal())
+      ->addExpressionObject($this->testActionExpression->reveal())
       ->execute();
   }
 
@@ -172,12 +174,12 @@ class RuleTest extends RulesUnitTestBase {
    * @covers ::execute
    */
   public function testNestedRules() {
-    $this->testActionExpression->expects($this->once())
-      ->method('executeWithState');
+    $this->testActionExpression->executeWithState(
+      Argument::type(RulesStateInterface::class))->shouldBeCalledTimes(1);
 
     $nested = $this->getMockRule()
       ->addExpressionObject($this->trueConditionExpression->reveal())
-      ->addExpressionObject($this->testActionExpression);
+      ->addExpressionObject($this->testActionExpression->reveal());
 
     $this->rule
       ->addExpressionObject($this->trueConditionExpression->reveal())

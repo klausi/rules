@@ -29,14 +29,14 @@ abstract class RulesUnitTestBase extends UnitTestCase {
   /**
    * A mocked condition that always evaluates to FALSE.
    *
-   * @var \Drupal\rules\Engine\ConditionExpressionInterface
+   * @var \Drupal\rules\Engine\ConditionExpressionInterface|\Prophecy\Prophecy\ProphecyInterface
    */
   protected $falseConditionExpression;
 
   /**
    * A mocked dummy action object.
    *
-   * @var \Drupal\rules\Engine\ActionExpressionInterface
+   * @var \Drupal\rules\Engine\ActionExpressionInterface|\Prophecy\Prophecy\ProphecyInterface
    */
   protected $testActionExpression;
 
@@ -59,21 +59,12 @@ abstract class RulesUnitTestBase extends UnitTestCase {
     $this->trueConditionExpression->executeWithState(
       Argument::type(RulesStateInterface::class))->willReturn(TRUE);
 
-    $this->falseConditionExpression = $this->getMock('Drupal\rules\Engine\ConditionExpressionInterface');
+    $this->falseConditionExpression = $this->prophesize(ConditionExpressionInterface::class);
+    $this->falseConditionExpression->execute()->willReturn(FALSE);
+    $this->falseConditionExpression->executeWithState(
+      Argument::type(RulesStateInterface::class))->willReturn(FALSE);
 
-    $this->falseConditionExpression->expects($this->any())
-      ->method('execute')
-      ->will($this->returnValue(FALSE));
-
-    $this->falseConditionExpression->expects($this->any())
-      ->method('executeWithState')
-      ->will($this->returnValue(FALSE));
-
-    $this->falseConditionExpression->expects($this->any())
-      ->method('evaluate')
-      ->will($this->returnValue(FALSE));
-
-    $this->testActionExpression = $this->getMock('Drupal\rules\Engine\ActionExpressionInterface');
+    $this->testActionExpression = $this->prophesize(\Drupal\rules\Engine\ActionExpressionInterface::class);
 
     $this->expressionManager = $this->getMockBuilder('Drupal\rules\Engine\ExpressionPluginManager')
       ->disableOriginalConstructor()

@@ -75,12 +75,12 @@ class RulesAndTest extends RulesUnitTestBase {
    */
   public function testTwoFalseConditions() {
     // The method on the test condition must be called once.
-    $this->falseConditionExpression->expects($this->once())
-      ->method('executeWithState');
+    $this->falseConditionExpression->executeWithState(
+      Argument::type(RulesStateInterface::class))->shouldBeCalledTimes(1);
 
     $this->and
-      ->addExpressionObject($this->falseConditionExpression)
-      ->addExpressionObject($this->falseConditionExpression);
+      ->addExpressionObject($this->falseConditionExpression->reveal())
+      ->addExpressionObject($this->falseConditionExpression->reveal());
 
     $this->assertFalse($this->and->execute(), 'Two false conditions return FALSE.');
   }
