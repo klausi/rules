@@ -28,7 +28,10 @@ trait ExecutablePluginTrait {
     if (empty($definition['label'])) {
       throw new InvalidPluginDefinitionException('The label is not defined for plugin ' . $this->getPluginId() . ' (' . __CLASS__ . ').');
     }
-    return $definition['label'];
+    // The label can be an instance of
+    // \Drupal\Core\StringTranslation\TranslationWrapper here, so make sure to
+    // always return a primitive string representation here.
+    return (string) $definition['label'];
   }
 
   /**
