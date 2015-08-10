@@ -24,7 +24,7 @@ class ContextDefinition extends CoreContextDefinition {
   /**
    * The ContextDefinitionInterface object.
    *
-   * @var \Drupal\rules\Context\ContextDefinitionInterface.
+   * @var \Drupal\rules\Context\ContextDefinitionInterface
    */
   protected $definition;
 
@@ -38,6 +38,8 @@ class ContextDefinition extends CoreContextDefinition {
     // Default to Rules context definition class.
     $values['class'] = isset($values['class']) ? $values['class'] : '\Drupal\rules\Context\ContextDefinition';
     parent::__construct($values);
+    $additional_values = $values + ['allow_null' => FALSE];
+    $this->definition->setAllowNull($additional_values['allow_null']);
   }
 
   /**

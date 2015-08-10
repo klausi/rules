@@ -296,4 +296,44 @@ class NodeIntegrationTest extends RulesDrupalTestBase {
     }
   }
 
+  /**
+   * Tests that NULL values for contexts are allowed if specified.
+   */
+  public function testAllowNullValue() {
+    $entity_manager = $this->container->get('entity.manager');
+    $entity_manager->getStorage('node_type')
+      ->create(['type' => 'page'])
+      ->save();
+
+    // Create a node with a title set to NULL.
+    $node = $entity_manager->getStorage('node')
+      ->create([
+        'type' => 'page',
+      ]);
+    $node->setTitle(NULL);
+
+    // Configure a simple rule with one action.
+    $action = $this->expressionManager->createInstance('rules_action',
+      ContextConfig::create()
+        ->setConfigKey('action_id', 'rules_data_set')
+        ->map('data', 'node:title:0:value')
+        ->map('value', 'new_title')
+        ->toArray()
+    );
+
+    $rule = $this->expressionManager->createRule([
+      'context_definitions' => [
+        'node' => ContextDefinition::create('entity:node')->toArray(),
+        'new_title' => ContextDefinition::create('string')->toArray(),
+      ],
+    ]);
+    $rule->setContextValue('node', $node);
+    $rule->setContextValue('new_title', 'new title');
+    $rule->addExpressionObject($action);
+    $rule->execute();
+
+    $this->assertEqual('new title', $node->getTitle());
+    $this->assertNotNull($node->id(), 'Node ID is set, which means that the node has been auto-saved.');
+  }
+
 }

@@ -14,7 +14,6 @@ use Drupal\Core\TypedData\ComplexDataInterface;
 use Drupal\Core\TypedData\DataReferenceInterface;
 use Drupal\Core\TypedData\ListInterface;
 use Drupal\Core\TypedData\TranslatableInterface;
-use Drupal\Core\TypedData\TypedDataTrait;
 use Drupal\rules\Exception\RulesEvaluationException;
 
 /**
@@ -24,8 +23,6 @@ use Drupal\rules\Exception\RulesEvaluationException;
  * for elements in the current PHP-variable-scope.
  */
 class RulesState implements RulesStateInterface {
-
-  use TypedDataTrait;
 
   /**
    * Globally keeps the ids of rules blocked due to recursion prevention.
@@ -135,11 +132,10 @@ class RulesState implements RulesStateInterface {
         try {
           $child_typed_data = $typed_data->get($name);
 
-          // If the list is empty the returned value can be NULL here, use the
-          // item information instead.
+          // If the list is empty the returned value can be NULL here, so we
+          // create a new empty item.
           if ($child_typed_data === NULL) {
-            $item_definition = $typed_data->getItemDefinition();
-            $child_typed_data = $this->getTypedDataManager()->create($item_definition, NULL, $name, $typed_data);
+            $child_typed_data = $typed_data->appendItem();
           }
           $typed_data = $child_typed_data;
         }
