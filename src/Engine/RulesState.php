@@ -14,6 +14,7 @@ use Drupal\Core\TypedData\ComplexDataInterface;
 use Drupal\Core\TypedData\DataReferenceInterface;
 use Drupal\Core\TypedData\ListInterface;
 use Drupal\Core\TypedData\TranslatableInterface;
+use Drupal\Core\TypedData\TypedDataTrait;
 use Drupal\rules\Exception\RulesEvaluationException;
 
 /**
@@ -23,6 +24,8 @@ use Drupal\rules\Exception\RulesEvaluationException;
  * for elements in the current PHP-variable-scope.
  */
 class RulesState implements RulesStateInterface {
+
+  use TypedDataTrait;
 
   /**
    * Globally keeps the ids of rules blocked due to recursion prevention.
@@ -136,8 +139,7 @@ class RulesState implements RulesStateInterface {
           // item information instead.
           if ($child_typed_data === NULL) {
             $item_definition = $typed_data->getItemDefinition();
-            // @todo Inject typed data manager.
-            $child_typed_data = \Drupal::typedDataManager()->create($item_definition, NULL, $name, $typed_data);
+            $child_typed_data = $this->getTypedDataManager()->create($item_definition, NULL, $name, $typed_data);
           }
           $typed_data = $child_typed_data;
         }
