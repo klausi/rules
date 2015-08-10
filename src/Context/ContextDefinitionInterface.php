@@ -34,6 +34,8 @@ interface ContextDefinitionInterface extends ContextDefinitionInterfaceCore {
    *
    * @param bool $null_allowed
    *   TRUE if NULL values should be allowed, FALSE otherwise.
+   *
+   * @return $this
    */
   public function setAllowNull($null_allowed);
 

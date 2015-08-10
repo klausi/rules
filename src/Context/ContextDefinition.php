@@ -84,6 +84,7 @@ class ContextDefinition extends ContextDefinitionCore implements ContextDefiniti
    */
   public function setAllowNull($null_allowed) {
     $this->allowNull = $null_allowed;
+    return $this;
   }
 
 }
