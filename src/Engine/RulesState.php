@@ -130,7 +130,16 @@ class RulesState implements RulesStateInterface {
       // Drill down to the next step in the data selector.
       if ($typed_data instanceof ListInterface || $typed_data instanceof ComplexDataInterface) {
         try {
-          $typed_data = $typed_data->get($name);
+          $child_typed_data = $typed_data->get($name);
+
+          // If the list is empty the returned value can be NULL here, use the
+          // item information instead.
+          if ($child_typed_data === NULL) {
+            $item_definition = $typed_data->getItemDefinition();
+            // @todo Inject typed data manager.
+            $child_typed_data = \Drupal::typedDataManager()->create($item_definition, NULL, $name, $typed_data);
+          }
+          $typed_data = $child_typed_data;
         }
         catch (\InvalidArgumentException $e) {
           // In case of an exception, re-throw it.

@@ -27,7 +27,15 @@ class ContextDefinition extends ContextDefinitionCore implements ContextDefiniti
     'required' => 'isRequired',
     'default_value' => 'defaultValue',
     'constraints' => 'constraints',
+    'allow_null' => 'allowNull',
   ];
+
+  /**
+   * Whether the context value is allowed to be NULL or not.
+   *
+   * @var bool
+   */
+  protected $allowNull = FALSE;
 
   /**
    * Exports the definition as an array.
@@ -62,6 +70,20 @@ class ContextDefinition extends ContextDefinitionCore implements ContextDefiniti
       $definition->$name = $values[$key];
     }
     return $definition;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function isAllowedNull() {
+    return $this->allowNull;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function setAllowNull($null_allowed) {
+    $this->allowNull = $null_allowed;
   }
 
 }
