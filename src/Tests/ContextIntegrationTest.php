@@ -19,53 +19,25 @@ use Drupal\rules\Exception\RulesEvaluationException;
 class ContextIntegrationTest extends RulesDrupalTestBase {
 
   /**
-   * Modules to enable.
-   *
-   * @var array
-   */
-  public static $modules = ['node', 'user'];
-
-  /**
-   * {@inheritdoc}
-   */
-  public function setUp() {
-    parent::setUp();
-
-    $this->installEntitySchema('user');
-    $this->installEntitySchema('node');
-  }
-
-  /**
    * Tests that a required context mapping that is NULL throws an exception.
    */
   public function testRequiredNullMapping() {
-    $entity_manager = $this->container->get('entity.manager');
-    $entity_manager->getStorage('node_type')
-      ->create(['type' => 'page'])
-      ->save();
-
-    $node = $entity_manager->getStorage('node')
-      ->create([
-        'title' => 'test',
-        'type' => 'page',
-      ]);
-
-    // Configure a simple rule with one action. The node ID is NULL and does not
-    // exist yet.
+    // Configure a simple rule with one action.
     $action = $this->expressionManager->createInstance('rules_action',
       ContextConfig::create()
         ->setConfigKey('action_id', 'rules_test_string')
-        ->map('text', 'node:nid:0:value')
+        ->map('text', 'null_context')
         ->toArray()
     );
 
     $rule = $this->expressionManager->createRule([
       'context_definitions' => [
-        'node' => ContextDefinition::create('entity:node')->toArray(),
+        'null_context' => ContextDefinition::create('string')->toArray(),
       ],
     ]);
-    $rule->setContextValue('node', $node);
+    $rule->setContextValue('null_context', NULL);
     $rule->addExpressionObject($action);
+
     try {
       $rule->execute();
       $this->fail('No exception thrown when required context value is NULL');
@@ -79,17 +51,6 @@ class ContextIntegrationTest extends RulesDrupalTestBase {
    * Tests that a required context value that is NULL throws an exception.
    */
   public function testRequiredNullValue() {
-    $entity_manager = $this->container->get('entity.manager');
-    $entity_manager->getStorage('node_type')
-      ->create(['type' => 'page'])
-      ->save();
-
-    $node = $entity_manager->getStorage('node')
-      ->create([
-        'title' => 'test',
-        'type' => 'page',
-      ]);
-
     // Configure a simple rule with one action. The required 'text' context is
     // set to be NULL.
     $action = $this->expressionManager->createInstance('rules_action',
@@ -99,12 +60,7 @@ class ContextIntegrationTest extends RulesDrupalTestBase {
         ->toArray()
     );
 
-    $rule = $this->expressionManager->createRule([
-      'context_definitions' => [
-        'node' => ContextDefinition::create('entity:node')->toArray(),
-      ],
-    ]);
-    $rule->setContextValue('node', $node);
+    $rule = $this->expressionManager->createRule([]);
     $rule->addExpressionObject($action);
     try {
       $rule->execute();
@@ -119,40 +75,28 @@ class ContextIntegrationTest extends RulesDrupalTestBase {
    * Tests that NULL values for contexts are allowed if specified.
    */
   public function testAllowNullValue() {
-    $entity_manager = $this->container->get('entity.manager');
-    $entity_manager->getStorage('node_type')
-      ->create(['type' => 'page'])
-      ->save();
-
-    // Create a node with a title set to NULL.
-    $node = $entity_manager->getStorage('node')
-      ->create([
-        'type' => 'page',
-      ]);
-    $node->setTitle(NULL);
-
-    // Configure a simple rule with one action.
+    // Configure a simple rule with the data set action which allows NULL
+    // values.
     $action = $this->expressionManager->createInstance('rules_action',
       ContextConfig::create()
         ->setConfigKey('action_id', 'rules_data_set')
-        ->map('data', 'node:title:0:value')
-        ->map('value', 'new_title')
+        ->map('data', 'null_variable')
+        ->map('value', 'new_value')
         ->toArray()
     );
 
     $rule = $this->expressionManager->createRule([
       'context_definitions' => [
-        'node' => ContextDefinition::create('entity:node')->toArray(),
-        'new_title' => ContextDefinition::create('string')->toArray(),
+        'null_variable' => ContextDefinition::create('string')->toArray(),
+        'new_value' => ContextDefinition::create('string')->toArray(),
       ],
     ]);
-    $rule->setContextValue('node', $node);
-    $rule->setContextValue('new_title', 'new title');
+    $rule->setContextValue('null_variable', NULL);
+    $rule->setContextValue('new_value', 'new value');
     $rule->addExpressionObject($action);
     $rule->execute();
 
-    $this->assertEqual('new title', $node->getTitle());
-    $this->assertNotNull($node->id(), 'Node ID is set, which means that the node has been auto-saved.');
+    $this->assertEqual('new value', $rule->getContextValue('null_variable'));
   }
 
 }

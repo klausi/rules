@@ -130,14 +130,7 @@ class RulesState implements RulesStateInterface {
       // Drill down to the next step in the data selector.
       if ($typed_data instanceof ListInterface || $typed_data instanceof ComplexDataInterface) {
         try {
-          $child_typed_data = $typed_data->get($name);
-
-          // If the list is empty the returned value can be NULL here, so we
-          // create a new empty item.
-          if ($child_typed_data === NULL) {
-            $child_typed_data = $typed_data->appendItem();
-          }
-          $typed_data = $child_typed_data;
+          $typed_data = $typed_data->get($name);
         }
         catch (\InvalidArgumentException $e) {
           // In case of an exception, re-throw it.
