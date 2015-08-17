@@ -20,10 +20,6 @@ interface ContextDefinitionInterface extends ContextDefinitionInterfaceCore {
   /**
    * Determines if the context value is allowed to be NULL.
    *
-   * Usually Rules will not pass any NULL values as argument, but abort the
-   * evaluation if a NULL value is present. If set to TRUE, Rules will not abort
-   * and pass the NULL value through.
-   *
    * @return bool
    *   TRUE if NULL values are allowed, FALSE otherwise.
    */
