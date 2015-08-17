@@ -56,8 +56,9 @@ trait ContextHandlerTrait {
         }
         $plugin->getContext($name)->setContextData($typed_data);
       }
-      // @todo: This misses support for picking up pre-defined values here.
-
+      elseif (array_key_exists($name, $this->configuration['context_values'])) {
+        $plugin->getContext($name)->setContextValue($this->configuration['context_values'][$name]);
+      }
       elseif ($definition->isRequired()) {
         throw new RulesEvaluationException(SafeMarkup::format('Required context @name is missing for plugin @plugin.', [
           '@name' => $name,
