@@ -96,7 +96,7 @@ class ContextIntegrationTest extends RulesDrupalTestBase {
     $rule->addExpressionObject($action);
     $rule->execute();
 
-    $this->assertEqual('new valu', $rule->getContextValue('null_variable'));
+    $this->assertEqual('new value', $rule->getContextValue('null_variable'));
   }
 
 }
