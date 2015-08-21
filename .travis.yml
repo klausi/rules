@@ -62,6 +62,7 @@ before_script:
   # Create new site, stubbing sendmail path with true to prevent delivery errors
   # and manually resolving drush path.
   - mysql -e 'create database rules'
+  - export SIMPLETEST_DB=mysql://root:@127.0.0.1/rules
   # Download Drupal 8 core.
   - travis_retry git clone --branch 8.0.x --depth 1 http://git.drupal.org/project/drupal.git
   - cd drupal
@@ -81,7 +82,5 @@ before_script:
   #- until netstat -an 2>/dev/null | grep '8080.*LISTEN'; do true; done
 
 script:
-  # Run the Simpletests for Rules.
-  - php ./core/scripts/run-tests.sh --php `which php` --concurrency 12 --url http://127.0.0.1:8080 --verbose --color "rules"
-  # Run the PHPUnit tests.
+  # Run the PHPUnit tests which also include the kernel tests.
   - ./core/vendor/phpunit/phpunit/phpunit -c ./core/phpunit.xml.dist ./modules/rules

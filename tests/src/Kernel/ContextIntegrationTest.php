@@ -5,7 +5,7 @@
  * Contains \Drupal\rules\Tests\ContextIntegrationTest.
  */
 
-namespace Drupal\rules\Tests;
+namespace Drupal\Tests\rules\Kernel;
 
 use Drupal\rules\Context\ContextConfig;
 use Drupal\rules\Context\ContextDefinition;
@@ -96,7 +96,7 @@ class ContextIntegrationTest extends RulesDrupalTestBase {
     $rule->addExpressionObject($action);
     $rule->execute();
 
-    $this->assertEqual('new value', $rule->getContextValue('null_variable'));
+    $this->assertEqual('new valu', $rule->getContextValue('null_variable'));
   }
 
 }

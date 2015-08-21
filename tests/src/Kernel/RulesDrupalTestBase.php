@@ -5,9 +5,10 @@
  * Contains \Drupal\rules\Tests\RulesDrupalTestBase.
  */
 
-namespace Drupal\rules\Tests;
+namespace Drupal\Tests\rules\Kernel;
 
-use Drupal\simpletest\KernelTestBase;
+use Drupal\Component\FileCache\FileCacheFactory;
+use Drupal\KernelTests\KernelTestBase;
 
 /**
  * Base class for Rules Drupal unit tests.
@@ -53,6 +54,7 @@ abstract class RulesDrupalTestBase extends KernelTestBase {
    * {@inheritdoc}
    */
   public function setUp() {
+    FileCacheFactory::setPrefix($this->randomMachineName());
     parent::setUp();
 
     $this->logger = $this->container->get('logger.channel.rules');
