@@ -28,6 +28,7 @@ class ContextDefinition extends ContextDefinitionCore implements ContextDefiniti
     'default_value' => 'defaultValue',
     'constraints' => 'constraints',
     'allow_null' => 'allowNull',
+    'parameter_restriction' => 'parameterRestriction',
   ];
 
   /**
@@ -36,6 +37,15 @@ class ContextDefinition extends ContextDefinitionCore implements ContextDefiniti
    * @var bool
    */
   protected $allowNull = FALSE;
+
+  /**
+   * The parameter restriction of this context.
+   *
+   * @see \Drupal\rules\Context\ContextDefinitionInterface::getParameterRestriction()
+   *
+   * @var string|null
+   */
+  protected $parameterRestriction = NULL;
 
   /**
    * Exports the definition as an array.
@@ -93,6 +103,21 @@ class ContextDefinition extends ContextDefinitionCore implements ContextDefiniti
    */
   public function setAllowNull($null_allowed) {
     $this->allowNull = $null_allowed;
+    return $this;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getParameterRestriction() {
+    return $this->parameterRestriction;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function setParameterRestriction($restriction) {
+    $this->parameterRestriction = $restriction;
     return $this;
   }
 
