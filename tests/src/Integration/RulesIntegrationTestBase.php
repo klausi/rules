@@ -10,6 +10,7 @@ namespace Drupal\Tests\rules\Integration;
 use Drupal\Core\Cache\NullBackend;
 use Drupal\Core\DependencyInjection\ClassResolverInterface;
 use Drupal\Core\DependencyInjection\ContainerBuilder;
+use Drupal\Core\Entity\EntityManagerInterface;
 use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Path\AliasManagerInterface;
 use Drupal\Core\TypedData\TypedDataManager;
@@ -31,7 +32,7 @@ use Prophecy\Argument;
 abstract class RulesIntegrationTestBase extends UnitTestCase {
 
   /**
-   * @var \Drupal\Core\Entity\EntityManagerInterface
+   * @var \Drupal\Core\Entity\EntityManagerInterface|\Prophecy\Prophecy\ProphecyInterface
    */
   protected $entityManager;
 
@@ -150,14 +151,10 @@ abstract class RulesIntegrationTestBase extends UnitTestCase {
 
     $this->aliasManager = $this->prophesize(AliasManagerInterface::class);
 
-    $this->entityManager = $this->getMockBuilder('Drupal\Core\Entity\EntityManagerInterface')
-      ->disableOriginalConstructor()
-      ->getMock();
-    $this->entityManager->expects($this->any())
-      ->method('getDefinitions')
-      ->willReturn([]);
+    $this->entityManager = $this->prophesize(EntityManagerInterface::class);
+    $this->entityManager->getDefinitions()->willReturn([]);
 
-    $container->set('entity.manager', $this->entityManager);
+    $container->set('entity.manager', $this->entityManager->reveal());
     $container->set('path.alias_manager', $this->aliasManager->reveal());
     $container->set('plugin.manager.rules_action', $this->actionManager);
     $container->set('plugin.manager.condition', $this->conditionManager);

@@ -7,6 +7,9 @@
 
 namespace Drupal\Tests\rules\Integration;
 
+use Drupal\Core\Language\LanguageInterface;
+use Drupal\Core\Language\LanguageManagerInterface;
+
 /**
  * Base class for Rules integration tests with entities.
  *
@@ -19,7 +22,7 @@ abstract class RulesEntityIntegrationTestBase extends RulesIntegrationTestBase {
   /**
    * The language manager mock.
    *
-   * @var \Drupal\Core\Language\LanguageManagerInterface
+   * @var \Drupal\Core\Language\LanguageManagerInterface|\Prophecy\Prophecy\ProphecyInterface
    */
   protected $languageManager;
 
@@ -35,18 +38,12 @@ abstract class RulesEntityIntegrationTestBase extends RulesIntegrationTestBase {
     $this->namespaces['Drupal\\Core\\Entity'] = $this->root . '/core/lib/Drupal/Core/Entity';
     $this->namespaces['Drupal\\entity_test'] = $this->root . '/core/modules/system/tests/modules/entity_test/src';
 
-    $language = $this->getMock('Drupal\Core\Language\LanguageInterface');
-    $language->expects($this->any())
-      ->method('getId')
-      ->willReturn('en');
+    $language = $this->prophesize(LanguageInterface::class);
+    $language->getId()->willReturn('en');
 
-    $this->languageManager = $this->getMock('Drupal\Core\Language\LanguageManagerInterface');
-    $this->languageManager->expects($this->any())
-      ->method('getCurrentLanguage')
-      ->willReturn($language);
-    $this->languageManager->expects($this->any())
-      ->method('getLanguages')
-      ->willReturn([$language]);
+    $this->languageManager = $this->prophesize(LanguageManagerInterface::class);
+    $this->languageManager->getCurrentLanguage()->willReturn($language->reveal());
+    $this->languageManager->getLanguages()->willReturn([$language->reveal()]);
 
     $this->entityAccess = $this->getMock('Drupal\Core\Entity\EntityAccessControlHandlerInterface');
 
@@ -56,7 +53,7 @@ abstract class RulesEntityIntegrationTestBase extends RulesIntegrationTestBase {
         $this->namespaces,
         $this->moduleHandler->reveal(),
         $this->cacheBackend,
-        $this->languageManager,
+        $this->languageManager->reveal(),
         $this->getStringTranslationStub(),
         $this->getClassResolverStub(),
         $this->typedDataManager,

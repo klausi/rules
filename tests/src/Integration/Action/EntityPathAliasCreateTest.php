@@ -106,7 +106,7 @@ class EntityPathAliasCreateTest extends RulesEntityIntegrationTestBase {
    *   The mocked entity object.
    */
   protected function getMockEntity() {
-    $language = $this->languageManager->getCurrentLanguage();
+    $language = $this->languageManager->reveal()->getCurrentLanguage();
 
     $entity = $this->prophesize(EntityInterface::class);
     $entity->language()->willReturn($language)->shouldBeCalledTimes(1);
