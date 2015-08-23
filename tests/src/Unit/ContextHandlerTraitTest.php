@@ -35,13 +35,13 @@ class ContextHandlerTraitTest extends RulesUnitTestBase {
     $trait->configuration = ContextConfig::create()->toArray();
 
     // Make the context required in the definition.
-    $context_definition->isRequired()->willReturn(TRUE)->shouldBeCalled(1);
+    $context_definition->isRequired()->willReturn(TRUE)->shouldBeCalledTimes(1);
 
     $plugin = $this->prophesize(ContextAwarePluginInterface::class);
     $plugin->getContextDefinitions()
       ->willReturn(['test' => $context_definition->reveal()])
       ->shouldBeCalled(1);
-    $plugin->getPluginId()->willReturn('testplugin')->shouldBeCalled(1);
+    $plugin->getPluginId()->willReturn('testplugin')->shouldBeCalledTimes(1);
 
     $state = $this->prophesize(RulesStateInterface::class);
 
