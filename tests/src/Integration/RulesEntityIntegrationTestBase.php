@@ -7,6 +7,7 @@
 
 namespace Drupal\Tests\rules\Integration;
 
+use Drupal\Core\Entity\EntityAccessControlHandlerInterface;
 use Drupal\Core\Language\LanguageInterface;
 use Drupal\Core\Language\LanguageManagerInterface;
 
@@ -27,6 +28,13 @@ abstract class RulesEntityIntegrationTestBase extends RulesIntegrationTestBase {
   protected $languageManager;
 
   /**
+   * The mocked entity access handler.
+   *
+   * @var \Drupal\Core\Entity\EntityAccessControlHandlerInterface|\Prophecy\Prophecy\ProphecyInterface
+   */
+  protected $entityAccess;
+
+  /**
    * {@inheritdoc}
    */
   public function setUp() {
@@ -45,7 +53,7 @@ abstract class RulesEntityIntegrationTestBase extends RulesIntegrationTestBase {
     $this->languageManager->getCurrentLanguage()->willReturn($language->reveal());
     $this->languageManager->getLanguages()->willReturn([$language->reveal()]);
 
-    $this->entityAccess = $this->getMock('Drupal\Core\Entity\EntityAccessControlHandlerInterface');
+    $this->entityAccess = $this->prophesize(EntityAccessControlHandlerInterface::class);
 
     $this->entityManager = $this->getMockBuilder('Drupal\Core\Entity\EntityManager')
       ->setMethods(['getAccessControlHandler', 'getBaseFieldDefinitions', 'getBundleInfo'])
@@ -65,7 +73,7 @@ abstract class RulesEntityIntegrationTestBase extends RulesIntegrationTestBase {
     $this->entityManager->expects($this->any())
       ->method('getAccessControlHandler')
       ->with($this->anything())
-      ->will($this->returnValue($this->entityAccess));
+      ->will($this->returnValue($this->entityAccess->reveal()));
 
     // The base field definitions for entity_test aren't used, and would
     // require additional mocking.
