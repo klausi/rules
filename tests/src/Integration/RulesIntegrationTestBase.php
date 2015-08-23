@@ -8,8 +8,10 @@
 namespace Drupal\Tests\rules\Integration;
 
 use Drupal\Core\Cache\NullBackend;
+use Drupal\Core\DependencyInjection\ClassResolverInterface;
 use Drupal\Core\DependencyInjection\ContainerBuilder;
 use Drupal\Core\Extension\ModuleHandlerInterface;
+use Drupal\Core\Path\AliasManagerInterface;
 use Drupal\Core\TypedData\TypedDataManager;
 use Drupal\rules\Condition\ConditionManager;
 use Drupal\rules\Context\DataProcessorManager;
@@ -44,7 +46,7 @@ abstract class RulesIntegrationTestBase extends UnitTestCase {
   protected $actionManager;
 
   /**
-   * @var \Drupal\Core\Path\AliasManager
+   * @var \Drupal\Core\Path\AliasManager|\Prophecy\Prophecy\ProphecyInterface
    */
   protected $aliasManager;
 
@@ -95,7 +97,7 @@ abstract class RulesIntegrationTestBase extends UnitTestCase {
   /**
    * The class resolver mock for the typed data manager.
    *
-   * @var \Drupal\Core\DependencyInjection\ClassResolverInterface
+   * @var \Drupal\Core\DependencyInjection\ClassResolverInterface|\Prophecy\Prophecy\ProphecyInterface
    */
   protected $classResolver;
 
@@ -136,16 +138,17 @@ abstract class RulesIntegrationTestBase extends UnitTestCase {
     $this->conditionManager = new ConditionManager($this->namespaces, $this->cacheBackend, $this->moduleHandler->reveal());
     $this->rulesExpressionManager = new ExpressionManager($this->namespaces, $this->moduleHandler->reveal());
 
-    $this->classResolver = $this->getMockBuilder('Drupal\Core\DependencyInjection\ClassResolverInterface')
-      ->disableOriginalConstructor()
-      ->getMock();
+    $this->classResolver = $this->prophesize(ClassResolverInterface::class);
 
-    $this->typedDataManager = new TypedDataManager($this->namespaces, $this->cacheBackend, $this->moduleHandler->reveal(), $this->classResolver);
+    $this->typedDataManager = new TypedDataManager(
+      $this->namespaces,
+      $this->cacheBackend,
+      $this->moduleHandler->reveal(),
+      $this->classResolver->reveal()
+    );
     $this->rulesDataProcessorManager = new DataProcessorManager($this->namespaces, $this->moduleHandler->reveal());
 
-    $this->aliasManager = $this->getMockBuilder('Drupal\Core\Path\AliasManagerInterface')
-      ->disableOriginalConstructor()
-      ->getMock();
+    $this->aliasManager = $this->prophesize(AliasManagerInterface::class);
 
     $this->entityManager = $this->getMockBuilder('Drupal\Core\Entity\EntityManagerInterface')
       ->disableOriginalConstructor()
@@ -155,7 +158,7 @@ abstract class RulesIntegrationTestBase extends UnitTestCase {
       ->willReturn([]);
 
     $container->set('entity.manager', $this->entityManager);
-    $container->set('path.alias_manager', $this->aliasManager);
+    $container->set('path.alias_manager', $this->aliasManager->reveal());
     $container->set('plugin.manager.rules_action', $this->actionManager);
     $container->set('plugin.manager.condition', $this->conditionManager);
     $container->set('plugin.manager.rules_expression', $this->rulesExpressionManager);
