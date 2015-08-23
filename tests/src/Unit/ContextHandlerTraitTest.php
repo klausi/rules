@@ -20,20 +20,6 @@ use Drupal\rules\Engine\RulesStateInterface;
 class ContextHandlerTraitTest extends RulesUnitTestBase {
 
   /**
-   * The mocked condition manager.
-   *
-   * @var \Drupal\Core\Condition\ConditionManager
-   */
-  protected $conditionManager;
-
-  /**
-   * The condition object being tested.
-   *
-   * @var \Drupal\rules\Plugin\RulesExpression\RulesCondition
-   */
-  protected $condition;
-
-  /**
    * Tests that a missing required context triggers an exception.
    *
    * @covers ::mapContext
