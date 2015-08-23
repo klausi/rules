@@ -8,13 +8,15 @@
 namespace Drupal\Tests\rules\Integration;
 
 use Drupal\Core\Cache\NullBackend;
-use Drupal\rules\Condition\ConditionManager;
 use Drupal\Core\DependencyInjection\ContainerBuilder;
+use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\TypedData\TypedDataManager;
+use Drupal\rules\Condition\ConditionManager;
 use Drupal\rules\Context\DataProcessorManager;
-use Drupal\rules\Engine\ExpressionManager;
 use Drupal\rules\Core\RulesActionManager;
+use Drupal\rules\Engine\ExpressionManager;
 use Drupal\Tests\UnitTestCase;
+use Prophecy\Argument;
 
 /**
  * Base class for Rules integration tests.
@@ -74,7 +76,7 @@ abstract class RulesIntegrationTestBase extends UnitTestCase {
   protected $cacheBackend;
 
   /**
-   * @var \Drupal\Core\Extension\ModuleHandlerInterface
+   * @var \Drupal\Core\Extension\ModuleHandlerInterface||\Prophecy\Prophecy\ProphecyInterface
    */
   protected $moduleHandler;
 
@@ -105,18 +107,21 @@ abstract class RulesIntegrationTestBase extends UnitTestCase {
     $container = new ContainerBuilder();
     // Register plugin managers used by Rules, but mock some unwanted
     // dependencies requiring more stuff to loaded.
-    $this->moduleHandler = $this->getMockBuilder('Drupal\Core\Extension\ModuleHandlerInterface')
-      ->disableOriginalConstructor()
-      ->getMock();
+    $this->moduleHandler = $this->prophesize(ModuleHandlerInterface::class);
+
     // Set all the modules as being existent.
     $this->enabledModules = new \ArrayObject();
     $this->enabledModules['rules'] = TRUE;
     $this->enabledModules['rules_test'] = TRUE;
-    $this->moduleHandler->expects($this->any())
-      ->method('moduleExists')
-      ->will($this->returnCallback(function ($module) {
-        return [$module, $this->enabledModules[$module]];
-      }));
+    $enabledModules = $this->enabledModules;
+    $this->moduleHandler->moduleExists(Argument::type('string'))
+      ->will(function ($arguments) use ($enabledModules) {
+        return [$arguments[0], $enabledModules[$arguments[0]]];
+      });
+
+    // Wed don't care about alter() calls on the module handler.
+    $this->moduleHandler->alter(Argument::any(), Argument::any(), Argument::any(), Argument::any())
+      ->willReturn(NULL);
 
     $this->cacheBackend = new NullBackend('rules');
     $rules_directory = __DIR__ . '/../../..';
@@ -127,16 +132,16 @@ abstract class RulesIntegrationTestBase extends UnitTestCase {
       'Drupal\\Core\\Validation' => $this->root . '/core/lib/Drupal/Core/Validation',
     ]);
 
-    $this->actionManager = new RulesActionManager($this->namespaces, $this->cacheBackend, $this->moduleHandler);
-    $this->conditionManager = new ConditionManager($this->namespaces, $this->cacheBackend, $this->moduleHandler);
-    $this->rulesExpressionManager = new ExpressionManager($this->namespaces, $this->moduleHandler);
+    $this->actionManager = new RulesActionManager($this->namespaces, $this->cacheBackend, $this->moduleHandler->reveal());
+    $this->conditionManager = new ConditionManager($this->namespaces, $this->cacheBackend, $this->moduleHandler->reveal());
+    $this->rulesExpressionManager = new ExpressionManager($this->namespaces, $this->moduleHandler->reveal());
 
     $this->classResolver = $this->getMockBuilder('Drupal\Core\DependencyInjection\ClassResolverInterface')
       ->disableOriginalConstructor()
       ->getMock();
 
-    $this->typedDataManager = new TypedDataManager($this->namespaces, $this->cacheBackend, $this->moduleHandler, $this->classResolver);
-    $this->rulesDataProcessorManager = new DataProcessorManager($this->namespaces, $this->moduleHandler);
+    $this->typedDataManager = new TypedDataManager($this->namespaces, $this->cacheBackend, $this->moduleHandler->reveal(), $this->classResolver);
+    $this->rulesDataProcessorManager = new DataProcessorManager($this->namespaces, $this->moduleHandler->reveal());
 
     $this->aliasManager = $this->getMockBuilder('Drupal\Core\Path\AliasManagerInterface')
       ->disableOriginalConstructor()

@@ -54,7 +54,7 @@ abstract class RulesEntityIntegrationTestBase extends RulesIntegrationTestBase {
       ->setMethods(['getAccessControlHandler', 'getBaseFieldDefinitions', 'getBundleInfo'])
       ->setConstructorArgs([
         $this->namespaces,
-        $this->moduleHandler,
+        $this->moduleHandler->reveal(),
         $this->cacheBackend,
         $this->languageManager,
         $this->getStringTranslationStub(),
@@ -85,9 +85,7 @@ abstract class RulesEntityIntegrationTestBase extends RulesIntegrationTestBase {
 
     $this->container->set('entity.manager', $this->entityManager);
 
-    $this->moduleHandler->expects($this->any())
-      ->method('getImplementations')
-      ->with('entity_type_build')
+    $this->moduleHandler->getImplementations('entity_type_build')
       ->willReturn([]);
   }
 
