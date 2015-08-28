@@ -17,7 +17,7 @@ trait RulesUserIntegrationTestTrait {
   /**
    * Creates a mocked user.
    *
-   * @return UserInterface|\Prophecy\Prophecy\ProphecyInterface
+   * @return \Drupal\user\UserInterface|\Prophecy\Prophecy\ProphecyInterface
    *   The mocked user.
    */
   protected function getMockedUser() {

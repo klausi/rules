@@ -8,12 +8,15 @@
 namespace Drupal\Tests\rules\Integration\Action {
 
   use Drupal\Tests\rules\Integration\RulesEntityIntegrationTestBase;
+  use Drupal\Tests\rules\Integration\RulesUserIntegrationTestTrait;
 
   /**
    * @coversDefaultClass \Drupal\rules\Plugin\RulesAction\SendAccountEmail
    * @group rules_actions
    */
   class SendAccountEmailTest extends RulesEntityIntegrationTestBase {
+
+    use RulesUserIntegrationTestTrait;
 
     /**
      * The action to be tested.
@@ -47,9 +50,9 @@ namespace Drupal\Tests\rules\Integration\Action {
      * @covers ::execute
      */
     public function testActionExecution() {
-      $account = $this->getMock('Drupal\user\UserInterface');
+      $account = $this->getMockedUser();
       $mail_type = 'test_mail_type';
-      $this->action->setContextValue('user', $account)
+      $this->action->setContextValue('user', $account->reveal())
         ->setContextValue('email_type', $mail_type);
 
       $this->action->execute();
