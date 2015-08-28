@@ -53,6 +53,16 @@ abstract class RulesEntityIntegrationTestBase extends RulesIntegrationTestBase {
     $this->languageManager->getCurrentLanguage()->willReturn($language->reveal());
     $this->languageManager->getLanguages()->willReturn([$language->reveal()]);
 
+    $entityType = new ContentEntityType([
+      'id' => 'test',
+      'label' => 'Test',
+      'entity_keys' => [
+        'bundle' => 'bundle',
+      ],
+    ]);
+    $this->entityManager->getDefinitions()
+      ->willReturn(['test' => $entityType]);
+
     $this->entityAccess = $this->prophesize(EntityAccessControlHandlerInterface::class);
 
     $this->entityManager->getAccessControlHandler(Argument::any())
@@ -66,16 +76,6 @@ abstract class RulesEntityIntegrationTestBase extends RulesIntegrationTestBase {
     // does not call out to the config entity system to get bundle information.
     $this->entityManager->getBundleInfo(Argument::any())
       ->willReturn(['test' => ['label' => 'Test']]);
-
-    $entityType = new ContentEntityType([
-      'id' => 'test',
-      'label' => 'Test',
-      'entity_keys' => [
-        'bundle' => 'bundle',
-      ],
-    ]);
-    $this->entityManager->getDefinitions()
-      ->willReturn(['test' => $entityType]);
 
     $this->moduleHandler->getImplementations('entity_type_build')
       ->willReturn([]);
