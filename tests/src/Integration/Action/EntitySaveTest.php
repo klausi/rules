@@ -7,6 +7,7 @@
 
 namespace Drupal\Tests\rules\Integration\Action;
 
+use Drupal\Core\Entity\EntityInterface;
 use Drupal\Tests\rules\Integration\RulesEntityIntegrationTestBase;
 
 /**
@@ -23,10 +24,24 @@ class EntitySaveTest extends RulesEntityIntegrationTestBase {
   protected $action;
 
   /**
+   * The mocked entity used for testing.
+   *
+   * @var \Drupal\Core\Entity\EntityInterface|\Prophecy\Prophecy\ProphecyInterface
+   */
+  protected $entity;
+
+  /**
    * {@inheritdoc}
    */
   public function setUp() {
     parent::setUp();
+
+    $this->entity = $this->prophesize(EntityInterface::class);
+    // We don't care about the cache methods but we need to mock them because
+    // they get called.
+    $this->entity->getCacheContexts()->willReturn([]);
+    $this->entity->getCacheTags()->willReturn([]);
+    $this->entity->getCacheMaxAge()->willReturn(0);
 
     $this->action = $this->actionManager->createInstance('rules_entity_save');
   }
@@ -46,11 +61,9 @@ class EntitySaveTest extends RulesEntityIntegrationTestBase {
    * @covers ::execute
    */
   public function testActionExecutionImmediately() {
-    $entity = $this->getMock('Drupal\Core\Entity\EntityInterface');
-    $entity->expects($this->once())
-      ->method('save');
+    $this->entity->save()->shouldBeCalledTimes(1);
 
-    $this->action->setContextValue('entity', $entity)
+    $this->action->setContextValue('entity', $this->entity->reveal())
       ->setContextValue('immediate', TRUE);
 
     $this->action->execute();
@@ -63,11 +76,9 @@ class EntitySaveTest extends RulesEntityIntegrationTestBase {
    * @covers ::execute
    */
   public function testActionExecutionPostponed() {
-    $entity = $this->getMock('Drupal\Core\Entity\EntityInterface');
-    $entity->expects($this->never())
-      ->method('save');
+    $this->entity->save()->shouldNotBeCalled();
 
-    $this->action->setContextValue('entity', $entity);
+    $this->action->setContextValue('entity', $this->entity->reveal());
     $this->action->execute();
 
     $this->assertEquals($this->action->autoSaveContext(), ['entity'], 'Action returns the entity context name for auto saving.');

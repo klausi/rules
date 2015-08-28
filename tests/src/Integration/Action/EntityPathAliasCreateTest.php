@@ -117,7 +117,8 @@ class EntityPathAliasCreateTest extends RulesEntityIntegrationTestBase {
     $entity->urlInfo(Argument::any())->willReturn($url->reveal())
       ->shouldBeCalledTimes(1);
 
-    // @todo is this really needed?
+    // Wed don't care about the cache methods, but they will be called so we
+    // have to mock them.
     $entity->getCacheContexts()->willReturn([]);
     $entity->getCacheTags()->willReturn([]);
     $entity->getCacheMaxAge()->willReturn(-1);
