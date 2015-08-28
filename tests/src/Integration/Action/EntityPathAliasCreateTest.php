@@ -102,7 +102,7 @@ class EntityPathAliasCreateTest extends RulesEntityIntegrationTestBase {
   /**
    * Creates a mock entity.
    *
-   * @return \PHPUnit_Framework_MockObject_MockObject|\Drupal\Core\Entity\EntityInterface
+   * @return \Drupal\Core\Entity\EntityInterface|\Prophecy\Prophecy\ProphecyInterface
    *   The mocked entity object.
    */
   protected function getMockEntity() {
