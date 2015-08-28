@@ -33,13 +33,8 @@ class AutoSaveTest extends RulesEntityIntegrationTestBase {
       ->map('entity', 'entity')
     );
 
-    $entity = $this->prophesize(EntityInterface::class);
+    $entity = $this->prophesizeEntity(EntityInterface::class);
     $entity->save()->shouldBeCalledTimes(1);
-    // Wed don't care about the cache methods, but they will be called so we
-    // have to mock them.
-    $entity->getCacheContexts()->willReturn([]);
-    $entity->getCacheTags()->willReturn([]);
-    $entity->getCacheMaxAge()->willReturn(-1);
 
     $rule->setContextValue('entity', $entity->reveal());
     $rule->execute();

@@ -163,14 +163,10 @@ class UserBlockTest extends RulesEntityIntegrationTestBase {
    *   The mocked user object.
    */
   protected function getUserMock($active, $authenticated) {
-    $user = $this->prophesize(UserInterface::class);
+    $user = $this->prophesizeEntity(UserInterface::class);
 
     $user->isActive()->willReturn($active);
     $user->isAuthenticated()->willReturn($authenticated);
-    // Cache methods are irrelevant for the tests but might be called.
-    $user->getCacheContexts()->willReturn([]);
-    $user->getCacheTags()->willReturn([]);
-    $user->getCacheMaxAge()->willReturn(0);
 
     return $user;
   }

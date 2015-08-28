@@ -38,15 +38,10 @@ class EntityIsOfBundleTest extends RulesEntityIntegrationTestBase {
    * @covers ::evaluate
    */
   public function testConditionEvaluation() {
-    $entity = $this->prophesize(EntityInterface::class);
+    $entity = $this->prophesizeEntity(EntityInterface::class);
 
     $entity->getEntityTypeId()->willReturn('node')->shouldBeCalledTimes(3);
     $entity->bundle()->willReturn('page')->shouldBeCalledTimes(3);
-    // We don't care about the cache methods but we need to mock them because
-    // they get called.
-    $entity->getCacheContexts()->willReturn([]);
-    $entity->getCacheTags()->willReturn([]);
-    $entity->getCacheMaxAge()->willReturn(0);
 
     // Add the test node to our context as the evaluated entity, along with
     // explicit entity type and bundle strings.

@@ -108,7 +108,7 @@ class EntityPathAliasCreateTest extends RulesEntityIntegrationTestBase {
   protected function getMockEntity() {
     $language = $this->languageManager->reveal()->getCurrentLanguage();
 
-    $entity = $this->prophesize(EntityInterface::class);
+    $entity = $this->prophesizeEntity(EntityInterface::class);
     $entity->language()->willReturn($language)->shouldBeCalledTimes(1);
 
     $url = $this->prophesize(Url::class);
@@ -116,12 +116,6 @@ class EntityPathAliasCreateTest extends RulesEntityIntegrationTestBase {
 
     $entity->urlInfo(Argument::any())->willReturn($url->reveal())
       ->shouldBeCalledTimes(1);
-
-    // Wed don't care about the cache methods, but they will be called so we
-    // have to mock them.
-    $entity->getCacheContexts()->willReturn([]);
-    $entity->getCacheTags()->willReturn([]);
-    $entity->getCacheMaxAge()->willReturn(-1);
 
     return $entity;
   }

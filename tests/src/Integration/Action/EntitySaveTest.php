@@ -36,12 +36,7 @@ class EntitySaveTest extends RulesEntityIntegrationTestBase {
   public function setUp() {
     parent::setUp();
 
-    $this->entity = $this->prophesize(EntityInterface::class);
-    // We don't care about the cache methods but we need to mock them because
-    // they get called.
-    $this->entity->getCacheContexts()->willReturn([]);
-    $this->entity->getCacheTags()->willReturn([]);
-    $this->entity->getCacheMaxAge()->willReturn(0);
+    $this->entity = $this->prophesizeEntity(EntityInterface::class);
 
     $this->action = $this->actionManager->createInstance('rules_entity_save');
   }
