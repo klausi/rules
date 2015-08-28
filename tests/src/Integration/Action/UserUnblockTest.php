@@ -8,12 +8,15 @@
 namespace Drupal\Tests\rules\Integration\Action;
 
 use Drupal\Tests\rules\Integration\RulesEntityIntegrationTestBase;
+use Drupal\Tests\rules\Integration\RulesUserIntegrationTestTrait;
 
 /**
  * @coversDefaultClass \Drupal\rules\Plugin\RulesAction\UserUnblock
  * @group rules_actions
  */
 class UserUnblockTest extends RulesEntityIntegrationTestBase {
+
+  use RulesUserIntegrationTestTrait;
 
   /**
    * Constant used for authenticated test when mocking a user.
@@ -65,30 +68,24 @@ class UserUnblockTest extends RulesEntityIntegrationTestBase {
    * @dataProvider userProvider
    * @covers ::execute
    */
-  public function testUnblockUser($active, $authenticated, $expects, $context_name) {
+  public function testUnblockUser($active, $authenticated, $expects, $autosave_names) {
     // Set-up a mock user.
-    $account = $this->getMock('Drupal\user\UserInterface');
+    $account = $this->getMockedUser();
     // Mock isBlocked.
-    $account->expects($this->any())
-      ->method('isBlocked')
-      ->willReturn(!$active);
+    $account->isBlocked()->willReturn(!$active);
     // Mock isAuthenticated.
-    $account->expects($this->any())
-      ->method('isAuthenticated')
-      ->willReturn($authenticated);
+    $account->isAuthenticated()->willReturn($authenticated);
     // Mock activate.
-    $account->expects($this->{$expects}())
-      ->method('activate');
+    $account->activate()->shouldBeCalledTimes($expects);
     // We do noe expect call of the 'save' method because user should be
     // auto-saved later.
-    $account->expects($this->never())
-      ->method('save');
+    $account->save()->shouldNotBeCalled();
     // Test unblocking the user.
     $this->action
-      ->setContextValue('user', $account)
+      ->setContextValue('user', $account->reveal())
       ->execute();
 
-    $this->assertEquals($this->action->autoSaveContext(), $context_name, 'Action returns correct context name for auto saving.');
+    $this->assertEquals($this->action->autoSaveContext(), $autosave_names, 'Action returns correct context name for auto saving.');
   }
 
   /**
@@ -97,13 +94,13 @@ class UserUnblockTest extends RulesEntityIntegrationTestBase {
   public function userProvider() {
     return [
       // Test blocked authenticated user.
-      [self::BLOCKED, self::AUTHENTICATED, 'once', ['user']],
+      [self::BLOCKED, self::AUTHENTICATED, 1, ['user']],
       // Test active anonymous user.
-      [self::ACTIVE, self::ANONYMOUS, 'never', []],
+      [self::ACTIVE, self::ANONYMOUS, 0, []],
       // Test active authenticated user.
-      [self::ACTIVE, self::AUTHENTICATED, 'never', []],
+      [self::ACTIVE, self::AUTHENTICATED, 0, []],
       // Test blocked anonymous user.
-      [self::BLOCKED, self::ANONYMOUS, 'never', []],
+      [self::BLOCKED, self::ANONYMOUS, 0, []],
     ];
   }
 
