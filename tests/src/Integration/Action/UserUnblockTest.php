@@ -8,15 +8,13 @@
 namespace Drupal\Tests\rules\Integration\Action;
 
 use Drupal\Tests\rules\Integration\RulesEntityIntegrationTestBase;
-use Drupal\Tests\rules\Integration\RulesUserIntegrationTestTrait;
+use Drupal\user\UserInterface;
 
 /**
  * @coversDefaultClass \Drupal\rules\Plugin\RulesAction\UserUnblock
  * @group rules_actions
  */
 class UserUnblockTest extends RulesEntityIntegrationTestBase {
-
-  use RulesUserIntegrationTestTrait;
 
   /**
    * Constant used for authenticated test when mocking a user.
@@ -41,7 +39,7 @@ class UserUnblockTest extends RulesEntityIntegrationTestBase {
   /**
    * The action to be tested.
    *
-   * @var \Drupal\rules\Engine\RulesActionInterface
+   * @var \Drupal\rules\Core\RulesActionInterface
    */
   protected $action;
 
@@ -70,7 +68,7 @@ class UserUnblockTest extends RulesEntityIntegrationTestBase {
    */
   public function testUnblockUser($active, $authenticated, $expects, $autosave_names) {
     // Set-up a mock user.
-    $account = $this->getMockedUser();
+    $account = $this->prophesizeEntity(UserInterface::class);
     // Mock isBlocked.
     $account->isBlocked()->willReturn(!$active);
     // Mock isAuthenticated.

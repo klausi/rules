@@ -8,16 +8,14 @@
 namespace Drupal\Tests\rules\Integration\Condition;
 
 use Drupal\Tests\rules\Integration\RulesEntityIntegrationTestBase;
-use Drupal\Tests\rules\Integration\RulesUserIntegrationTestTrait;
 use Drupal\user\RoleInterface;
+use Drupal\user\UserInterface;
 
 /**
  * @coversDefaultClass \Drupal\rules\Plugin\Condition\UserHasRole
  * @group rules_conditions
  */
 class UserHasRoleTest extends RulesEntityIntegrationTestBase {
-
-  use RulesUserIntegrationTestTrait;
 
   /**
    * The condition that is being tested.
@@ -44,7 +42,7 @@ class UserHasRoleTest extends RulesEntityIntegrationTestBase {
   public function testConditionEvaluation() {
     // Set-up a mock object with roles 'authenticated' and 'editor', but not
     // 'administrator'.
-    $account = $this->getMockedUser();
+    $account = $this->prophesizeEntity(UserInterface::class);
     $account->getRoles()->willReturn(['authenticated', 'editor'])
       ->shouldBeCalledTimes(7);
 

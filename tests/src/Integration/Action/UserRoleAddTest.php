@@ -8,8 +8,8 @@
 namespace Drupal\Tests\rules\Integration\Action;
 
 use Drupal\Tests\rules\Integration\RulesEntityIntegrationTestBase;
-use Drupal\Tests\rules\Integration\RulesUserIntegrationTestTrait;
 use Drupal\user\RoleInterface;
+use Drupal\user\UserInterface;
 use Prophecy\Argument;
 
 /**
@@ -17,8 +17,6 @@ use Prophecy\Argument;
  * @group rules_actions
  */
 class UserRoleAddTest extends RulesEntityIntegrationTestBase {
-
-  use RulesUserIntegrationTestTrait;
 
   /**
    * The action that is being tested.
@@ -52,7 +50,7 @@ class UserRoleAddTest extends RulesEntityIntegrationTestBase {
    */
   public function testAddOneRoleNoSave() {
     // Set-up a mock user.
-    $account = $this->getMockedUser();
+    $account = $this->prophesizeEntity(UserInterface::class);
 
     $account->hasRole('administrator')->willReturn(FALSE);
     $account->addRole('administrator')->shouldBeCalledTimes(1);
@@ -80,7 +78,7 @@ class UserRoleAddTest extends RulesEntityIntegrationTestBase {
    */
   public function testAddThreeRoles() {
     // Set-up a mock user.
-    $account = $this->getMockedUser();
+    $account = $this->prophesizeEntity(UserInterface::class);
     // Mock hasRole.
     $account->hasRole('manager')->willReturn(FALSE)->shouldBeCalledTimes(1);
     $account->hasRole('editor')->willReturn(FALSE)->shouldBeCalledTimes(1);
@@ -115,7 +113,7 @@ class UserRoleAddTest extends RulesEntityIntegrationTestBase {
    */
   public function testAddExistingRole() {
     // Set-up a mock user with role 'administrator'.
-    $account = $this->getMockedUser();
+    $account = $this->prophesizeEntity(UserInterface::class);
     $account->hasRole('administrator')->willReturn(TRUE);
 
     // We do not expect a call of the 'addRole' method.
@@ -141,7 +139,7 @@ class UserRoleAddTest extends RulesEntityIntegrationTestBase {
    */
   public function testAddExistingAndNonexistentRole() {
     // Set-up a mock user with role 'administrator' but without 'editor'.
-    $account = $this->getMockedUser();
+    $account = $this->prophesizeEntity(UserInterface::class);
     $account->hasRole('administrator')->willReturn(TRUE)
       ->shouldBeCalledTimes(1);
     $account->hasRole('editor')->willReturn(FALSE)

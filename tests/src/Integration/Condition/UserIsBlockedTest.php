@@ -8,15 +8,13 @@
 namespace Drupal\Tests\rules\Integration\Condition;
 
 use Drupal\Tests\rules\Integration\RulesEntityIntegrationTestBase;
-use Drupal\Tests\rules\Integration\RulesUserIntegrationTestTrait;
+use Drupal\user\UserInterface;
 
 /**
  * @coversDefaultClass \Drupal\rules\Plugin\Condition\UserIsBlocked
  * @group rules_conditions
  */
 class UserIsBlockedTest extends RulesEntityIntegrationTestBase {
-
-  use RulesUserIntegrationTestTrait;
 
   /**
    * The condition to be tested.
@@ -41,7 +39,7 @@ class UserIsBlockedTest extends RulesEntityIntegrationTestBase {
    * @covers ::evaluate
    */
   public function testConditionEvaluation() {
-    $blocked_user = $this->getMockedUser();
+    $blocked_user = $this->prophesizeEntity(UserInterface::class);
     $blocked_user->isBlocked()->willReturn(TRUE)->shouldbeCalledTimes(1);
 
     // Set the user context value.
@@ -49,7 +47,7 @@ class UserIsBlockedTest extends RulesEntityIntegrationTestBase {
 
     $this->assertTrue($this->condition->evaluate());
 
-    $active_user = $this->getMockedUser();
+    $active_user = $this->prophesizeEntity(UserInterface::class);
     $active_user->isBlocked()->willReturn(FALSE)->shouldbeCalledTimes(1);
 
     // Set the user context value.
