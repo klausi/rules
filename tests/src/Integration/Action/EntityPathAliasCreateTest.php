@@ -45,7 +45,7 @@ class EntityPathAliasCreateTest extends RulesEntityIntegrationTestBase {
     $this->container->set('path.alias_storage', $this->aliasStorage->reveal());
 
     // Instantiate the action we are testing.
-    $this->action = $this->actionManager->createInstance('rules_entity_path_alias_create:entity:entity_test');
+    $this->action = $this->actionManager->createInstance('rules_entity_path_alias_create:entity:test');
   }
 
   /**
@@ -54,7 +54,7 @@ class EntityPathAliasCreateTest extends RulesEntityIntegrationTestBase {
    * @covers ::summary
    */
   public function testSummary() {
-    $this->assertEquals('Create test entity path alias', $this->action->summary());
+    $this->assertEquals('Create test path alias', $this->action->summary());
   }
 
   /**
