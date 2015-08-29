@@ -7,6 +7,9 @@
 
 namespace Drupal\Tests\rules\Integration\Action;
 
+use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Entity\EntityStorageInterface;
+use Drupal\Core\Entity\Query\QueryInterface;
 use Drupal\Tests\rules\Integration\RulesEntityIntegrationTestBase;
 
 /**
@@ -27,37 +30,6 @@ class EntityFetchByFieldTest extends RulesEntityIntegrationTestBase {
    */
   public function setUp() {
     parent::setUp();
-
-    // Prepare our own dummy entityManager as the entityManager in
-    // RulesEntityIntegrationTestBase does not mock the getStorage method.
-    $this->entityManager = $this->getMockBuilder('Drupal\Core\Entity\EntityManager')
-      ->setMethods(['getBundleInfo', 'getStorage', 'getBaseFieldDefinitions'])
-      ->setConstructorArgs([
-        $this->namespaces,
-        $this->moduleHandler,
-        $this->cacheBackend,
-        $this->languageManager,
-        $this->getStringTranslationStub(),
-        $this->getClassResolverStub(),
-        $this->typedDataManager,
-        $this->getMock('Drupal\Core\KeyValueStore\KeyValueFactoryInterface'),
-        $this->getMock('Symfony\Component\EventDispatcher\EventDispatcherInterface')
-      ])
-      ->getMock();
-
-    // Return some dummy bundle information for now, so that the entity manager
-    // does not call out to the config entity system to get bundle information.
-    $this->entityManager->expects($this->any())
-      ->method('getBundleInfo')
-      ->with($this->anything())
-      ->willReturn(['entity_test' => ['label' => 'Entity Test']]);
-    $this->container->set('entity.manager', $this->entityManager);
-
-    // The base field definitions for entity_test aren't used, and would
-    // require additional mocking.
-    $this->entityManager->expects($this->any())
-      ->method('getBaseFieldDefinitions')
-      ->willReturn([]);
 
     $this->action = $this->actionManager->createInstance('rules_entity_fetch_by_field');
   }
@@ -85,20 +57,16 @@ class EntityFetchByFieldTest extends RulesEntityIntegrationTestBase {
     // Create an array of dummy entities.
     $entities = [];
     for ($i = 0; $i < 2; $i++) {
-      $entity = $this->getMock('Drupal\Core\Entity\EntityInterface');
-      $entities[] = $entity;
+      $entity = $this->prophesize(EntityInterface::class);
+      $entities[] = $entity->reveal();
     }
 
     // Create dummy entity storage object.
-    $entityStorage = $this->getMock('Drupal\Core\Entity\EntityStorageInterface');
-    $entityStorage->expects($this->once())
-      ->method('loadByProperties')
-      ->with([$field_name => $field_value])
+    $entityStorage = $this->prophesize(EntityStorageInterface::class);
+    $entityStorage->loadByProperties([$field_name => $field_value])
       ->willReturn($entities);
-    $this->entityManager->expects($this->once())
-      ->method('getStorage')
-      ->with($entity_type)
-      ->willReturn($entityStorage);
+    $this->entityManager->getStorage($entity_type)
+      ->willReturn($entityStorage->reveal());
 
     // Set context values for EntityFetchByField action and execute.
     $this->action->setContextValue('type', $entity_type)
@@ -123,39 +91,35 @@ class EntityFetchByFieldTest extends RulesEntityIntegrationTestBase {
 
     // Create an array of dummy entities.
     $entities = array_map(function () {
-      return $this->getMock('Drupal\Core\Entity\EntityInterface');
+      return $this->prophesize(EntityInterface::class)->reveal();
     }, range(1, $limit));
 
     // Creates entity ids for new dummy array of entities.
     $entity_ids = range(1, $limit);
 
     // Create dummy query object.
-    $query = $this->getMock('Drupal\Core\Entity\Query\QueryInterface');
-    $query->expects($this->once())
-      ->method('condition')
-      ->with($field_name, $field_value, '=')
-      ->willReturn($query);
-    $query->expects($this->once())
-      ->method('range')
-      ->with(0, $limit)
-      ->willReturn($query);
-    $query->expects($this->once())
-      ->method('execute')
-      ->willReturn($entity_ids);
+    $query = $this->prophesize(QueryInterface::class);
+    $query->condition($field_name, $field_value, '=')
+      ->willReturn($query->reveal())
+      ->shouldBeCalledTimes(1);
+    $query->range(0, $limit)
+      ->willReturn($query->reveal())
+      ->shouldBeCalledTimes(1);
+    $query->execute()
+      ->willReturn($entity_ids)
+      ->shouldBeCalledTimes(1);
 
     // Create dummy entity storage object.
-    $entityStorage = $this->getMock('Drupal\Core\Entity\EntityStorageInterface');
-    $entityStorage->expects($this->once())
-      ->method('loadMultiple')
-      ->with($entity_ids)
-      ->willReturn($entities);
-    $entityStorage->expects($this->once())
-      ->method('getQuery')
-      ->willReturn($query);
-    $this->entityManager->expects($this->once())
-      ->method('getStorage')
-      ->with($entity_type)
-      ->willReturn($entityStorage);
+    $entityStorage = $this->prophesize(EntityStorageInterface::class);
+    $entityStorage->loadMultiple($entity_ids)
+      ->willReturn($entities)
+      ->shouldBeCalledTimes(1);
+    $entityStorage->getQuery()
+      ->willReturn($query)
+      ->shouldBeCalledTimes(1);
+    $this->entityManager->getStorage($entity_type)
+      ->willReturn($entityStorage->reveal())
+      ->shouldBeCalledTimes(1);
 
     // Set context values for EntityFetchByField action and execute.
     $this->action->setContextValue('type', $entity_type)
@@ -182,20 +146,17 @@ class EntityFetchByFieldTest extends RulesEntityIntegrationTestBase {
     // Create an array of dummy entities.
     $entities = [];
     for ($i = 0; $i < 2; $i++) {
-      $entity = $this->getMock('Drupal\Core\Entity\EntityInterface');
+      $entity = $this->prophesize(EntityInterface::class)->reveal();
       $entities[] = $entity;
     }
 
     // Create dummy entity storage object.
-    $entityStorage = $this->getMock('Drupal\Core\Entity\EntityStorageInterface');
-    $entityStorage->expects($this->once())
-      ->method('loadByProperties')
-      ->with([$field_name => $field_value])
+    $entityStorage = $this->prophesize(EntityStorageInterface::class);
+    $entityStorage->loadByProperties([$field_name => $field_value])
       ->willReturn($entities);
-    $this->entityManager->expects($this->once())
-      ->method('getStorage')
-      ->with($entity_type)
-      ->willReturn($entityStorage);
+    $this->entityManager->getStorage($entity_type)
+      ->willReturn($entityStorage->reveal())
+      ->shouldBeCalledTimes(1);
 
     // Set context values for EntityFetchByField action and execute.
     $this->action->setContextValue('type', $entity_type)
