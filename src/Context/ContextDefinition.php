@@ -28,7 +28,7 @@ class ContextDefinition extends ContextDefinitionCore implements ContextDefiniti
     'default_value' => 'defaultValue',
     'constraints' => 'constraints',
     'allow_null' => 'allowNull',
-    'parameter_restriction' => 'parameterRestriction',
+    'assignment_restriction' => 'assignmentRestriction',
   ];
 
   /**
@@ -39,13 +39,13 @@ class ContextDefinition extends ContextDefinitionCore implements ContextDefiniti
   protected $allowNull = FALSE;
 
   /**
-   * The parameter restriction of this context.
+   * The assignment restriction of this context.
    *
-   * @see \Drupal\rules\Context\ContextDefinitionInterface::getParameterRestriction()
+   * @see \Drupal\rules\Context\ContextDefinitionInterface::getAssignmentRestriction()
    *
    * @var string|null
    */
-  protected $parameterRestriction = NULL;
+  protected $assignmentRestriction = NULL;
 
   /**
    * Exports the definition as an array.
@@ -109,15 +109,15 @@ class ContextDefinition extends ContextDefinitionCore implements ContextDefiniti
   /**
    * {@inheritdoc}
    */
-  public function getParameterRestriction() {
-    return $this->parameterRestriction;
+  public function getAssignmentRestriction() {
+    return $this->assignmentRestriction;
   }
 
   /**
    * {@inheritdoc}
    */
-  public function setParameterRestriction($restriction) {
-    $this->parameterRestriction = $restriction;
+  public function setAssignmentRestriction($restriction) {
+    $this->assignmentRestriction = $restriction;
     return $this;
   }
 

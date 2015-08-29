@@ -100,15 +100,15 @@ class ContextIntegrationTest extends RulesDrupalTestBase {
   }
 
   /**
-   * Tests the parameter restriction on context definitions.
+   * Tests the assignment restriction on context definitions.
    */
-  public function testParameterRestriction() {
+  public function testAssignmentRestriction() {
     $action_manager = $this->container->get('plugin.manager.rules_action');
 
-    // Test the parameter restriction on the entity fetch action as an example.
+    // Test the assignment restriction on the entity fetch action as an example.
     $entity_fetch_action = $action_manager->createInstance('rules_entity_fetch_by_id');
     $context_definition = $entity_fetch_action->getContextDefinition('entity_type_id');
-    $this->assertEqual($context_definition->getParameterRestriction(), 'input');
+    $this->assertEqual($context_definition->getAssignmentRestriction(), 'input');
   }
 
 }

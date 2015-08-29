@@ -18,12 +18,12 @@ use \Drupal\Core\Plugin\Context\ContextDefinitionInterface as ContextDefinitionI
 interface ContextDefinitionInterface extends ContextDefinitionInterfaceCore {
 
   /**
-   * Constants for the context parameter restriction mode.
+   * Constants for the context assignment restriction mode.
    *
-   * @see ::getParameterRestriction()
+   * @see ::getAssignmentRestriction()
    */
-  const PARAMETER_RESTRICTION_INPUT = 'input';
-  const PARAMETER_RESTRICTION_SELECTOR = 'selector';
+  const ASSIGNMENT_RESTRICTION_INPUT = 'input';
+  const ASSIGNMENT_RESTRICTION_SELECTOR = 'selector';
 
   /**
    * Determines if the context value is allowed to be NULL.
@@ -44,25 +44,25 @@ interface ContextDefinitionInterface extends ContextDefinitionInterfaceCore {
   public function setAllowNull($null_allowed);
 
   /**
-   * Determines if this context has a parameter restriction.
+   * Determines if this context has an assignment restriction.
    *
    * @return string|null
-   *   Either PARAMETER_RESTRICTION_INPUT for context parameters that are only
-   *   allowed to be provided as input values, PARAMETER_RESTRICTION_SELECTOR
-   *   for context parameters that must be provided as data selectors or NULL if
-   *   there is no restriction for this context.
+   *   Either ASSIGNMENT_RESTRICTION_INPUT for contexts that are only allowed to
+   *   be provided as input values, ASSIGNMENT_RESTRICTION_SELECTOR for contexts
+   *   that must be provided as data selectors or NULL if there is no
+   *   restriction for this context.
    */
-  public function getParameterRestriction();
+  public function getAssignmentRestriction();
 
   /**
-   * Sete the parameter restriction mode for this context.
+   * Sets the assignment restriction mode for this context.
    *
    * @param string|null $restriction
-   *   Either PARAMETER_RESTRICTION_INPUT for context parameters that are only
-   *   allowed to be provided as input values, PARAMETER_RESTRICTION_SELECTOR
-   *   for context parameters that must be provided as data selectors or NULL if
-   *   there is no restriction for this context.
+   *   Either ASSIGNMENT_RESTRICTION_INPUT for contexts that are only allowed to
+   *   be provided as input values, ASSIGNMENT_RESTRICTION_SELECTOR for contexts
+   *   that must be provided as data selectors or NULL if there is no
+   *   restriction for this context.
    */
-  public function setParameterRestriction($restriction);
+  public function setAssignmentRestriction($restriction);
 
 }
