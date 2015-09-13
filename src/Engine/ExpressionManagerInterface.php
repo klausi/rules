@@ -2,7 +2,7 @@
 
 /**
  * @file
- * Contains \Drupal\rules\Engine\ExpressionPluginManagerInterface.
+ * Contains \Drupal\rules\Engine\ExpressionManagerInterface.
  */
 
 namespace Drupal\rules\Engine;
@@ -12,7 +12,7 @@ use Drupal\Component\Plugin\PluginManagerInterface;
 /**
  * Defines an interface for the expression plugin manager.
  */
-interface ExpressionPluginManagerInterface extends PluginManagerInterface {
+interface ExpressionManagerInterface extends PluginManagerInterface {
 
   /**
    * Creates a new rule.
@@ -24,6 +24,17 @@ interface ExpressionPluginManagerInterface extends PluginManagerInterface {
    *   The created rule.
    */
   public function createRule(array $configuration = []);
+
+  /**
+   * Creates a new reaction rule.
+   *
+   * @param array $configuration
+   *   The configuration array to create the plugin instance with.
+   *
+   * @return \Drupal\rules\Plugin\RulesExpression\RuleInterface
+   *   The created reaction rule.
+   */
+  public function createReactionRule(array $configuration = []);
 
   /**
    * Creates a new action expression.

@@ -22,7 +22,8 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  *   context = {
  *     "entity_type_id" = @ContextDefinition("string",
  *       label = @Translation("Entity type"),
- *       description = @Translation("Specifies the type of entity that should be fetched.")
+ *       description = @Translation("Specifies the type of entity that should be fetched."),
+ *       assignment_restriction = "input"
  *     ),
  *     "entity_id" = @ContextDefinition("integer",
  *       label = @Translation("Identifier"),
@@ -75,13 +76,6 @@ class EntityFetchById extends RulesActionBase implements ContainerFactoryPluginI
       $plugin_definition,
       $container->get('entity.manager')
     );
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function summary() {
-    return $this->t('Fetch entity by id');
   }
 
   /**

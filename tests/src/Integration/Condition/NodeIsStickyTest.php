@@ -7,6 +7,7 @@
 
 namespace Drupal\Tests\rules\Integration\Condition;
 
+use Drupal\node\NodeInterface;
 use Drupal\Tests\rules\Integration\RulesEntityIntegrationTestBase;
 
 /**
@@ -33,32 +34,27 @@ class NodeIsStickyTest extends RulesEntityIntegrationTestBase {
   }
 
   /**
-   * Tests the summary.
-   *
-   * @covers ::summary
-   */
-  public function testSummary() {
-    $this->assertEquals('Node is sticky', $this->condition->summary());
-  }
-
-  /**
    * Tests evaluating the condition.
    *
    * @covers ::evaluate
    */
   public function testConditionEvaluation() {
-    $node = $this->getMock('Drupal\node\NodeInterface');
+    $sticky_node = $this->prophesizeEntity(NodeInterface::class);
 
-    $node->expects($this->exactly(2))
-      ->method('isSticky')
-      ->will($this->onConsecutiveCalls(TRUE, FALSE));
+    $sticky_node->isSticky()->willReturn(TRUE)->shouldBeCalledTimes(1);
 
     // Set the node context value.
-    $this->condition->setContextValue('node', $node);
+    $this->condition->setContextValue('node', $sticky_node->reveal());
 
-    // Test evaluation. The first invocation should return TRUE, the second
-    // should return FALSE.
     $this->assertTrue($this->condition->evaluate());
+
+    $unsticky_node = $this->prophesizeEntity(NodeInterface::class);
+
+    $unsticky_node->isSticky()->willReturn(FALSE)->shouldBeCalledTimes(1);
+
+    // Set the node context value.
+    $this->condition->setContextValue('node', $unsticky_node->reveal());
+
     $this->assertFalse($this->condition->evaluate());
   }
 

@@ -5,7 +5,7 @@
  * Contains \Drupal\rules\Tests\NodeIntegrationTest.
  */
 
-namespace Drupal\rules\Tests;
+namespace Drupal\Tests\rules\Kernel;
 
 use Drupal\rules\Context\ContextConfig;
 use Drupal\rules\Context\ContextDefinition;
@@ -169,7 +169,7 @@ class NodeIntegrationTest extends RulesDrupalTestBase {
     $rule->execute();
 
     $messages = drupal_set_message();
-    $this->assertEqual($messages['status'][0]['message'], 'Hello klausi!');
+    $this->assertEqual((string) $messages['status'][0], 'Hello klausi!');
   }
 
   /**
@@ -213,7 +213,7 @@ class NodeIntegrationTest extends RulesDrupalTestBase {
     $rule->execute();
 
     $messages = drupal_set_message();
-    $this->assertEqual($messages['status'][0]['message'], 'The node was created in the year 1970');
+    $this->assertEqual((string) $messages['status'][0], 'The node was created in the year 1970');
   }
 
   /**

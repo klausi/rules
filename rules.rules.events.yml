@@ -5,6 +5,13 @@ rules_user_login:
     account:
       type: 'entity:user'
       label: 'Logged in user'
+rules_user_logout:
+  label: 'User has logged out'
+  category: 'User'
+  context:
+    account:
+      type: 'entity:user'
+      label: 'Logged out user'
 kernel.request:
   label: 'Drupal is initializing'
   category: 'System'
@@ -14,3 +21,15 @@ kernel.request:
 rules_entity_presave:
   label: 'Before saving an entity'
   deriver: '\Drupal\rules\Plugin\RulesEvent\EntityPresaveDeriver'
+rules_entity_delete:
+  label: 'After deleting an entity'
+  deriver: '\Drupal\rules\Plugin\RulesEvent\EntityDeleteDeriver'
+rules_entity_insert:
+  label: 'After saving a new entity'
+  deriver: '\Drupal\rules\Plugin\RulesEvent\EntityInsertDeriver'
+rules_entity_update:
+  label: 'After updating an entity'
+  deriver: '\Drupal\rules\Plugin\RulesEvent\EntityUpdateDeriver'
+rules_entity_view:
+  label: 'Viewing an entity'
+  deriver: '\Drupal\rules\Plugin\RulesEvent\EntityViewDeriver'

@@ -5,7 +5,7 @@
  * Contains \Drupal\rules\Tests\ConfigEntityTest.
  */
 
-namespace Drupal\rules\Tests;
+namespace Drupal\Tests\rules\Kernel;
 
 use Drupal\rules\Context\ContextDefinition;
 
@@ -38,10 +38,8 @@ class ConfigEntityTest extends RulesDrupalTestBase {
   public function testSavingEmptyRule() {
     $rule = $this->expressionManager->createRule();
     $config_entity = $this->storage->create([
-      'id' => 'test_rule',
-      'expression_id' => 'rules_rule',
-      'configuration' => $rule->getConfiguration(),
-    ]);
+      'id' => 'test_rule'
+    ])->setExpression($rule);
     $config_entity->save();
   }
 
@@ -50,12 +48,9 @@ class ConfigEntityTest extends RulesDrupalTestBase {
    */
   public function testConfigAction() {
     $action = $this->expressionManager->createAction('rules_test_log');
-
     $config_entity = $this->storage->create([
-      'id' => 'test_rule',
-      'expression_id' => 'rules_action',
-      'configuration' => $action->getConfiguration(),
-    ]);
+      'id' => 'test_rule'
+    ])->setExpression($action);
     $config_entity->save();
 
     $loaded_entity = $this->storage->load('test_rule');
@@ -81,10 +76,8 @@ class ConfigEntityTest extends RulesDrupalTestBase {
     $rule->addAction('rules_test_log');
 
     $config_entity = $this->storage->create([
-      'id' => 'test_rule',
-      'expression_id' => 'rules_rule',
-      'configuration' => $rule->getConfiguration(),
-    ]);
+      'id' => 'test_rule'
+    ])->setExpression($rule);
     $config_entity->save();
 
     $loaded_entity = $this->storage->load('test_rule');
@@ -109,10 +102,8 @@ class ConfigEntityTest extends RulesDrupalTestBase {
     ]);
 
     $config_entity = $this->storage->create([
-      'id' => 'test_rule',
-      'expression_id' => 'rules_rule',
-      'configuration' => $rule->getConfiguration(),
-    ]);
+      'id' => 'test_rule'
+    ])->setExpression($rule);
     $config_entity->save();
 
     $loaded_entity = $this->storage->load('test_rule');
@@ -121,6 +112,18 @@ class ConfigEntityTest extends RulesDrupalTestBase {
     $context_definitions = $expression->getContextDefinitions();
     $this->assertEqual($context_definitions['test']->getDataType(), 'string', 'Data type of context definition is correct.');
     $this->assertEqual($context_definitions['test']->getLabel(), 'Test string', 'Label of context definition is correct.');
+  }
+
+  /**
+   * Tests that a reaction rule config entity can be saved.
+   */
+  public function testReactionRuleSaving() {
+    $rule = $this->expressionManager->createReactionRule();
+    $storage = $this->container->get('entity.manager')->getStorage('rules_reaction_rule');
+    $config_entity = $storage->create([
+      'id' => 'test_rule'
+    ])->setExpression($rule);
+    $config_entity->save();
   }
 
 }

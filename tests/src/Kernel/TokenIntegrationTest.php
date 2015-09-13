@@ -5,7 +5,7 @@
  * Contains \Drupal\rules\Tests\TokenIntegrationTest.
  */
 
-namespace Drupal\rules\Tests;
+namespace Drupal\Tests\rules\Kernel;
 
 use Drupal\rules\Context\ContextConfig;
 use Drupal\rules\Context\ContextDefinition;
@@ -44,7 +44,7 @@ class TokenIntegrationTest extends RulesDrupalTestBase {
 
     $messages = drupal_set_message();
     $date = format_date(time(), 'custom', 'Y-m');
-    $this->assertEqual($messages['status'][0]['message'], "The date is $date!");
+    $this->assertEqual((string) $messages['status'][0], "The date is $date!");
   }
 
 }

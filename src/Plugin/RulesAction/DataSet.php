@@ -19,7 +19,8 @@ use Drupal\rules\Core\RulesActionBase;
  *   context = {
  *     "data" = @ContextDefinition("any",
  *       label = @Translation("Data"),
- *       description = @Translation("Specifies the data to be modified using a data selector, e.g. 'node:author:name'.")
+ *       description = @Translation("Specifies the data to be modified using a data selector, e.g. 'node:author:name'."),
+ *       allow_null = TRUE
  *     ),
  *     "value" = @ContextDefinition("any",
  *       label = @Translation("Value"),
@@ -32,13 +33,6 @@ use Drupal\rules\Core\RulesActionBase;
  * @todo 'allow NULL' for both 'data' and 'value'?
  */
 class DataSet extends RulesActionBase {
-
-  /**
-   * {@inheritdoc}
-   */
-  public function summary() {
-    return $this->t('Set a data value.');
-  }
 
   /**
    * {@inheritdoc}

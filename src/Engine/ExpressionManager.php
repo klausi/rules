@@ -2,7 +2,7 @@
 
 /**
  * @file
- * Contains \Drupal\rules\Plugin\ExpressionPluginManager.
+ * Contains \Drupal\rules\Plugin\ExpressionManager.
  */
 
 namespace Drupal\rules\Engine;
@@ -15,7 +15,7 @@ use Drupal\Core\Plugin\DefaultPluginManager;
  *
  * @see \Drupal\rules\Engine\ExpressionInterface
  */
-class ExpressionPluginManager extends DefaultPluginManager implements ExpressionPluginManagerInterface {
+class ExpressionManager extends DefaultPluginManager implements ExpressionManagerInterface {
 
   /**
    * A map from class names to plugin ids.
@@ -37,6 +37,13 @@ class ExpressionPluginManager extends DefaultPluginManager implements Expression
    */
   public function createRule(array $configuration = []) {
     return $this->createInstance('rules_rule', $configuration);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function createReactionRule(array $configuration = []) {
+    return $this->createInstance('rules_reaction_rule', $configuration);
   }
 
   /**

@@ -5,11 +5,10 @@
  * Contains \Drupal\rules\Tests\RulesEngineTest.
  */
 
-namespace Drupal\rules\Tests;
+namespace Drupal\Tests\rules\Kernel;
 
 use Drupal\rules\Context\ContextConfig;
 use Drupal\rules\Context\ContextDefinition;
-use Drupal\rules\Engine\RulesLog;
 use Drupal\rules\Engine\RulesState;
 
 /**
@@ -153,6 +152,14 @@ class RulesEngineTest extends RulesDrupalTestBase {
     $this->assertEqual($concatenated->getContextValue(), 'test valuetest value');
     $concatenated2 = $state->getVariable('concatenated2');
     $this->assertEqual($concatenated2->getContextValue(), 'test valuetest valuetest valuetest value');
+  }
+
+  /**
+   * Verifies swapping out core services works.
+   */
+  public function testSwappedCoreServices() {
+    $condition_manager = $this->container->get('plugin.manager.condition');
+    $this->assertTrue($condition_manager instanceof \Drupal\rules\Condition\ConditionManager);
   }
 
 }

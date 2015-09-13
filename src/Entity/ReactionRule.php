@@ -8,6 +8,7 @@
 namespace Drupal\rules\Entity;
 
 use Drupal\Core\Config\Entity\ConfigEntityBase;
+use Drupal\rules\Engine\ExpressionInterface;
 
 /**
  * Reaction rule configuration entity to persistently store configuration.
@@ -116,6 +117,22 @@ class ReactionRule extends ConfigEntityBase {
    * @var string
    */
   protected $module = 'rules';
+    
+  /**
+   * Sets a Rules expression instance for this Reaction rule.
+   *
+   * @param \Drupal\rules\Engine\ExpressionInterface $expression
+   *   The expression to set.
+   *
+   * @return $this
+   */
+  public function setExpression(ExpressionInterface $expression) {
+    $this->expression = $expression;
+    $this->expression_id = $expression->getPluginId();
+    $this->configuration = $expression->getConfiguration();
+    return $this;
+  }
+  
 
   /**
    * Gets a Rules expression instance for this Reaction rule.
@@ -138,7 +155,7 @@ class ReactionRule extends ConfigEntityBase {
    * @todo Actually we should use dependency injection here, but is that even
    *   possible with config entities? How?
    *
-   * @return \Drupal\rules\Engine\ExpressionPluginManager
+   * @return \Drupal\rules\Engine\ExpressionManager
    *   The Rules expression manager.
    */
   protected function getExpressionManager() {

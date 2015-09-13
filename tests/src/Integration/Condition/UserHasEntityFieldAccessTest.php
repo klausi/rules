@@ -7,8 +7,12 @@
 
 namespace Drupal\Tests\rules\Integration\Condition;
 
+use Drupal\Core\Entity\ContentEntityInterface;
+use Drupal\Core\Field\FieldDefinitionInterface;
+use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\Core\Language\Language;
 use Drupal\Tests\rules\Integration\RulesEntityIntegrationTestBase;
+use Drupal\user\UserInterface;
 
 /**
  * @coversDefaultClass \Drupal\rules\Plugin\Condition\UserHasEntityFieldAccess
@@ -24,20 +28,6 @@ class UserHasEntityFieldAccessTest extends RulesEntityIntegrationTestBase {
   protected $condition;
 
   /**
-   * The mocked entity access handler.
-   *
-   * @var \PHPUnit_Framework_MockObject_MockObject|\Drupal\Core\Entity\EntityAccessControlHandlerInterface
-   */
-  protected $entityAccess;
-
-  /**
-   * The mocked entity manager.
-   *
-   * @var \PHPUnit_Framework_MockObject_MockObject|\Drupal\Core\Entity\EntityManagerInterface
-   */
-  protected $entityManager;
-
-  /**
    * {@inheritdoc}
    */
   public function setUp() {
@@ -48,62 +38,47 @@ class UserHasEntityFieldAccessTest extends RulesEntityIntegrationTestBase {
   }
 
   /**
-   * Tests the summary.
-   *
-   * @covers ::summary
-   */
-  public function testSummary() {
-    $this->assertEquals('User has access to field on entity', $this->condition->summary());
-  }
-
-  /**
    * Tests evaluating the condition.
    *
    * @covers ::evaluate
    */
   public function testConditionEvaluation() {
-    $account = $this->getMock('Drupal\user\UserInterface');
-    $entity = $this->getMock('Drupal\Core\Entity\ContentEntityInterface');
-    $items = $this->getMock('Drupal\Core\Field\FieldItemListInterface');
+    $account = $this->prophesizeEntity(UserInterface::class);
+    $entity = $this->prophesizeEntity(ContentEntityInterface::class);
+    $items = $this->prophesize(FieldItemListInterface::class);
 
-    $entity->expects($this->any())
-      ->method('getEntityTypeId')
-      ->will($this->returnValue('user'));
+    $entity->getEntityTypeId()->willReturn('user');
+    $entity->hasField('potato-field')->willReturn(TRUE)
+      ->shouldBeCalledTimes(3);
 
-    $entity->expects($this->exactly(3))
-      ->method('hasField')
-      ->with('potato-field')
-      ->will($this->returnValue(TRUE));
+    $definition = $this->prophesize(FieldDefinitionInterface::class);
+    $entity->getFieldDefinition('potato-field')
+      ->willReturn($definition->reveal())
+      ->shouldBeCalledTimes(2);
 
-    $definition = $this->getMock('Drupal\Core\Field\FieldDefinitionInterface');
-    $entity->expects($this->exactly(2))
-      ->method('getFieldDefinition')
-      ->with('potato-field')
-      ->will($this->returnValue($definition));
+    $entity->get('potato-field')->willReturn($items->reveal())
+      ->shouldBeCalledTimes(2);
 
-    $entity->expects($this->exactly(2))
-      ->method('get')
-      ->with('potato-field')
-      ->will($this->returnValue($items));
-
-    $this->condition->setContextValue('entity', $entity)
+    $this->condition->setContextValue('entity', $entity->reveal())
       ->setContextValue('field', 'potato-field')
-      ->setContextValue('user', $account);
+      ->setContextValue('user', $account->reveal());
 
-    $this->entityAccess->expects($this->exactly(3))
-      ->method('access')
-      ->will($this->returnValueMap([
-        [$entity, 'view', Language::LANGCODE_DEFAULT, $account, FALSE, TRUE],
-        [$entity, 'edit', Language::LANGCODE_DEFAULT, $account, FALSE, TRUE],
-        [$entity, 'delete', Language::LANGCODE_DEFAULT, $account, FALSE, FALSE],
-      ]));
+    $this->entityAccess->access($entity->reveal(), 'view', Language::LANGCODE_DEFAULT, $account->reveal())
+      ->willReturn(TRUE)
+      ->shouldBeCalledTimes(1);
+    $this->entityAccess->access($entity->reveal(), 'edit', Language::LANGCODE_DEFAULT, $account->reveal())
+      ->willReturn(TRUE)
+      ->shouldBeCalledTimes(1);
+    $this->entityAccess->access($entity->reveal(), 'delete', Language::LANGCODE_DEFAULT, $account->reveal())
+      ->willReturn(FALSE)
+      ->shouldBeCalledTimes(1);
 
-    $this->entityAccess->expects($this->exactly(2))
-      ->method('fieldAccess')
-      ->will($this->returnValueMap([
-        ['view', $definition, $account, $items, FALSE, TRUE],
-        ['edit', $definition, $account, $items, FALSE, FALSE],
-      ]));
+    $this->entityAccess->fieldAccess('view', $definition->reveal(), $account->reveal(), $items->reveal())
+      ->willReturn(TRUE)
+      ->shouldBeCalledTimes(1);
+    $this->entityAccess->fieldAccess('edit', $definition->reveal(), $account->reveal(), $items->reveal())
+      ->willReturn(FALSE)
+      ->shouldBeCalledTimes(1);
 
     // Test with 'view', 'edit' and 'delete'. Both 'view' and 'edit' will have
     // general entity access, but the 'potato-field' should deny access for the

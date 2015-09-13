@@ -7,7 +7,8 @@
 
 namespace Drupal\Tests\rules\Integration\Action;
 
-use Drupal\Core\Entity\ContentEntityType;
+use Drupal\Core\Entity\EntityStorageBase;
+use Drupal\Core\Field\BaseFieldDefinition;
 use Drupal\Tests\rules\Integration\RulesEntityIntegrationTestBase;
 
 /**
@@ -37,96 +38,36 @@ class EntityCreateTest extends RulesEntityIntegrationTestBase {
     // Prepare mocked bundle field definition. This is needed because
     // EntityCreateDeriver adds required contexts for required fields, and
     // assumes that the bundle field is required.
-    $this->bundleFieldDefinition = $this->getMockBuilder('Drupal\Core\Field\BaseFieldDefinition')
-      ->disableOriginalConstructor()
-      ->getMock();
+    $bundleFieldDefinition = $this->prophesize(BaseFieldDefinition::class);
 
     // The next methods are mocked because EntityCreateDeriver executes them,
     // and the mocked field definition is instantiated without the necessary
     // information.
-    $this->bundleFieldDefinition
-      ->expects($this->once())
-      ->method('getCardinality')
-      ->willReturn(1);
+    $bundleFieldDefinition->getCardinality()->willReturn(1)
+      ->shouldBeCalledTimes(1);
 
-    $this->bundleFieldDefinition
-      ->expects($this->once())
-      ->method('getType')
-      ->willReturn('string');
+    $bundleFieldDefinition->getType()->willReturn('string')
+      ->shouldBeCalledTimes(1);
 
-    $this->bundleFieldDefinition
-      ->expects($this->once())
-      ->method('getLabel')
-      ->willReturn('Bundle');
+    $bundleFieldDefinition->getLabel()->willReturn('Bundle')
+      ->shouldBeCalledTimes(1);
 
-    $this->bundleFieldDefinition
-      ->expects($this->once())
-      ->method('getDescription')
-      ->willReturn('Bundle mock description');
-
-    // Prepare an content entity type instance.
-    $this->entityType = new ContentEntityType([
-      'id' => 'test',
-      'label' => 'Test',
-      'entity_keys' => [
-        'bundle' => 'bundle',
-      ],
-    ]);
+    $bundleFieldDefinition->getDescription()
+      ->willReturn('Bundle mock description')
+      ->shouldBeCalledTimes(1);
 
     // Prepare mocked entity storage.
-    $this->entityTypeStorage = $this->getMockBuilder('Drupal\Core\Entity\EntityStorageBase')
-      ->setMethods(['create'])
-      ->setConstructorArgs([$this->entityType])
-      ->getMockForAbstractClass();
-
-    $this->entityTypeStorage
-      ->expects($this->any())
-      ->method('create')
+    $entityTypeStorage = $this->prophesize(EntityStorageBase::class);
+    $entityTypeStorage->create(['bundle' => 'test'])
       ->willReturn(self::ENTITY_REPLACEMENT);
 
-    // Prepare mocked entity manager.
-    $this->entityManager = $this->getMockBuilder('Drupal\Core\Entity\EntityManager')
-      ->setMethods(['getBundleInfo', 'getStorage', 'getDefinitions', 'getBaseFieldDefinitions'])
-      ->setConstructorArgs([
-        $this->namespaces,
-        $this->moduleHandler,
-        $this->cacheBackend,
-        $this->languageManager,
-        $this->getStringTranslationStub(),
-        $this->getClassResolverStub(),
-        $this->typedDataManager,
-        $this->getMock('Drupal\Core\KeyValueStore\KeyValueFactoryInterface'),
-        $this->getMock('Symfony\Component\EventDispatcher\EventDispatcherInterface')
-      ])
-      ->getMock();
-
     // Return the mocked storage controller.
-    $this->entityManager
-      ->expects($this->any())
-      ->method('getStorage')
-      ->willReturn($this->entityTypeStorage);
+    $this->entityManager->getStorage('test')
+      ->willReturn($entityTypeStorage->reveal());
 
     // Return a mocked list of base fields definitions.
-    $this->entityManager
-      ->expects($this->any())
-      ->method('getBaseFieldDefinitions')
-      ->willReturn(['bundle' => $this->bundleFieldDefinition]);
-
-    // Return a mocked list of entity types.
-    $this->entityManager
-      ->expects($this->any())
-      ->method('getDefinitions')
-      ->willReturn(['test' => $this->entityType]);
-
-    // Return some dummy bundle information for now, so that the entity manager
-    // does not call out to the config entity system to get bundle information.
-    $this->entityManager
-      ->expects($this->any())
-      ->method('getBundleInfo')
-      ->with($this->anything())
-      ->willReturn(['test' => ['label' => 'Test']]);
-
-    $this->container->set('entity.manager', $this->entityManager);
+    $this->entityManager->getBaseFieldDefinitions('test')
+      ->willReturn(['bundle' => $bundleFieldDefinition->reveal()]);
 
     // Instantiate the action we are testing.
     $this->action = $this->actionManager->createInstance('rules_entity_create:entity:test');
@@ -138,7 +79,7 @@ class EntityCreateTest extends RulesEntityIntegrationTestBase {
    * @covers ::summary
    */
   public function testSummary() {
-    $this->assertEquals('Create a new test entity', $this->action->summary());
+    $this->assertEquals('Create a new test', $this->action->summary());
   }
 
   /**
