@@ -8,6 +8,7 @@
 namespace Drupal\rules\Context;
 
 use Drupal\Component\Utility\SafeMarkup;
+use Drupal\Core\Plugin\Context\Context;
 use Drupal\Core\Plugin\ContextAwarePluginInterface as CoreContextAwarePluginInterface;
 use Drupal\rules\Engine\RulesStateInterface;
 use Drupal\rules\Exception\RulesEvaluationException;
@@ -54,7 +55,9 @@ trait ContextHandlerTrait {
             '@plugin' => $plugin->getPluginId(),
           ]));
         }
-        $plugin->getContext($name)->setContextData($typed_data);
+        $context = $plugin->getContext($name);
+        $new_context = Context::createFromContext($context, $typed_data);
+        $plugin->setContext($name, $new_context);
       }
       elseif (isset($this->configuration['context_values'])
         && array_key_exists($name, $this->configuration['context_values'])
