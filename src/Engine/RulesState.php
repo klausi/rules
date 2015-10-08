@@ -14,6 +14,7 @@ use Drupal\Core\TypedData\ComplexDataInterface;
 use Drupal\Core\TypedData\DataReferenceInterface;
 use Drupal\Core\TypedData\ListInterface;
 use Drupal\Core\TypedData\TranslatableInterface;
+use Drupal\Core\TypedData\TypedDataInterface;
 use Drupal\rules\Exception\RulesEvaluationException;
 
 /**
@@ -34,7 +35,7 @@ class RulesState implements RulesStateInterface {
   /**
    * The known variables.
    *
-   * @var \Drupal\Core\Plugin\Context\ContextInterface[]
+   * @var \Drupal\Core\TypedData\TypedDataInterface[]
    */
   protected $variables = [];
 
@@ -53,8 +54,8 @@ class RulesState implements RulesStateInterface {
   /**
    * Creates a new RulesState object.
    *
-   * @param \Drupal\Core\Plugin\Context\ContextInterface[] $contexts
-   *   Context variables to initialize this state with (optional).
+   * @param \Drupal\Core\TypedData\TypedDataInterface[] $variables
+   *   Variables to initialize this state with (optional).
    */
   public function __construct($variables = []) {
     $this->variables = $variables;
@@ -64,7 +65,7 @@ class RulesState implements RulesStateInterface {
   /**
    * {@inheritdoc}
    */
-  public function addVariable($name, ContextInterface $context) {
+  public function addVariable($name, TypedDataInterface $context) {
     $this->variables[$name] = $context;
   }
 

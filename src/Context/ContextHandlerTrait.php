@@ -70,7 +70,9 @@ trait ContextHandlerTrait {
           ]));
         }
 
-        $plugin->getContext($name)->setContextValue($this->configuration['context_values'][$name]);
+        $context = $plugin->getContext($name);
+        $new_context = Context::createFromContext($context, $this->configuration['context_values'][$name]);
+        $plugin->setContext($name, $new_context);
       }
       elseif ($definition->isRequired()) {
         throw new RulesEvaluationException(SafeMarkup::format('Required context @name is missing for plugin @plugin.', [
@@ -95,10 +97,10 @@ trait ContextHandlerTrait {
       // Avoid name collisions in the rules state: provided variables can be
       // renamed.
       if (isset($this->configuration['provides_mapping'][$name])) {
-        $state->addVariable($this->configuration['provides_mapping'][$name], $plugin->getProvidedContext($name));
+        $state->addVariable($this->configuration['provides_mapping'][$name], $plugin->getProvidedContext($name)->getContextData());
       }
       else {
-        $state->addVariable($name, $plugin->getProvidedContext($name));
+        $state->addVariable($name, $plugin->getProvidedContext($name)->getContextData());
       }
     }
   }
