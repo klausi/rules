@@ -9,7 +9,6 @@ namespace Drupal\rules\Engine;
 
 use Drupal\Component\Utility\SafeMarkup;
 use Drupal\Core\Language\LanguageInterface;
-use Drupal\Core\Plugin\Context\ContextInterface;
 use Drupal\Core\TypedData\ComplexDataInterface;
 use Drupal\Core\TypedData\DataReferenceInterface;
 use Drupal\Core\TypedData\ListInterface;
@@ -65,8 +64,8 @@ class RulesState implements RulesStateInterface {
   /**
    * {@inheritdoc}
    */
-  public function addVariable($name, TypedDataInterface $context) {
-    $this->variables[$name] = $context;
+  public function addVariable($name, TypedDataInterface $data) {
+    $this->variables[$name] = $data;
   }
 
   /**
