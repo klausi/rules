@@ -56,8 +56,8 @@ class RulesState implements RulesStateInterface {
    * @param \Drupal\Core\Plugin\Context\ContextInterface[] $contexts
    *   Context variables to initialize this state with (optional).
    */
-  public function __construct($contexts = []) {
-    $this->variables = $contexts;
+  public function __construct($variables = []) {
+    $this->variables = $variables;
     // @todo Initialize the global "site" variable.
   }
 
@@ -92,8 +92,8 @@ class RulesState implements RulesStateInterface {
    */
   public function applyDataSelector($selector, $langcode = LanguageInterface::LANGCODE_NOT_SPECIFIED) {
     $parts = explode(':', $selector, 2);
-    $context = $this->getVariable($parts[0]);
-    $typed_data = $context->getContextData();
+    $typed_data = $this->getVariable($parts[0]);
+
     if (count($parts) == 1) {
       return $typed_data;
     }
