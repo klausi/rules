@@ -7,8 +7,7 @@
 
 namespace Drupal\rules\Form;
 
-use Drupal\Core\Form\FormBase;
-use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Condition\ConditionManager;
 
 class AddConditionForm extends FormBase {
 
@@ -22,7 +21,7 @@ class AddConditionForm extends FormBase {
   /**
    * Creates a new object of this class.
    */
-  public function __construct(\Drupal\Core\Condition\ConditionManager $condition_manager) {
+  public function __construct(ConditionManager $condition_manager) {
     $this->conditionManager = $condition_manager;
   }
 

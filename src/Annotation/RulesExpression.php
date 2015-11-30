@@ -40,10 +40,10 @@ class RulesExpression extends Plugin {
   public $type = '';
 
   /**
-   * The clss name of the form for displaying/editing this expression.
+   * The class name of the form for displaying/editing this expression.
    *
    * @var string
    */
-  public $form;
+  public $form_class;
 
 }

@@ -17,7 +17,7 @@ use Drupal\rules\Engine\RulesEventManager;
  * @RulesExpression(
  *   id = "rules_reaction_rule",
  *   label = @Translation("A reaction rule triggering on events"),
- *   form = "\Drupal\rules\Form\Expression\ReactionRuleForm"
+ *   form_class = "\Drupal\rules\Form\Expression\ReactionRuleForm"
  * )
  */
 class ReactionRule extends Rule {

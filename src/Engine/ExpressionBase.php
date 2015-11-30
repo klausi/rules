@@ -132,8 +132,8 @@ abstract class ExpressionBase extends ContextAwarePluginBase implements Expressi
    * {@inheritdoc}
    */
   public function getFormHandler() {
-    if (isset($this->pluginDefinition['form'])) {
-      $class_name = $this->pluginDefinition['form'];
+    if (isset($this->pluginDefinition['form_class'])) {
+      $class_name = $this->pluginDefinition['form_class'];
       return new $class_name($this);
     }
   }
