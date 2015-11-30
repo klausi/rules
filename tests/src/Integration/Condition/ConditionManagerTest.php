@@ -11,6 +11,8 @@ use Drupal\Tests\rules\Integration\RulesIntegrationTestBase;
 
 /**
  * Tests the Rules condition manager.
+ *
+ * @group rules_conditions
  */
 class ConditionManagerTest extends RulesIntegrationTestBase {
 
@@ -28,4 +30,5 @@ class ConditionManagerTest extends RulesIntegrationTestBase {
       }
     }
   }
+
 }

@@ -27,6 +27,7 @@ use Drupal\rules\Core\RulesConditionBase;
  *     "operation" = @ContextDefinition("string",
  *       label = @Translation("Match roles"),
  *       description = @Translation("If matching against all selected roles, the user must have <em>all</em> the roles selected."),
+ *       default_value = "AND",
  *       required = FALSE
  *     )
  *   }
@@ -42,7 +43,7 @@ class UserHasRole extends RulesConditionBase {
   public function evaluate() {
     $account = $this->getContextValue('user');
     $roles = $this->getContextValue('roles');
-    $operation = $this->getContext('operation')->getContextData() ? $this->getContextValue('operation') : 'AND';
+    $operation = $this->getContext('operation')->hasContextValue() ? $this->getContextValue('operation') : 'AND';
 
     $rids = array_map(function ($role) {
       return $role->id();

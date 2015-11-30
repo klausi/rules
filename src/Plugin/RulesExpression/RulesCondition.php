@@ -92,7 +92,7 @@ class RulesCondition extends ExpressionBase implements ConditionExpressionInterf
     // If the plugin id has been set already, keep it if not specified.
     if (isset($this->configuration['condition_id'])) {
       $configuration += [
-        'condition_id' => $this->configuration['condition_id']
+        'condition_id' => $this->configuration['condition_id'],
       ];
     }
     return parent::setConfiguration($configuration);
@@ -121,6 +121,10 @@ class RulesCondition extends ExpressionBase implements ConditionExpressionInterf
     // Now that the condition has been executed it can provide additional
     // context which we will have to pass back in the evaluation state.
     $this->mapProvidedContext($condition, $state);
+
+    if ($this->isNegated()) {
+      $result = !$result;
+    }
 
     return $result;
   }

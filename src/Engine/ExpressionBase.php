@@ -2,7 +2,7 @@
 
 /**
  * @file
- * Contains \Drupal\rules\Engine\ExpressionBase
+ * Contains \Drupal\rules\Engine\ExpressionBase.
  */
 
 namespace Drupal\rules\Engine;
@@ -78,7 +78,12 @@ abstract class ExpressionBase extends ContextAwarePluginBase implements Expressi
    */
   public function execute() {
     $contexts = $this->getContexts();
-    $state = new RulesState($contexts);
+    $variables = [];
+    foreach ($contexts as $name => $context) {
+      $variables[$name] = $context->getContextData();
+    }
+
+    $state = new RulesState($variables);
     $result = $this->executeWithState($state);
     // Save specifically registered variables in the end after execution.
     $state->autoSave();

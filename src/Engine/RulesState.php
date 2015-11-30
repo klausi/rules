@@ -7,13 +7,12 @@
 
 namespace Drupal\rules\Engine;
 
-use Drupal\Component\Utility\SafeMarkup;
 use Drupal\Core\Language\LanguageInterface;
-use Drupal\Core\Plugin\Context\ContextInterface;
 use Drupal\Core\TypedData\ComplexDataInterface;
 use Drupal\Core\TypedData\DataReferenceInterface;
 use Drupal\Core\TypedData\ListInterface;
 use Drupal\Core\TypedData\TranslatableInterface;
+use Drupal\Core\TypedData\TypedDataInterface;
 use Drupal\rules\Exception\RulesEvaluationException;
 
 /**
@@ -34,7 +33,7 @@ class RulesState implements RulesStateInterface {
   /**
    * The known variables.
    *
-   * @var \Drupal\Core\Plugin\Context\ContextInterface[]
+   * @var \Drupal\Core\TypedData\TypedDataInterface[]
    */
   protected $variables = [];
 
@@ -53,19 +52,19 @@ class RulesState implements RulesStateInterface {
   /**
    * Creates a new RulesState object.
    *
-   * @param \Drupal\Core\Plugin\Context\ContextInterface[] $contexts
-   *   Context variables to initialize this state with (optional).
+   * @param \Drupal\Core\TypedData\TypedDataInterface[] $variables
+   *   Variables to initialize this state with (optional).
    */
-  public function __construct($contexts = []) {
-    $this->variables = $contexts;
+  public function __construct($variables = []) {
+    $this->variables = $variables;
     // @todo Initialize the global "site" variable.
   }
 
   /**
    * {@inheritdoc}
    */
-  public function addVariable($name, ContextInterface $context) {
-    $this->variables[$name] = $context;
+  public function addVariable($name, TypedDataInterface $data) {
+    $this->variables[$name] = $data;
   }
 
   /**
@@ -73,9 +72,7 @@ class RulesState implements RulesStateInterface {
    */
   public function getVariable($name) {
     if (!array_key_exists($name, $this->variables)) {
-      throw new RulesEvaluationException(SafeMarkup::format('Unable to get variable @name, it is not defined.', [
-        '@name' => $name,
-      ]));
+      throw new RulesEvaluationException("Unable to get variable $name, it is not defined.");
     }
     return $this->variables[$name];
   }
@@ -92,8 +89,8 @@ class RulesState implements RulesStateInterface {
    */
   public function applyDataSelector($selector, $langcode = LanguageInterface::LANGCODE_NOT_SPECIFIED) {
     $parts = explode(':', $selector, 2);
-    $context = $this->getVariable($parts[0]);
-    $typed_data = $context->getContextData();
+    $typed_data = $this->getVariable($parts[0]);
+
     if (count($parts) == 1) {
       return $typed_data;
     }
@@ -104,9 +101,7 @@ class RulesState implements RulesStateInterface {
       if ($typed_data instanceof DataReferenceInterface) {
         $typed_data = $typed_data->getTarget();
         if ($typed_data === NULL) {
-          throw new RulesEvaluationException(SafeMarkup::format('Unable to apply data selector @current_selector. The specified reference is NULL.', [
-            '@current_selector' => $current_selector,
-          ]));
+          throw new RulesEvaluationException("Unable to apply data selector $current_selector. The specified reference is NULL.");
         }
       }
 
@@ -134,17 +129,11 @@ class RulesState implements RulesStateInterface {
         }
         catch (\InvalidArgumentException $e) {
           // In case of an exception, re-throw it.
-          throw new RulesEvaluationException(SafeMarkup::format('Unable to apply data selector @current_selector: @error', [
-            '@current_selector' => $current_selector,
-            '@error' => $e->getMessage(),
-          ]));
+          throw new RulesEvaluationException("Unable to apply data selector $current_selector: " . $e->getMessage());
         }
       }
       else {
-        throw new RulesEvaluationException(SafeMarkup::format('Unable to apply data selector @current_selector. The specified variable is not a list or a complex structure: @name.', [
-          '@current_selector' => $current_selector,
-          '@name' => $name,
-        ]));
+        throw new RulesEvaluationException("Unable to apply data selector $current_selector. The specified variable is not a list or a complex structure: $name.");
       }
     }
 

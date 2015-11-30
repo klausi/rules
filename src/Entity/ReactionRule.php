@@ -117,7 +117,7 @@ class ReactionRule extends ConfigEntityBase {
    * @var string
    */
   protected $module = 'rules';
-    
+
   /**
    * Sets a Rules expression instance for this Reaction rule.
    *
@@ -132,7 +132,7 @@ class ReactionRule extends ConfigEntityBase {
     $this->configuration = $expression->getConfiguration();
     return $this;
   }
-  
+
 
   /**
    * Gets a Rules expression instance for this Reaction rule.
@@ -210,13 +210,12 @@ class ReactionRule extends ConfigEntityBase {
   public function calculateDependencies() {
     parent::calculateDependencies();
 
-    // Ensure that the Reaction rule is dependant on the module that
+    // Ensure that the Reaction rule is dependent on the module that
     // implements the component.
     $this->addDependency('module', $this->module);
 
     // @todo Handle dependencies of plugins that are provided by various modules
     //   here.
-
     return $this->dependencies;
   }
 

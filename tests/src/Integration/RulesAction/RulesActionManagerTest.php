@@ -11,6 +11,8 @@ use Drupal\Tests\rules\Integration\RulesIntegrationTestBase;
 
 /**
  * Tests the Rules action manager.
+ *
+ * @group rules_actions
  */
 class RulesActionManagerTest extends RulesIntegrationTestBase {
 
@@ -28,4 +30,5 @@ class RulesActionManagerTest extends RulesIntegrationTestBase {
       }
     }
   }
+
 }

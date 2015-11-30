@@ -200,13 +200,12 @@ class RulesComponent extends ConfigEntityBase {
   public function calculateDependencies() {
     parent::calculateDependencies();
 
-    // Ensure that the Rules component is dependant on the module that
+    // Ensure that the Rules component is dependent on the module that
     // implements the component.
     $this->addDependency('module', $this->module);
 
     // @todo Handle dependencies of plugins that are provided by various modules
     //   here.
-
     return $this->dependencies;
   }
 

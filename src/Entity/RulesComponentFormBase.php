@@ -28,12 +28,12 @@ abstract class RulesComponentFormBase extends EntityForm {
 
     $form['id'] = [
       '#type' => 'machine_name',
-      '#description' => t('A unique machine-readable name. Can only contain lowercase letters, numbers, and underscores.'),
+      '#description' => $this->t('A unique machine-readable name. Can only contain lowercase letters, numbers, and underscores.'),
       '#disabled' => !$this->entity->isNew(),
       '#default_value' => $this->entity->id(),
       '#machine_name' => [
         'exists' => [$this, 'exists'],
-        'replace_pattern' =>'([^a-z0-9_]+)|(^custom$)',
+        'replace_pattern' => '([^a-z0-9_]+)|(^custom$)',
         'error' => $this->t('The machine-readable name must be unique, and can only contain lowercase letters, numbers, and underscores. Additionally, it can not be the reserved word "custom".'),
       ],
     ];
@@ -43,15 +43,15 @@ abstract class RulesComponentFormBase extends EntityForm {
       '#type' => 'textfield',
       '#title' => $this->t('Tag'),
       '#default_value' => $this->entity->getTag(),
-      '#description' => t('Enter a tag here'),
-      '#required' => TRUE,
+      '#description' => $this->t('Enter a tag here'),
+      '#required' => FALSE,
     ];
 
     $form['description'] = [
       '#type' => 'textarea',
       '#default_value' => $this->entity->getDescription(),
-      '#description' => t('Enter a description for this component.'),
-      '#title' => t('Description'),
+      '#description' => $this->t('Enter a description for this component.'),
+      '#title' => $this->t('Description'),
     ];
 
     return parent::form($form, $form_state);
@@ -68,7 +68,7 @@ abstract class RulesComponentFormBase extends EntityForm {
    */
   public function exists($id) {
     $type = $this->entity->getEntityTypeId();
-    return (bool) $this->entityManager->getStorage($type)->load($id);
+    return (bool) $this->entityTypeManager->getStorage($type)->load($id);
   }
 
 }

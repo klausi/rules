@@ -28,11 +28,13 @@ use Drupal\rules\Core\RulesActionBase;
  *     "unique" = @ContextDefinition("boolean",
  *       label = @Translation("Enforce uniqueness"),
  *       description = @Translation("Only add the item to the list if it is not yet contained."),
+ *       default_value = FALSE,
  *       required = FALSE
  *     ),
  *     "pos" = @ContextDefinition("string",
  *       label = @Translation("Insert position"),
  *       description = @Translation("Position to insert the item."),
+ *       default_value = "end",
  *       required = FALSE
  *     )
  *   }
@@ -53,7 +55,7 @@ class DataListItemAdd extends RulesActionBase {
     $unique = ($this->getContextValue('unique') ? $this->getContextValue('unique') : FALSE);
     // Optionally, only add the list item if it is not yet contained.
     if (!((bool) $unique && in_array($item, $list))) {
-      if ($position === 'start' ) {
+      if ($position === 'start') {
         array_unshift($list, $item);
       }
       else {
@@ -62,4 +64,5 @@ class DataListItemAdd extends RulesActionBase {
     }
     $this->setContextValue('list', $list);
   }
+
 }

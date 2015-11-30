@@ -42,10 +42,10 @@ abstract class RulesConditionBase extends ConditionPluginBase implements RulesCo
     // Provide a reasonable default implementation that calls doEvaluate() while
     // passing the defined context as arguments.
     $args = [];
-    foreach ($this->getContexts() as $name => $context) {
-      $args[$name] = $context->getContextValue();
+    foreach ($this->getContextDefinitions() as $name => $definition) {
+      $args[$name] = $this->getContextValue($name);
     }
-    call_user_func_array([$this, 'doEvaluate'], $args);
+    return call_user_func_array([$this, 'doEvaluate'], $args);
   }
 
 }

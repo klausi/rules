@@ -49,4 +49,4 @@ before_script:
 
 script:
   # Run the PHPUnit tests which also include the kernel tests.
-  - ./core/vendor/phpunit/phpunit/phpunit -c ./core/phpunit.xml.dist ./modules/rules
+  - ./vendor/phpunit/phpunit/phpunit -c ./core/phpunit.xml.dist ./modules/rules

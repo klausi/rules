@@ -36,7 +36,7 @@ class RulesEngineTest extends RulesDrupalTestBase {
     $or = $this->expressionManager->createOr()
       ->addCondition('rules_test_true', ContextConfig::create()->negateResult())
       ->addCondition('rules_test_false')
-      ->addCondition($and);
+      ->addExpressionObject($and);
 
     // Test that the 'or' condition container evaluates to TRUE.
     $this->assertTrue($or->execute());
@@ -67,7 +67,7 @@ class RulesEngineTest extends RulesDrupalTestBase {
       'context_definitions' => [
         'test' => ContextDefinition::create('string')
           ->setLabel('Test string')
-          ->toArray()
+          ->toArray(),
       ],
     ]);
 
@@ -119,7 +119,7 @@ class RulesEngineTest extends RulesDrupalTestBase {
 
     // Check that the newly named variable exists and has the provided value.
     $variable = $state->getVariable('newname');
-    $this->assertEqual($variable->getContextValue(), 'test value');
+    $this->assertEqual($variable->getValue(), 'test value');
   }
 
   /**
@@ -149,9 +149,9 @@ class RulesEngineTest extends RulesDrupalTestBase {
 
     // Check that the created variables exists and have the provided values.
     $concatenated = $state->getVariable('concatenated');
-    $this->assertEqual($concatenated->getContextValue(), 'test valuetest value');
+    $this->assertEqual($concatenated->getValue(), 'test valuetest value');
     $concatenated2 = $state->getVariable('concatenated2');
-    $this->assertEqual($concatenated2->getContextValue(), 'test valuetest valuetest valuetest value');
+    $this->assertEqual($concatenated2->getValue(), 'test valuetest valuetest valuetest value');
   }
 
   /**

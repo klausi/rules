@@ -7,6 +7,9 @@
 
 namespace Drupal\Tests\rules\Kernel;
 
+use Drupal\rules\Context\ContextConfig;
+use Drupal\user\Entity\User;
+
 /**
  * Test for the Symfony event mapping to Rules events.
  *
@@ -34,7 +37,7 @@ class EventIntegrationTest extends RulesDrupalTestBase {
   public function setUp() {
     parent::setUp();
 
-    $this->storage = $this->container->get('entity.manager')->getStorage('rules_reaction_rule');
+    $this->storage = $this->container->get('entity_type.manager')->getStorage('rules_reaction_rule');
   }
 
   /**
@@ -43,7 +46,10 @@ class EventIntegrationTest extends RulesDrupalTestBase {
   public function testUserLoginEvent() {
     $rule = $this->expressionManager->createInstance('rules_reaction_rule', ['event' => 'rules_user_login']);
     $rule->addCondition('rules_test_true');
-    $rule->addAction('rules_test_log');
+    $rule->addAction('rules_test_log',
+      ContextConfig::create()
+        ->map('message', 'account:name:0:value')
+    );
 
     $config_entity = $this->storage->create([
       'id' => 'test_rule',
@@ -58,12 +64,12 @@ class EventIntegrationTest extends RulesDrupalTestBase {
     // The logger instance has changed, refresh it.
     $this->logger = $this->container->get('logger.channel.rules');
 
-    $account = $this->container->get('current_user');
+    $account = User::create(['name' => 'test_user']);
     // Invoke the hook manually which should trigger the rule.
     rules_user_login($account);
 
     // Test that the action in the rule logged something.
-    $this->assertRulesLogEntryExists('action called');
+    $this->assertRulesLogEntryExists('test_user');
   }
 
   /**
@@ -90,6 +96,34 @@ class EventIntegrationTest extends RulesDrupalTestBase {
     $account = $this->container->get('current_user');
     // Invoke the hook manually which should trigger the rule.
     rules_user_logout($account);
+
+    // Test that the action in the rule logged something.
+    $this->assertRulesLogEntryExists('action called');
+  }
+
+  /**
+   * Test that the cron hook triggers the Rules event listener.
+   */
+  public function testCronEvent() {
+    $rule = $this->expressionManager->createInstance('rules_reaction_rule', ['event' => 'rules_system_cron']);
+    $rule->addCondition('rules_test_true');
+    $rule->addAction('rules_test_log');
+
+    $config_entity = $this->storage->create([
+      'id' => 'test_rule',
+      'expression_id' => 'rules_reaction_rule',
+      'event' => 'rules_system_cron',
+      'configuration' => $rule->getConfiguration(),
+    ]);
+    $config_entity->save();
+
+    // Rebuild the container so that the newly configured event gets picked up.
+    $this->container->get('kernel')->rebuildContainer();
+    // The logger instance has changed, refresh it.
+    $this->logger = $this->container->get('logger.channel.rules');
+
+    // Run cron.
+    $this->container->get('cron')->run();
 
     // Test that the action in the rule logged something.
     $this->assertRulesLogEntryExists('action called');
