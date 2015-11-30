@@ -47,6 +47,14 @@ before_script:
   # Reference rules in build site.
   - ln -s $TESTDIR modules/rules
 
+  # Start a web server on port 8080, run in the background; wait for
+  # initialization.
+  - php -S localhost:8888 &
+  - until netstat -an 2>/dev/null | grep '8888.*LISTEN'; do true; done
+
+  # Export web server URL for browser tests.
+  - export SIMPLETEST_BASE_URL=http://localhost:8888
+
 script:
   # Run the PHPUnit tests which also include the kernel tests.
   - ./vendor/phpunit/phpunit/phpunit -c ./core/phpunit.xml.dist ./modules/rules
