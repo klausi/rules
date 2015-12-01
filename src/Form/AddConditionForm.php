@@ -7,14 +7,17 @@
 
 namespace Drupal\rules\Form;
 
-use Drupal\Core\Condition\ConditionManager;
+use Drupal\Core\Form\FormBase;
+use Drupal\Core\Form\FormStateInterface;
+use Drupal\rules\Condition\ConditionManager;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 class AddConditionForm extends FormBase {
 
   /**
    * The condition plugin manager.
    *
-   * @var \Drupal\Core\Condition\ConditionManager
+   * @var \Drupal\rules\Condition\ConditionManager
    */
   protected $conditionManager;
 
@@ -36,20 +39,55 @@ class AddConditionForm extends FormBase {
    * {@inheritdoc}
    */
   public function buildForm(array $form, FormStateInterface $form_state) {
-    $condition_definitions = $this->conditionManager->getGroupedDefinitions();
-    $options = [];
-    foreach ($condition_definitions as $group => $definitions) {
-      foreach ($definitions as $id => $definition) {
-        $options[$group][$id] = $definition['label'];
+    $condition_name = $form_state->getValue('condition');
+
+    // Step 1 of the multistep form.
+    if (!$condition_name) {
+      $condition_definitions = $this->conditionManager->getGroupedDefinitions();
+      $options = [];
+      foreach ($condition_definitions as $group => $definitions) {
+        foreach ($definitions as $id => $definition) {
+          $options[$group][$id] = $definition['label'];
+        }
       }
+
+      $form['condition'] = [
+        '#type' => 'select',
+        '#title' => $this->t('Condition'),
+        '#options' => $options,
+        '#required' => TRUE,
+        '#empty_value' => $this->t('- Select -'),
+      ];
+      $form['continue'] = [
+        '#type' => 'submit',
+        '#value' => $this->t('Continue'),
+      ];
+
+      return $form;
     }
 
-    $form['condition'] = [
-      '#type' => 'select',
-      '#title' => $this->t('Condition'),
-      '#options' => $options,
-      '#required' => TRUE,
-      '#empty_value' => $this->t('- Select -'),
+    /** @var \Drupal\rules\Core\RulesConditionInterface $condition */
+    $condition = $this->conditionManager->createInstance($condition_name);
+
+    // Step 2 of the form.
+    $form['summary'] = [
+      '#markup' => $condition->summary(),
+    ];
+
+    $context_defintions = $condition->getContextDefinitions();
+
+    foreach ($context_defintions as $context_name => $context_definition) {
+      $form['context'][$context_name] = [
+        '#type' => 'textfield',
+        '#title' => $context_definition->getLabel(),
+        '#description' => $context_definition->getDescription(),
+        '#required' => $context_definition->isRequired(),
+      ];
+    }
+
+    $form['save'] = [
+      '#type' => 'submit',
+      '#value' => $this->t('Save'),
     ];
 
     return $form;
@@ -59,14 +97,14 @@ class AddConditionForm extends FormBase {
    * {@inheritdoc}
    */
   public function getFormId() {
-    return 'rules_ui_condition_add';
+    return 'rules_reaction_condition_add';
   }
 
   /**
    * {@inheritdoc}
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
-
+    $form_state->setRebuild();
   }
 
 }
