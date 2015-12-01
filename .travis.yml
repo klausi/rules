@@ -1,5 +1,5 @@
 language: php
-sudo: true
+sudo: false
 
 php:
   - 5.5
@@ -50,7 +50,8 @@ before_script:
   # Start a web server on port 8888, run in the background; wait for
   # initialization.
   - nohup php -S localhost:8888 > /dev/null 2>&1 &
-  - until netstat -an 2>/dev/null | grep '8888.*LISTEN'; do true; done
+  #- until netstat -an 2>/dev/null | grep '8888.*LISTEN'; do true; done
+  - sleep 5
 
   # Export web server URL for browser tests.
   - export SIMPLETEST_BASE_URL=http://localhost:8888
