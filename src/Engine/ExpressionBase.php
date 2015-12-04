@@ -33,6 +33,13 @@ abstract class ExpressionBase extends ContextAwarePluginBase implements Expressi
   protected $root;
 
   /**
+   * The config entity this expression is associated with, if any.
+   *
+   * @var string
+   */
+  protected $configEntityId;
+
+  /**
    * Overrides the parent constructor to populate context definitions.
    *
    * Expression plugins can be configured to have arbitrary context definitions.
@@ -143,7 +150,7 @@ abstract class ExpressionBase extends ContextAwarePluginBase implements Expressi
    */
   public function getRoot() {
     if (isset($this->root)) {
-      return $this->root;
+      return $this->root->getRoot();
     }
     return $this;
   }
@@ -153,6 +160,20 @@ abstract class ExpressionBase extends ContextAwarePluginBase implements Expressi
    */
   public function setRoot(ExpressionInterface $root) {
     $this->root = $root;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getConfigEntityId() {
+    return $this->configEntityId;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function setConfigEntityId($id) {
+    $this->configEntityId = $id;
   }
 
 }

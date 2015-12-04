@@ -50,7 +50,7 @@ class ConditionContainerForm implements ExpressionFormInterface {
       '#link' => [
         'title' => $this->t('Add condition'),
         'url' => Url::fromRoute('rules.reaction_rule.condition.add', [
-          'rules_reaction_rule' => $this->conditionContainer->getRoot()->getPluginId(),
+          'rules_reaction_rule' => $this->conditionContainer->getRoot()->getConfigEntityId(),
         ]),
       ],
     ];

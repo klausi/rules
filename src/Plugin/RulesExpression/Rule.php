@@ -68,7 +68,9 @@ class Rule extends ExpressionBase implements RuleInterface, ContainerFactoryPlug
     // conjunction (AND), meaning that all conditions in it must evaluate to
     // TRUE to fire the actions.
     $this->conditions = $expression_manager->createInstance('rules_and', $configuration['conditions']);
+    $this->conditions->setRoot($this->getRoot());
     $this->actions = $expression_manager->createInstance('rules_action_set', $configuration['actions']);
+    $this->actions->setRoot($this->getRoot());
   }
 
   /**
