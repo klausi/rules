@@ -76,4 +76,12 @@ interface ExpressionInterface extends ExecutableInterface, ContextAwarePluginInt
    */
   public function setConfigEntityId($id);
 
+  /**
+   * The label of this expression element that can be shown in the UI.
+   *
+   * @return string
+   *   The label for display.
+   */
+  public function getLabel();
+
 }

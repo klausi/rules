@@ -149,6 +149,10 @@ class AddConditionForm extends FormBase {
       // config entity.
       $reaction_rule->setExpression($expression);
       $reaction_rule->save();
+
+      $form_state->setRedirect('entity.rules_reaction_rule.edit_form', [
+        'rules_reaction_rule' => $reaction_rule->id(),
+      ]);
     }
     else {
       $form_state->setRebuild();

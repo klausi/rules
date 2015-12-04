@@ -176,4 +176,11 @@ abstract class ExpressionBase extends ContextAwarePluginBase implements Expressi
     $this->configEntityId = $id;
   }
 
+  /**
+   * {@inheritdoc}
+   */
+  public function getLabel() {
+    return $this->pluginDefinition['label'];
+  }
+
 }

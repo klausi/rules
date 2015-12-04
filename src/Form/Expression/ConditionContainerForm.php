@@ -45,6 +45,10 @@ class ConditionContainerForm implements ExpressionFormInterface {
       '#empty' => t('None'),
     );
 
+    foreach ($this->conditionContainer as $condition) {
+      $form['conditions']['table']['#rows'][] = [$condition->getLabel()];
+    }
+
     $form['add_condition'] = [
       '#theme' => 'menu_local_action',
       '#link' => [
