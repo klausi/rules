@@ -2,7 +2,7 @@
 
 /**
  * @file
- * Contains \Drupal\rules\RulesServiceProvider. 
+ * Contains \Drupal\rules\RulesServiceProvider.
  */
 
 namespace Drupal\rules;
