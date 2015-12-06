@@ -55,6 +55,13 @@ before_script:
   # Export web server URL for browser tests.
   - export SIMPLETEST_BASE_URL=http://localhost:8888
 
+  # Install PHPCS to check for Drupal coding standards.
+  - export COMPOSER_BIN_DIR=/usr/local/bin
+  - composer global require drupal/coder
+  - phpcs --config-set installed_paths ~/.composer/vendor/drupal/coder/coder_sniffer
+
 script:
   # Run the PHPUnit tests which also include the kernel tests.
   - ./vendor/phpunit/phpunit/phpunit -c ./core/phpunit.xml.dist ./modules/rules
+  # Check for coding standard violations
+  - phpcs ./modules/rules
