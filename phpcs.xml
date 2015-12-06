@@ -2,7 +2,7 @@
 <ruleset name="rules">
   <description>Default PHP CodeSniffer configuration for Rules.</description>
   <file>.</file>
-  <arg name="extensions" value="inc,install,module,php,profile,test,theme"/>
+  <arg name="extensions" value="inc,install,module,php,profile,test,theme,yml"/>
 
   <!--Blacklist of coding standard rules that are not yet fixed. -->
   <rule ref="Drupal">
