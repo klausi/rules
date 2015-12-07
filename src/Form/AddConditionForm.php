@@ -15,6 +15,9 @@ use Drupal\rules\Entity\ReactionRuleStorage;
 use Drupal\rules\Plugin\RulesExpression\ReactionRule;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
+/**
+ * UI form for adding a Rules condition.
+ */
 class AddConditionForm extends FormBase {
 
   /**

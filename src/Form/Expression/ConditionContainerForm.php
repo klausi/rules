@@ -12,6 +12,9 @@ use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\Core\Url;
 use Drupal\rules\Engine\ConditionExpressionContainerInterface;
 
+/**
+ * Form view structure for Rules condition containers.
+ */
 class ConditionContainerForm implements ExpressionFormInterface {
 
   use StringTranslationTrait;

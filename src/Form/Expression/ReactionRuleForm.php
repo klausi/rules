@@ -10,6 +10,9 @@ namespace Drupal\rules\Form\Expression;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\rules\Plugin\RulesExpression\RuleInterface;
 
+/**
+ * Form view structure for Reaction Rules.
+ */
 class ReactionRuleForm implements ExpressionFormInterface {
 
   /**
@@ -25,7 +28,7 @@ class ReactionRuleForm implements ExpressionFormInterface {
   public function __construct(RuleInterface $rule) {
     $this->rule = $rule;
   }
-  
+
   /**
    * {@inheritdoc}
    */
@@ -33,9 +36,7 @@ class ReactionRuleForm implements ExpressionFormInterface {
     $conditions_form_handler = $this->rule->getConditions()->getFormHandler();
     $form = $conditions_form_handler->form($form, $form_state);
 
-    //$actions_form_handler = $this->rule->getActions()->getFormHandler();
-    //$form = $actions_form_handler->form($form, $form_state);
-
+    // @todo Add action container form here.
     return $form;
   }
 
