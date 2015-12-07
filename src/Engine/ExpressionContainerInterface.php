@@ -48,4 +48,12 @@ interface ExpressionContainerInterface extends ExpressionInterface, \IteratorAgg
    */
   public function addExpressionObject(ExpressionInterface $expression);
 
+  /**
+   * Deletes an element at the specified index in the container.
+   *
+   * @param int $index
+   *   The position of the element.
+   */
+  public function deleteExpressionAt($index);
+
 }
