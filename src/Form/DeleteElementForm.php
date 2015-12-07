@@ -6,8 +6,6 @@
  */
 
 namespace Drupal\rules\Form;
-
-use Drupal\book\BookManagerInterface;
 use Drupal\Core\Form\ConfirmFormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\rules\Plugin\RulesExpression\ReactionRule;
@@ -17,6 +15,20 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  * Removes an element from a rule.
  */
 class DeleteElementForm extends ConfirmFormBase {
+
+  /**
+   * The reaction rule the element is deleted from.
+   *
+   * @var \Drupal\rules\Plugin\RulesExpression\ReactionRule
+   */
+  protected $rule;
+
+  /**
+   * The index of the element in the rule.
+   *
+   * @var int
+   */
+  protected $index;
 
   /**
    * Constructor.
@@ -41,9 +53,9 @@ class DeleteElementForm extends ConfirmFormBase {
   /**
    * {@inheritdoc}
    */
-  public function buildForm(array $form, FormStateInterface $form_state, ReactionRule $rules_reaction_rule = NULL) {
-    dpm($rules_reaction_rule);
+  public function buildForm(array $form, FormStateInterface $form_state, ReactionRule $rules_reaction_rule = NULL, $index = NULL) {
     $this->rule = $rules_reaction_rule;
+    $this->index = $index;
     return parent::buildForm($form, $form_state);
   }
 
@@ -58,6 +70,7 @@ class DeleteElementForm extends ConfirmFormBase {
    * {@inheritdoc}
    */
   public function getQuestion() {
+    dpm($this->index);
     return $this->t('Are you sure you want to delete %title ?', array('%title' => $this->rule->label()));
   }
 

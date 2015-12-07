@@ -87,6 +87,9 @@ rules.reaction_rule.condition.add:
     _form: '\Drupal\rules\Form\AddConditionForm'
     _title: 'Add condition'
   options:
+    parameters:
+      rules_reaction_rule:
+        type: entity:rules_reaction_rule
     _admin_route: TRUE
   requirements:
     _permission: 'administer rules+administer rules reactions'
@@ -97,6 +100,9 @@ rules.reaction_rule.condition.delete:
     _form: '\Drupal\rules\Form\DeleteElementForm'
     _title: 'Delete element'
   options:
+    parameters:
+      rules_reaction_rule:
+        type: entity:rules_reaction_rule
     _admin_route: TRUE
   requirements:
     _permission: 'administer rules+administer rules reactions'
