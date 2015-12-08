@@ -6,10 +6,12 @@
  */
 
 namespace Drupal\rules\Form;
+
 use Drupal\Core\Form\ConfirmFormBase;
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\rules\Plugin\RulesExpression\ReactionRule;
+use Drupal\rules\Entity\ReactionRule;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 /**
  * Removes an element from a rule.
@@ -19,7 +21,7 @@ class DeleteElementForm extends ConfirmFormBase {
   /**
    * The reaction rule the element is deleted from.
    *
-   * @var \Drupal\rules\Plugin\RulesExpression\ReactionRule
+   * @var \Drupal\rules\Entity\ReactionRule
    */
   protected $rule;
 
@@ -29,19 +31,6 @@ class DeleteElementForm extends ConfirmFormBase {
    * @var int
    */
   protected $index;
-
-  /**
-   * Constructor.
-   */
-  public function __construct() {
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public static function create(ContainerInterface $container) {
-    return new static();
-  }
 
   /**
    * {@inheritdoc}
@@ -70,8 +59,22 @@ class DeleteElementForm extends ConfirmFormBase {
    * {@inheritdoc}
    */
   public function getQuestion() {
-    dpm($this->index);
-    return $this->t('Are you sure you want to delete %title ?', array('%title' => $this->rule->label()));
+    $expression = $this->rule->getExpression();
+    $conditions = $expression->getConditions()->getIterator();
+    if (!isset($conditions[$this->index])) {
+      $actions = $expression->getActions()->getIterator();
+      if (!isset($actions[$this->index - count($conditions)])) {
+        throw new NotFoundHttpException();
+      }
+      $element = $actions[$this->index - count($conditions)];
+    }
+    else {
+      $element = $conditions[$this->index];
+    }
+    return $this->t('Are you sure you want to delete %title from %rule?', [
+      '%title' => $element->getLabel(),
+      '%rule' => $this->rule->label(),
+    ]);
   }
 
   /**
@@ -85,7 +88,14 @@ class DeleteElementForm extends ConfirmFormBase {
    * {@inheritdoc}
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
-    dpm('yeah');
+    $expression = $this->rule->getExpression();
+    $expression->deleteExpressionAt($this->index);
+    // Set the expression again so that the config is copied over to the
+    // config entity.
+    $this->rule->setExpression($expression);
+    $this->rule->save();
+
+    drupal_set_message($this->t('Your changes have been saved.'));
     $form_state->setRedirectUrl($this->getCancelUrl());
   }
 
