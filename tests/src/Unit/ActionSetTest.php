@@ -7,8 +7,9 @@
 
 namespace Drupal\Tests\rules\Unit;
 
-use Drupal\rules\Plugin\RulesExpression\ActionSet;
 use Drupal\rules\Engine\RulesStateInterface;
+use Drupal\rules\Plugin\RulesExpression\ActionSet;
+use Drupal\rules\Plugin\RulesExpression\RulesAction;
 use Prophecy\Argument;
 
 /**
@@ -71,6 +72,19 @@ class ActionSetTest extends RulesUnitTestBase {
     $this->actionSet->addExpressionObject($this->testActionExpression->reveal())
       ->addExpressionObject($inner)
       ->execute();
+  }
+
+  /**
+   * Tests deleting an action from the container.
+   */
+  public function testDeletingAction() {
+    $this->actionSet->addExpressionObject($this->testActionExpression->reveal());
+    $second_action = $this->prophesize(RulesAction::class);
+    $this->actionSet->addExpressionObject($second_action->reveal());
+    $this->actionSet->deleteExpressionAt(0);
+    foreach ($this->actionSet as $action) {
+      $this->assertEquals($second_action->reveal(), $action);
+    }
   }
 
 }

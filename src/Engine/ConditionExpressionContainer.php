@@ -139,4 +139,13 @@ abstract class ConditionExpressionContainer extends ExpressionBase implements Co
     return new \ArrayIterator($this->conditions);
   }
 
+  /**
+   * {@inheritdoc}
+   */
+  public function deleteExpressionAt($index) {
+    unset($this->conditions[$index]);
+    // Reshuffle array to refresh the indices.
+    $this->conditions = array_values($this->conditions);
+  }
+
 }

@@ -188,4 +188,18 @@ class Rule extends ExpressionBase implements RuleInterface, ContainerFactoryPlug
     return $this->actions->getIterator();
   }
 
+  /**
+   * {@inheritdoc}
+   */
+  public function deleteExpressionAt($index) {
+    // We consider the conditions and actions as one: low indices refer to
+    // conditions, higher indices refer to actions.
+    if ($index < count($this->conditions->getIterator())) {
+      $this->conditions->deleteExpressionAt($index);
+    }
+    else {
+      $this->actions->deleteExpressionAt($index - count($this->conditions->getIterator()));
+    }
+  }
+
 }
