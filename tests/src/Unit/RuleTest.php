@@ -10,10 +10,11 @@ namespace Drupal\Tests\rules\Unit;
 use Drupal\rules\Context\ContextDefinition;
 use Drupal\rules\Engine\ExpressionManagerInterface;
 use Drupal\rules\Engine\RulesStateInterface;
+use Drupal\rules\Plugin\RulesExpression\ActionSet;
 use Drupal\rules\Plugin\RulesExpression\Rule;
+use Drupal\rules\Plugin\RulesExpression\RulesAction;
 use Drupal\rules\Plugin\RulesExpression\RulesAnd;
 use Drupal\rules\Plugin\RulesExpression\RulesOr;
-use Drupal\rules\Plugin\RulesExpression\ActionSet;
 use Prophecy\Argument;
 
 /**
@@ -223,6 +224,39 @@ class RuleTest extends RulesUnitTestBase {
     ], 'rules_rule', [], $this->expressionManager->reveal());
     $provided_definition = $rule->getProvidedContextDefinition('node');
     $this->assertSame($provided_definition->getDataType(), 'entity:node');
+  }
+
+  /**
+   * Tests that removing expressions by indices works.
+   */
+  public function testDeletingExpressions() {
+    // Create a rule with 2 conditions and 2 actions.
+    $rule = new Rule([], 'rules_rule', [], $this->expressionManager->reveal());
+    $rule->addExpressionObject($this->trueConditionExpression->reveal());
+    $rule->addExpressionObject($this->falseConditionExpression->reveal());
+    $rule->addExpressionObject($this->testActionExpression->reveal());
+    $second_action = $this->prophesize(RulesAction::class);
+    $rule->addExpressionObject($second_action->reveal());
+
+    // Delete the first action.
+    $rule->deleteExpressionAt(2);
+    $this->assertEquals(2, count($rule->getConditions()->getIterator()));
+    $this->assertEquals(1, count($rule->getActions()->getIterator()));
+
+    // Delete the second condition.
+    $rule->deleteExpressionAt(1);
+    $this->assertEquals(1, count($rule->getConditions()->getIterator()));
+    $this->assertEquals(1, count($rule->getActions()->getIterator()));
+
+    // Delete the first action.
+    $rule->deleteExpressionAt(1);
+    $this->assertEquals(1, count($rule->getConditions()->getIterator()));
+    $this->assertEquals(0, count($rule->getActions()->getIterator()));
+
+    // Delete the remaining condition, rule should be empty now.
+    $rule->deleteExpressionAt(0);
+    $this->assertEquals(0, count($rule->getConditions()->getIterator()));
+    $this->assertEquals(0, count($rule->getActions()->getIterator()));
   }
 
 }

@@ -75,6 +75,19 @@ class RulesConditionContainerTest extends RulesUnitTestBase {
     $this->assertTrue($container->execute());
   }
 
+  /**
+   * Tests deleting a condition from the container.
+   */
+  public function testDeletingCondition() {
+    $container = $this->getMockForAbstractClass(RulesConditionContainerTestStub::class, [], '', FALSE);
+    $container->addExpressionObject($this->trueConditionExpression->reveal());
+    $container->addExpressionObject($this->falseConditionExpression->reveal());
+    $container->deleteExpressionAt(0);
+    foreach ($container as $condition) {
+      $this->assertEquals($this->falseConditionExpression->reveal(), $condition);
+    }
+  }
+
 }
 
 /**

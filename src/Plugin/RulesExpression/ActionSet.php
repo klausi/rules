@@ -131,4 +131,13 @@ class ActionSet extends ExpressionBase implements ActionExpressionContainerInter
     return new \ArrayIterator($this->actions);
   }
 
+  /**
+   * {@inheritdoc}
+   */
+  public function deleteExpressionAt($index) {
+    unset($this->actions[$index]);
+    // Reshuffle array to refresh the indices.
+    $this->actions = array_values($this->actions);
+  }
+
 }
