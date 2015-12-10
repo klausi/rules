@@ -49,10 +49,26 @@ interface ExpressionContainerInterface extends ExpressionInterface, \IteratorAgg
   public function addExpressionObject(ExpressionInterface $expression);
 
   /**
+   * Looks up the expression by UUID in this container.
+   *
+   * @param string $uuid
+   *   The UUID of the expression.
+   *
+   * @return \Drupal\rules\Engine\ExpressionInterface|false
+   *   The expression object or FALSE if not expression object with that UUID
+   *   could be found.
+   */
+  public function getExpression($uuid);
+
+  /**
    * Deletes an element indentified by the specified UUID in the container.
    *
    * @param string $uuid
    *   The UUID of the element.
+   *
+   * @return bool
+   *   TRUE if an expression was deleted, FALSE if no expression with that UUID
+   *   was found.
    */
   public function deleteExpression($uuid);
 

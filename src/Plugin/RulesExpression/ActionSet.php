@@ -13,6 +13,7 @@ use Drupal\rules\Context\ContextConfig;
 use Drupal\rules\Engine\ActionExpressionContainerInterface;
 use Drupal\rules\Engine\ActionExpressionInterface;
 use Drupal\rules\Engine\ExpressionBase;
+use Drupal\rules\Engine\ExpressionContainerInterface;
 use Drupal\rules\Engine\ExpressionInterface;
 use Drupal\rules\Engine\ExpressionManagerInterface;
 use Drupal\rules\Engine\RulesStateInterface;
@@ -141,6 +142,24 @@ class ActionSet extends ExpressionBase implements ActionExpressionContainerInter
    */
   public function getIterator() {
     return new \ArrayIterator($this->actions);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getExpression($uuid) {
+    foreach ($this->actions as $action_uuid => $action) {
+      if ($uuid === $action_uuid) {
+        return $action;
+      }
+      if ($action instanceof ExpressionContainerInterface) {
+        $nested_action = $action->getExpression($uuid);
+        if ($nested_action) {
+          return $nested_action;
+        }
+      }
+    }
+    return FALSE;
   }
 
   /**

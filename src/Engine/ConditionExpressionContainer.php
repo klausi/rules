@@ -154,6 +154,24 @@ abstract class ConditionExpressionContainer extends ExpressionBase implements Co
   /**
    * {@inheritdoc}
    */
+  public function getExpression($uuid) {
+    foreach ($this->conditions as $condition_uuid => $condition) {
+      if ($uuid === $condition_uuid) {
+        return $condition;
+      }
+      if ($condition instanceof ExpressionContainerInterface) {
+        $nested_condition = $condition->getExpression($uuid);
+        if ($nested_condition) {
+          return $nested_condition;
+        }
+      }
+    }
+    return FALSE;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function deleteExpression($uuid) {
     unset($this->conditions[$uuid]);
   }
