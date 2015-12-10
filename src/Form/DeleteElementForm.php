@@ -10,7 +10,6 @@ namespace Drupal\rules\Form;
 use Drupal\Core\Form\ConfirmFormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\rules\Entity\ReactionRule;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 /**
@@ -26,11 +25,11 @@ class DeleteElementForm extends ConfirmFormBase {
   protected $rule;
 
   /**
-   * The index of the element in the rule.
+   * The UUID of the element in the rule.
    *
-   * @var int
+   * @var string
    */
-  protected $index;
+  protected $uuid;
 
   /**
    * {@inheritdoc}
@@ -42,9 +41,9 @@ class DeleteElementForm extends ConfirmFormBase {
   /**
    * {@inheritdoc}
    */
-  public function buildForm(array $form, FormStateInterface $form_state, ReactionRule $rules_reaction_rule = NULL, $index = NULL) {
+  public function buildForm(array $form, FormStateInterface $form_state, ReactionRule $rules_reaction_rule = NULL, $uuid = NULL) {
     $this->rule = $rules_reaction_rule;
-    $this->index = $index;
+    $this->uuid = $uuid;
     return parent::buildForm($form, $form_state);
   }
 
@@ -61,15 +60,15 @@ class DeleteElementForm extends ConfirmFormBase {
   public function getQuestion() {
     $expression = $this->rule->getExpression();
     $conditions = $expression->getConditions()->getIterator();
-    if (!isset($conditions[$this->index])) {
+    if (!isset($conditions[$this->uuid])) {
       $actions = $expression->getActions()->getIterator();
-      if (!isset($actions[$this->index - count($conditions)])) {
+      if (!isset($actions[$this->uuid - count($conditions)])) {
         throw new NotFoundHttpException();
       }
-      $element = $actions[$this->index - count($conditions)];
+      $element = $actions[$this->uuid - count($conditions)];
     }
     else {
-      $element = $conditions[$this->index];
+      $element = $conditions[$this->uuid];
     }
     return $this->t('Are you sure you want to delete %title from %rule?', [
       '%title' => $element->getLabel(),
@@ -89,7 +88,7 @@ class DeleteElementForm extends ConfirmFormBase {
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
     $expression = $this->rule->getExpression();
-    $expression->deleteExpressionAt($this->index);
+    $expression->deleteExpression($this->uuid);
     // Set the expression again so that the config is copied over to the
     // config entity.
     $this->rule->setExpression($expression);
