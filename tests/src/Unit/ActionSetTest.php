@@ -10,7 +10,6 @@ namespace Drupal\Tests\rules\Unit;
 use Drupal\Component\Uuid\Php;
 use Drupal\rules\Plugin\RulesExpression\ActionSet;
 use Drupal\rules\Plugin\RulesExpression\RulesAction;
-use Drupal\rules\Plugin\RulesExpression\ActionSet;
 use Drupal\rules\Engine\ExecutionStateInterface;
 use Prophecy\Argument;
 
