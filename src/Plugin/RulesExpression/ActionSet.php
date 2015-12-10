@@ -7,11 +7,12 @@
 
 namespace Drupal\rules\Plugin\RulesExpression;
 
+use Drupal\Component\Uuid\UuidInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\rules\Context\ContextConfig;
-use Drupal\rules\Engine\ExpressionBase;
 use Drupal\rules\Engine\ActionExpressionContainerInterface;
 use Drupal\rules\Engine\ActionExpressionInterface;
+use Drupal\rules\Engine\ExpressionBase;
 use Drupal\rules\Engine\ExpressionInterface;
 use Drupal\rules\Engine\ExpressionManagerInterface;
 use Drupal\rules\Engine\RulesStateInterface;
@@ -36,6 +37,13 @@ class ActionSet extends ExpressionBase implements ActionExpressionContainerInter
   protected $actions = [];
 
   /**
+   * The UUID generating service.
+   *
+   * @var \Drupal\Component\Uuid\UuidInterface
+   */
+  protected $uuidService;
+
+  /**
    * Constructs a new class instance.
    *
    * @param array $configuration
@@ -46,10 +54,13 @@ class ActionSet extends ExpressionBase implements ActionExpressionContainerInter
    *   The plugin implementation definition.
    * @param \Drupal\rules\Engine\ExpressionManagerInterface $expression_manager
    *   The rules expression plugin manager.
+   * @param \Drupal\Component\Uuid\UuidInterface $uuid_service
+   *   The UUID generating service.
    */
-  public function __construct(array $configuration, $plugin_id, $plugin_definition, ExpressionManagerInterface $expression_manager) {
+  public function __construct(array $configuration, $plugin_id, $plugin_definition, ExpressionManagerInterface $expression_manager, UuidInterface $uuid_service) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
     $this->expressionManager = $expression_manager;
+    $this->uuidService = $uuid_service;
 
     $configuration += ['actions' => []];
     foreach ($configuration['actions'] as $action_config) {
@@ -66,7 +77,8 @@ class ActionSet extends ExpressionBase implements ActionExpressionContainerInter
       $configuration,
       $plugin_id,
       $plugin_definition,
-      $container->get('plugin.manager.rules_expression')
+      $container->get('plugin.manager.rules_expression'),
+      $container->get('uuid')
     );
   }
 
@@ -77,7 +89,7 @@ class ActionSet extends ExpressionBase implements ActionExpressionContainerInter
     if (!$expression instanceof ActionExpressionInterface) {
       throw new InvalidExpressionException();
     }
-    $this->actions[] = $expression;
+    $this->actions[$this->uuidService->generate()] = $expression;
     return $this;
   }
 
@@ -118,8 +130,8 @@ class ActionSet extends ExpressionBase implements ActionExpressionContainerInter
     // We need to update the configuration in case actions have been added or
     // changed.
     $configuration['actions'] = [];
-    foreach ($this->actions as $action) {
-      $configuration['actions'][] = $action->getConfiguration();
+    foreach ($this->actions as $uuid => $action) {
+      $configuration['actions'][$uuid] = $action->getConfiguration();
     }
     return $configuration;
   }
@@ -134,10 +146,8 @@ class ActionSet extends ExpressionBase implements ActionExpressionContainerInter
   /**
    * {@inheritdoc}
    */
-  public function deleteExpressionAt($index) {
-    unset($this->actions[$index]);
-    // Reshuffle array to refresh the indices.
-    $this->actions = array_values($this->actions);
+  public function deleteExpression($uuid) {
+    unset($this->actions[$uuid]);
   }
 
 }
