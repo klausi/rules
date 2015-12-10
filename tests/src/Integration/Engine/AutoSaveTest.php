@@ -22,14 +22,6 @@ use Drupal\Tests\rules\Integration\RulesEntityIntegrationTestBase;
 class AutoSaveTest extends RulesEntityIntegrationTestBase {
 
   /**
-   * {@inheritdoc}
-   */
-  public function setUp() {
-    parent::setUp();
-    $this->container->set('uuid', new Php());
-  }
-
-  /**
    * Tests auto saving after an action execution.
    */
   public function testActionAutoSave() {

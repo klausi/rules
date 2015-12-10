@@ -61,10 +61,10 @@ interface ExpressionContainerInterface extends ExpressionInterface, \IteratorAgg
   public function getExpression($uuid);
 
   /**
-   * Deletes an element indentified by the specified UUID in the container.
+   * Deletes an expression indentified by the specified UUID in the container.
    *
    * @param string $uuid
-   *   The UUID of the element.
+   *   The UUID of the expression.
    *
    * @return bool
    *   TRUE if an expression was deleted, FALSE if no expression with that UUID
