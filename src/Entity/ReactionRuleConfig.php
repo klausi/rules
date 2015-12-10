@@ -2,7 +2,7 @@
 
 /**
  * @file
- * Contains Drupal\rules\Entity\ReactionRule.
+ * Contains Drupal\rules\Entity\ReactionRuleConfig.
  */
 
 namespace Drupal\rules\Entity;
@@ -50,7 +50,7 @@ use Drupal\rules\Engine\ExpressionInterface;
  *   }
  * )
  */
-class ReactionRule extends ConfigEntityBase {
+class ReactionRuleConfig extends ConfigEntityBase {
 
   /**
    * The unique ID of the Reaction Rule.
@@ -95,7 +95,7 @@ class ReactionRule extends ConfigEntityBase {
    *
    * @var string
    */
-  protected $expression_id = 'rules_reaction_rule';
+  protected $expression_id = 'rules_rule';
 
   /**
    * The expression plugin specific configuration as nested array.
