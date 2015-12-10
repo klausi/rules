@@ -203,10 +203,11 @@ class Rule extends ExpressionBase implements RuleInterface, ContainerFactoryPlug
    * {@inheritdoc}
    */
   public function deleteExpression($uuid) {
-    // The expression can either be in our condition or action set, so just
-    // delete it from both.
-    $this->conditions->deleteExpression($uuid);
-    $this->actions->deleteExpression($uuid);
+    $deleted = $this->conditions->deleteExpression($uuid);
+    if (!$deleted) {
+      $deleted = $this->actions->deleteExpression($uuid);
+    }
+    return $deleted;
   }
 
 }

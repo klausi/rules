@@ -8,7 +8,6 @@
 namespace Drupal\Tests\rules\Unit;
 
 use Drupal\Component\Uuid\Php;
-use Drupal\rules\Context\ContextDefinition;
 use Drupal\rules\Engine\ExpressionManagerInterface;
 use Drupal\rules\Engine\RulesStateInterface;
 use Drupal\rules\Plugin\RulesExpression\ActionSet;

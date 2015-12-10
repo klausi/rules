@@ -173,7 +173,11 @@ abstract class ConditionExpressionContainer extends ExpressionBase implements Co
    * {@inheritdoc}
    */
   public function deleteExpression($uuid) {
-    unset($this->conditions[$uuid]);
+    if (isset($this->conditions[$uuid])) {
+      unset($this->conditions[$uuid]);
+      return TRUE;
+    }
+    return FALSE;
   }
 
 }

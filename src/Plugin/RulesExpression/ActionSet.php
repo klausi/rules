@@ -166,7 +166,11 @@ class ActionSet extends ExpressionBase implements ActionExpressionContainerInter
    * {@inheritdoc}
    */
   public function deleteExpression($uuid) {
-    unset($this->actions[$uuid]);
+    if (isset($this->actions[$uuid])) {
+      unset($this->actions[$uuid]);
+      return TRUE;
+    }
+    return FALSE;
   }
 
 }

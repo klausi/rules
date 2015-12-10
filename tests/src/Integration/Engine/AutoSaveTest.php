@@ -7,7 +7,6 @@
 
 namespace Drupal\Tests\rules\Integration\Engine;
 
-use Drupal\Component\Uuid\Php;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\rules\Context\ContextConfig;
 use Drupal\rules\Context\ContextDefinition;
