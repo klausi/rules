@@ -199,6 +199,23 @@ class RuleTest extends RulesUnitTestBase {
   }
 
   /**
+   * Tests that a nested expression can be retrieved by UUID.
+   */
+  public function testLookupExpression() {
+    // Test Conditions.
+    $this->rule->addExpressionObject($this->trueConditionExpression->reveal());
+    $uuid = $this->rule->getConditions()->getIterator()->key();
+    $this->assertSame($this->trueConditionExpression->reveal(), $this->rule->getExpression($uuid));
+
+    // Test actions.
+    $this->rule->addExpressionObject($this->testActionExpression->reveal());
+    $uuid = $this->rule->getActions()->getIterator()->key();
+    $this->assertSame($this->testActionExpression->reveal(), $this->rule->getExpression($uuid));
+
+    $this->assertFalse($this->rule->getExpression('invalid UUID'));
+  }
+
+  /**
    * Tests that removing expressions by indices works.
    */
   public function testDeletingExpressions() {

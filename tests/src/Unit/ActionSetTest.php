@@ -76,6 +76,16 @@ class ActionSetTest extends RulesUnitTestBase {
   }
 
   /**
+   * Tests that a nested action can be retrieved by UUID.
+   */
+  public function testLookupAction() {
+    $this->actionSet->addExpressionObject($this->testActionExpression->reveal());
+    $uuid = $this->actionSet->getIterator()->key();
+    $this->assertSame($this->testActionExpression->reveal(), $this->actionSet->getExpression($uuid));
+    $this->assertFalse($this->actionSet->getExpression('invalid UUID'));
+  }
+
+  /**
    * Tests deleting an action from the container.
    */
   public function testDeletingAction() {
@@ -88,7 +98,7 @@ class ActionSetTest extends RulesUnitTestBase {
     $this->actionSet->deleteExpression($uuid);
     // Now only the second action remains.
     foreach ($this->actionSet as $action) {
-      $this->assertEquals($second_action->reveal(), $action);
+      $this->assertSame($second_action->reveal(), $action);
     }
   }
 

@@ -84,6 +84,23 @@ class RulesConditionContainerTest extends RulesUnitTestBase {
   }
 
   /**
+   * Tests that a nested expression can be retrieved by UUID.
+   */
+  public function testLookupExpression() {
+    $container = $this->getMockForAbstractClass(RulesConditionContainerTestStub::class, [
+      [],
+      'test_id',
+      [],
+      $this->prophesize(ExpressionManagerInterface::class)->reveal(),
+      new Php(),
+    ], '', TRUE);
+    $container->addExpressionObject($this->trueConditionExpression->reveal());
+    $uuid = $container->getIterator()->key();
+    $this->assertSame($this->trueConditionExpression->reveal(), $container->getExpression($uuid));
+    $this->assertFalse($container->getExpression('invalid UUID'));
+  }
+
+  /**
    * Tests deleting a condition from the container.
    */
   public function testDeletingCondition() {
