@@ -20,6 +20,9 @@ use Drupal\Tests\rules\Integration\RulesEntityIntegrationTestBase;
  */
 class AutoSaveTest extends RulesEntityIntegrationTestBase {
 
+  /**
+   * {@inheritdoc}
+   */
   public function setUp() {
     parent::setUp();
     $this->container->set('uuid', new Php());
