@@ -7,6 +7,7 @@
 
 namespace Drupal\Tests\rules\Unit;
 
+use Drupal\Component\Uuid\Php;
 use Drupal\rules\Engine\RulesStateInterface;
 use Drupal\rules\Plugin\RulesExpression\ActionSet;
 use Drupal\rules\Plugin\RulesExpression\RulesAction;
@@ -31,7 +32,7 @@ class ActionSetTest extends RulesUnitTestBase {
   public function setUp() {
     parent::setUp();
 
-    $this->actionSet = new ActionSet([], '', [], $this->expressionManager->reveal());
+    $this->actionSet = new ActionSet([], '', [], $this->expressionManager->reveal(), new Php());
   }
 
   /**
@@ -66,7 +67,7 @@ class ActionSetTest extends RulesUnitTestBase {
     $this->testActionExpression->executeWithState(
       Argument::type(RulesStateInterface::class))->shouldBeCalledTimes(2);
 
-    $inner = new ActionSet([], '', [], $this->expressionManager->reveal());
+    $inner = new ActionSet([], '', [], $this->expressionManager->reveal(), new Php());
     $inner->addExpressionObject($this->testActionExpression->reveal());
 
     $this->actionSet->addExpressionObject($this->testActionExpression->reveal())
@@ -81,7 +82,11 @@ class ActionSetTest extends RulesUnitTestBase {
     $this->actionSet->addExpressionObject($this->testActionExpression->reveal());
     $second_action = $this->prophesize(RulesAction::class);
     $this->actionSet->addExpressionObject($second_action->reveal());
-    $this->actionSet->deleteExpressionAt(0);
+
+    // Get the UUID of the first action added.
+    $uuid = $this->actionSet->getIterator()->key();
+    $this->actionSet->deleteExpression($uuid);
+    // Now only the second action remains.
     foreach ($this->actionSet as $action) {
       $this->assertEquals($second_action->reveal(), $action);
     }

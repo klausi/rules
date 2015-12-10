@@ -7,6 +7,7 @@
 
 namespace Drupal\Tests\rules\Unit;
 
+use Drupal\Component\Uuid\Php;
 use Drupal\rules\Context\ContextDefinition;
 use Drupal\rules\Engine\ExpressionManagerInterface;
 use Drupal\rules\Engine\RulesStateInterface;
@@ -59,13 +60,14 @@ class RuleTest extends RulesUnitTestBase {
 
     $this->expressionManager = $this->prophesize(ExpressionManagerInterface::class);
 
-    $this->conditions = new RulesAnd([], 'rules_and', [], $this->expressionManager->reveal());
+    $uuid_service = new Php();
+    $this->conditions = new RulesAnd([], 'rules_and', [], $this->expressionManager->reveal(), $uuid_service);
     $this->expressionManager->createInstance('rules_and', [])->willReturn($this->conditions);
 
-    $this->actions = new ActionSet([], 'rules_action_set', [], $this->expressionManager->reveal());
+    $this->actions = new ActionSet([], 'rules_action_set', [], $this->expressionManager->reveal(), $uuid_service);
     $this->expressionManager->createInstance('rules_action_set', [])->willReturn($this->actions);
 
-    $this->rule = new Rule([], 'rules_rule', [], $this->expressionManager->reveal());
+    $this->rule = new Rule([], 'rules_rule', [], $this->expressionManager->reveal(), $uuid_service);
   }
 
   /**
@@ -85,11 +87,11 @@ class RuleTest extends RulesUnitTestBase {
    * @covers ::getConditions
    */
   public function testSetConditionsGetConditions() {
-    $or = new RulesOr([], 'rules_or', [], $this->expressionManager->reveal());
+    $or = new RulesOr([], 'rules_or', [], $this->expressionManager->reveal(), new Php());
     $this->rule->setConditions($or);
     $this->assertSame($or, $this->rule->getConditions());
 
-    $and = new RulesAnd([], 'rules_and', [], $this->expressionManager->reveal());
+    $and = new RulesAnd([], 'rules_and', [], $this->expressionManager->reveal(), new Php());
     $this->rule->setConditions($and);
     $this->assertSame($and, $this->rule->getConditions());
   }
@@ -101,7 +103,7 @@ class RuleTest extends RulesUnitTestBase {
    * @covers ::getActions
    */
   public function testSetActionsGetActions() {
-    $action_set = new ActionSet([], '', [], $this->expressionManager->reveal());
+    $action_set = new ActionSet([], '', [], $this->expressionManager->reveal(), new Php());
     $this->rule->setActions($action_set);
     $this->assertSame($action_set, $this->rule->getActions());
   }
@@ -184,8 +186,8 @@ class RuleTest extends RulesUnitTestBase {
     $nested = new Rule([], 'rules_rule', [], $this->expressionManager->reveal());
     // We need to replace the action and conditon container to not have the same
     // instances as in the outer rule.
-    $nested->setConditions(new RulesAnd([], 'rules_and', [], $this->expressionManager->reveal()));
-    $nested->setActions(new ActionSet([], 'rules_action_set', [], $this->expressionManager->reveal()));
+    $nested->setConditions(new RulesAnd([], 'rules_and', [], $this->expressionManager->reveal(), new Php()));
+    $nested->setActions(new ActionSet([], 'rules_action_set', [], $this->expressionManager->reveal(), new Php()));
 
     $nested->addExpressionObject($this->trueConditionExpression->reveal())
       ->addExpressionObject($this->testActionExpression->reveal());
@@ -231,32 +233,35 @@ class RuleTest extends RulesUnitTestBase {
    */
   public function testDeletingExpressions() {
     // Create a rule with 2 conditions and 2 actions.
-    $rule = new Rule([], 'rules_rule', [], $this->expressionManager->reveal());
-    $rule->addExpressionObject($this->trueConditionExpression->reveal());
-    $rule->addExpressionObject($this->falseConditionExpression->reveal());
-    $rule->addExpressionObject($this->testActionExpression->reveal());
+    $this->rule->addExpressionObject($this->trueConditionExpression->reveal());
+    $this->rule->addExpressionObject($this->falseConditionExpression->reveal());
+    $this->rule->addExpressionObject($this->testActionExpression->reveal());
     $second_action = $this->prophesize(RulesAction::class);
-    $rule->addExpressionObject($second_action->reveal());
+    $this->rule->addExpressionObject($second_action->reveal());
 
     // Delete the first action.
-    $rule->deleteExpressionAt(2);
-    $this->assertEquals(2, count($rule->getConditions()->getIterator()));
-    $this->assertEquals(1, count($rule->getActions()->getIterator()));
+    $uuid = $this->rule->getIterator()->key();
+    $this->rule->deleteExpression($uuid);
+    $this->assertEquals(2, count($this->rule->getConditions()->getIterator()));
+    $this->assertEquals(1, count($this->rule->getActions()->getIterator()));
 
     // Delete the second condition.
-    $rule->deleteExpressionAt(1);
-    $this->assertEquals(1, count($rule->getConditions()->getIterator()));
-    $this->assertEquals(1, count($rule->getActions()->getIterator()));
+    $uuid = $this->rule->getConditions()->getIterator()->key();
+    $this->rule->deleteExpression($uuid);
+    $this->assertEquals(1, count($this->rule->getConditions()->getIterator()));
+    $this->assertEquals(1, count($this->rule->getActions()->getIterator()));
 
     // Delete the first action.
-    $rule->deleteExpressionAt(1);
-    $this->assertEquals(1, count($rule->getConditions()->getIterator()));
-    $this->assertEquals(0, count($rule->getActions()->getIterator()));
+    $uuid = $this->rule->getIterator()->key();
+    $this->rule->deleteExpression($uuid);
+    $this->assertEquals(1, count($this->rule->getConditions()->getIterator()));
+    $this->assertEquals(0, count($this->rule->getActions()->getIterator()));
 
     // Delete the remaining condition, rule should be empty now.
-    $rule->deleteExpressionAt(0);
-    $this->assertEquals(0, count($rule->getConditions()->getIterator()));
-    $this->assertEquals(0, count($rule->getActions()->getIterator()));
+    $uuid = $this->rule->getConditions()->getIterator()->key();
+    $this->rule->deleteExpression($uuid);
+    $this->assertEquals(0, count($this->rule->getConditions()->getIterator()));
+    $this->assertEquals(0, count($this->rule->getActions()->getIterator()));
   }
 
 }

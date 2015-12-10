@@ -49,11 +49,11 @@ interface ExpressionContainerInterface extends ExpressionInterface, \IteratorAgg
   public function addExpressionObject(ExpressionInterface $expression);
 
   /**
-   * Deletes an element at the specified index in the container.
+   * Deletes an element indentified by the specified UUID in the container.
    *
-   * @param int $index
-   *   The position of the element.
+   * @param string $uuid
+   *   The UUID of the element.
    */
-  public function deleteExpressionAt($index);
+  public function deleteExpression($uuid);
 
 }

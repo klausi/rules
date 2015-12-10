@@ -7,6 +7,7 @@
 
 namespace Drupal\Tests\rules\Integration\Engine;
 
+use Drupal\Component\Uuid\Php;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\rules\Context\ContextConfig;
 use Drupal\rules\Context\ContextDefinition;
@@ -18,6 +19,14 @@ use Drupal\Tests\rules\Integration\RulesEntityIntegrationTestBase;
  * @group rules
  */
 class AutoSaveTest extends RulesEntityIntegrationTestBase {
+
+  /**
+   * {@inheritdoc}
+   */
+  public function setUp() {
+    parent::setUp();
+    $this->container->set('uuid', new Php());
+  }
 
   /**
    * Tests auto saving after an action execution.

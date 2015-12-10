@@ -7,7 +7,9 @@
 
 namespace Drupal\Tests\rules\Unit;
 
+use Drupal\Component\Uuid\Php;
 use Drupal\rules\Engine\ConditionExpressionContainer;
+use Drupal\rules\Engine\ExpressionManagerInterface;
 use Drupal\rules\Engine\RulesStateInterface;
 
 /**
@@ -29,7 +31,13 @@ class RulesConditionContainerTest extends RulesUnitTestBase {
    */
   protected function getMockConditionContainer(array $methods = [], $class = 'RulesConditionContainerMock') {
     return $this->getMockForAbstractClass(
-      ConditionExpressionContainer::class, [], $class, FALSE, TRUE, TRUE, $methods
+      ConditionExpressionContainer::class, [
+        [],
+        'test_id',
+        [],
+        $this->prophesize(ExpressionManagerInterface::class)->reveal(),
+        new Php(),
+      ], $class, TRUE, TRUE, TRUE, $methods
     );
   }
 
@@ -45,7 +53,7 @@ class RulesConditionContainerTest extends RulesUnitTestBase {
     $property = new \ReflectionProperty($container, 'conditions');
     $property->setAccessible(TRUE);
 
-    $this->assertArrayEquals([$this->trueConditionExpression->reveal()], $property->getValue($container));
+    $this->assertArrayEquals([$this->trueConditionExpression->reveal()], array_values($property->getValue($container)));
   }
 
   /**
@@ -79,10 +87,19 @@ class RulesConditionContainerTest extends RulesUnitTestBase {
    * Tests deleting a condition from the container.
    */
   public function testDeletingCondition() {
-    $container = $this->getMockForAbstractClass(RulesConditionContainerTestStub::class, [], '', FALSE);
+    $container = $this->getMockForAbstractClass(RulesConditionContainerTestStub::class, [
+      [],
+      'test_id',
+      [],
+      $this->prophesize(ExpressionManagerInterface::class)->reveal(),
+      new Php(),
+    ], '', TRUE);
     $container->addExpressionObject($this->trueConditionExpression->reveal());
     $container->addExpressionObject($this->falseConditionExpression->reveal());
-    $container->deleteExpressionAt(0);
+
+    // Delete the first condition.
+    $uuid = $container->getIterator()->key();
+    $container->deleteExpression($uuid);
     foreach ($container as $condition) {
       $this->assertEquals($this->falseConditionExpression->reveal(), $condition);
     }
