@@ -58,20 +58,14 @@ class DeleteElementForm extends ConfirmFormBase {
    * {@inheritdoc}
    */
   public function getQuestion() {
-    $expression = $this->rule->getExpression();
-    $conditions = $expression->getConditions()->getIterator();
-    if (!isset($conditions[$this->uuid])) {
-      $actions = $expression->getActions()->getIterator();
-      if (!isset($actions[$this->uuid - count($conditions)])) {
-        throw new NotFoundHttpException();
-      }
-      $element = $actions[$this->uuid - count($conditions)];
+    $rule_expression = $this->rule->getExpression();
+    $expression_inside = $rule_expression->getExpression($this->uuid);
+    if (!$expression_inside) {
+      throw new NotFoundHttpException();
     }
-    else {
-      $element = $conditions[$this->uuid];
-    }
+
     return $this->t('Are you sure you want to delete %title from %rule?', [
-      '%title' => $element->getLabel(),
+      '%title' => $expression_inside->getLabel(),
       '%rule' => $this->rule->label(),
     ]);
   }
