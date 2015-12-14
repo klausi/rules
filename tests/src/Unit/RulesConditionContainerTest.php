@@ -84,7 +84,7 @@ class RulesConditionContainerTest extends RulesUnitTestBase {
   }
 
   /**
-   * Tests that a nested expression can be retrieved by UUID.
+   * Tests that an expression can be retrieved by UUID.
    */
   public function testLookupExpression() {
     $container = $this->getMockForAbstractClass(RulesConditionContainerTestStub::class, [
@@ -98,6 +98,34 @@ class RulesConditionContainerTest extends RulesUnitTestBase {
     $uuid = $container->getIterator()->key();
     $this->assertSame($this->trueConditionExpression->reveal(), $container->getExpression($uuid));
     $this->assertFalse($container->getExpression('invalid UUID'));
+  }
+
+  /**
+   * Tests that a nested expression can be retrieved by UUID.
+   */
+  public function testLookupNestedExpression() {
+    $container = $this->getMockForAbstractClass(RulesConditionContainerTestStub::class, [
+      [],
+      'test_id',
+      [],
+      $this->prophesize(ExpressionManagerInterface::class)->reveal(),
+      new Php(),
+    ], '', TRUE);
+    $container->addExpressionObject($this->trueConditionExpression->reveal());
+
+    $nested_container = $this->getMockForAbstractClass(RulesConditionContainerTestStub::class, [
+      [],
+      'test_id',
+      [],
+      $this->prophesize(ExpressionManagerInterface::class)->reveal(),
+      new Php(),
+    ], '', TRUE);
+    $nested_container->addExpressionObject($this->falseConditionExpression->reveal());
+
+    $container->addExpressionObject($nested_container);
+
+    $uuid = $nested_container->getIterator()->key();
+    $this->assertSame($this->falseConditionExpression->reveal(), $container->getExpression($uuid));
   }
 
   /**
@@ -116,10 +144,41 @@ class RulesConditionContainerTest extends RulesUnitTestBase {
 
     // Delete the first condition.
     $uuid = $container->getIterator()->key();
-    $container->deleteExpression($uuid);
+    $this->assertTrue($container->deleteExpression($uuid));
     foreach ($container as $condition) {
-      $this->assertEquals($this->falseConditionExpression->reveal(), $condition);
+      $this->assertSame($this->falseConditionExpression->reveal(), $condition);
     }
+
+    $this->assertFalse($container->deleteExpression('invalid UUID'));
+  }
+
+  /**
+   * Tests deleting a nested condition from the container.
+   */
+  public function testDeletingNestedCondition() {
+    $container = $this->getMockForAbstractClass(RulesConditionContainerTestStub::class, [
+      [],
+      'test_id',
+      [],
+      $this->prophesize(ExpressionManagerInterface::class)->reveal(),
+      new Php(),
+    ], '', TRUE);
+    $container->addExpressionObject($this->trueConditionExpression->reveal());
+
+    $nested_container = $this->getMockForAbstractClass(RulesConditionContainerTestStub::class, [
+      [],
+      'test_id',
+      [],
+      $this->prophesize(ExpressionManagerInterface::class)->reveal(),
+      new Php(),
+    ], '', TRUE);
+    $nested_container->addExpressionObject($this->falseConditionExpression->reveal());
+
+    $container->addExpressionObject($nested_container);
+
+    $uuid = $nested_container->getIterator()->key();
+    $this->assertTrue($container->deleteExpression($uuid));
+    $this->assertEquals(0, count($nested_container->getIterator()));
   }
 
 }

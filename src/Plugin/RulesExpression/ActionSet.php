@@ -148,10 +148,10 @@ class ActionSet extends ExpressionBase implements ActionExpressionContainerInter
    * {@inheritdoc}
    */
   public function getExpression($uuid) {
-    foreach ($this->actions as $action_uuid => $action) {
-      if ($uuid === $action_uuid) {
-        return $action;
-      }
+    if (isset($this->actions[$uuid])) {
+      return $this->actions[$uuid];
+    }
+    foreach ($this->actions as $action) {
       if ($action instanceof ExpressionContainerInterface) {
         $nested_action = $action->getExpression($uuid);
         if ($nested_action) {
@@ -169,6 +169,13 @@ class ActionSet extends ExpressionBase implements ActionExpressionContainerInter
     if (isset($this->actions[$uuid])) {
       unset($this->actions[$uuid]);
       return TRUE;
+    }
+    foreach ($this->actions as $action) {
+      if ($action instanceof ExpressionContainerInterface
+        && $action->deleteExpression($uuid)
+      ) {
+        return TRUE;
+      }
     }
     return FALSE;
   }

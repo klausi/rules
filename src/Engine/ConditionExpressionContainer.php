@@ -155,10 +155,10 @@ abstract class ConditionExpressionContainer extends ExpressionBase implements Co
    * {@inheritdoc}
    */
   public function getExpression($uuid) {
-    foreach ($this->conditions as $condition_uuid => $condition) {
-      if ($uuid === $condition_uuid) {
-        return $condition;
-      }
+    if (isset($this->conditions[$uuid])) {
+      return $this->conditions[$uuid];
+    }
+    foreach ($this->conditions as $condition) {
       if ($condition instanceof ExpressionContainerInterface) {
         $nested_condition = $condition->getExpression($uuid);
         if ($nested_condition) {
@@ -176,6 +176,13 @@ abstract class ConditionExpressionContainer extends ExpressionBase implements Co
     if (isset($this->conditions[$uuid])) {
       unset($this->conditions[$uuid]);
       return TRUE;
+    }
+    foreach ($this->conditions as $condition) {
+      if ($condition instanceof ExpressionContainerInterface
+        && $condition->deleteExpression($uuid)
+      ) {
+        return TRUE;
+      }
     }
     return FALSE;
   }
