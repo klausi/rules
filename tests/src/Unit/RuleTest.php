@@ -250,40 +250,4 @@ class RuleTest extends RulesUnitTestBase {
     $this->assertEquals(0, count($this->rule->getActions()->getIterator()));
   }
 
-  /**
-   * Tests that removing expressions by indices works.
-   */
-  public function testDeletingExpressions() {
-    // Create a rule with 2 conditions and 2 actions.
-    $this->rule->addExpressionObject($this->trueConditionExpression->reveal());
-    $this->rule->addExpressionObject($this->falseConditionExpression->reveal());
-    $this->rule->addExpressionObject($this->testActionExpression->reveal());
-    $second_action = $this->prophesize(RulesAction::class);
-    $this->rule->addExpressionObject($second_action->reveal());
-
-    // Delete the first action.
-    $uuid = $this->rule->getIterator()->key();
-    $this->rule->deleteExpression($uuid);
-    $this->assertEquals(2, count($this->rule->getConditions()->getIterator()));
-    $this->assertEquals(1, count($this->rule->getActions()->getIterator()));
-
-    // Delete the second condition.
-    $uuid = $this->rule->getConditions()->getIterator()->key();
-    $this->rule->deleteExpression($uuid);
-    $this->assertEquals(1, count($this->rule->getConditions()->getIterator()));
-    $this->assertEquals(1, count($this->rule->getActions()->getIterator()));
-
-    // Delete the first action.
-    $uuid = $this->rule->getIterator()->key();
-    $this->rule->deleteExpression($uuid);
-    $this->assertEquals(1, count($this->rule->getConditions()->getIterator()));
-    $this->assertEquals(0, count($this->rule->getActions()->getIterator()));
-
-    // Delete the remaining condition, rule should be empty now.
-    $uuid = $this->rule->getConditions()->getIterator()->key();
-    $this->rule->deleteExpression($uuid);
-    $this->assertEquals(0, count($this->rule->getConditions()->getIterator()));
-    $this->assertEquals(0, count($this->rule->getActions()->getIterator()));
-  }
-
 }

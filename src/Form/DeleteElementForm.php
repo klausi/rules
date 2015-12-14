@@ -9,7 +9,7 @@ namespace Drupal\rules\Form;
 
 use Drupal\Core\Form\ConfirmFormBase;
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\rules\Entity\ReactionRule;
+use Drupal\rules\Entity\ReactionRuleConfig;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 /**
@@ -41,7 +41,7 @@ class DeleteElementForm extends ConfirmFormBase {
   /**
    * {@inheritdoc}
    */
-  public function buildForm(array $form, FormStateInterface $form_state, ReactionRule $rules_reaction_rule = NULL, $uuid = NULL) {
+  public function buildForm(array $form, FormStateInterface $form_state, ReactionRuleConfig $rules_reaction_rule = NULL, $uuid = NULL) {
     $this->rule = $rules_reaction_rule;
     $this->uuid = $uuid;
     return parent::buildForm($form, $form_state);
