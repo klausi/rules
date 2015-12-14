@@ -105,7 +105,7 @@ abstract class ConditionExpressionContainer extends ExpressionBase implements Co
   /**
    * {@inheritdoc}
    */
-  public function executeWithState(RulesStateInterface $rules_state) {
+  public function executeWithState(ExecutionStateInterface $rules_state) {
     $result = $this->evaluate($rules_state);
     return $this->isNegated() ? !$result : $result;
   }
@@ -113,7 +113,7 @@ abstract class ConditionExpressionContainer extends ExpressionBase implements Co
   /**
    * Returns the final result after executing the conditions.
    */
-  abstract public function evaluate(RulesStateInterface $rules_state);
+  abstract public function evaluate(ExecutionStateInterface $rules_state);
 
   /**
    * {@inheritdoc}
@@ -154,8 +154,37 @@ abstract class ConditionExpressionContainer extends ExpressionBase implements Co
   /**
    * {@inheritdoc}
    */
+  public function getExpression($uuid) {
+    if (isset($this->conditions[$uuid])) {
+      return $this->conditions[$uuid];
+    }
+    foreach ($this->conditions as $condition) {
+      if ($condition instanceof ExpressionContainerInterface) {
+        $nested_condition = $condition->getExpression($uuid);
+        if ($nested_condition) {
+          return $nested_condition;
+        }
+      }
+    }
+    return FALSE;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function deleteExpression($uuid) {
-    unset($this->conditions[$uuid]);
+    if (isset($this->conditions[$uuid])) {
+      unset($this->conditions[$uuid]);
+      return TRUE;
+    }
+    foreach ($this->conditions as $condition) {
+      if ($condition instanceof ExpressionContainerInterface
+        && $condition->deleteExpression($uuid)
+      ) {
+        return TRUE;
+      }
+    }
+    return FALSE;
   }
 
 }

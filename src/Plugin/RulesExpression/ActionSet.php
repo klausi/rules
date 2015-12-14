@@ -13,9 +13,10 @@ use Drupal\rules\Context\ContextConfig;
 use Drupal\rules\Engine\ActionExpressionContainerInterface;
 use Drupal\rules\Engine\ActionExpressionInterface;
 use Drupal\rules\Engine\ExpressionBase;
+use Drupal\rules\Engine\ExpressionContainerInterface;
 use Drupal\rules\Engine\ExpressionInterface;
 use Drupal\rules\Engine\ExpressionManagerInterface;
-use Drupal\rules\Engine\RulesStateInterface;
+use Drupal\rules\Engine\ExecutionStateInterface;
 use Drupal\rules\Exception\InvalidExpressionException;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -116,7 +117,7 @@ class ActionSet extends ExpressionBase implements ActionExpressionContainerInter
   /**
    * {@inheritdoc}
    */
-  public function executeWithState(RulesStateInterface $state) {
+  public function executeWithState(ExecutionStateInterface $state) {
     foreach ($this->actions as $action) {
       $action->executeWithState($state);
     }
@@ -146,8 +147,37 @@ class ActionSet extends ExpressionBase implements ActionExpressionContainerInter
   /**
    * {@inheritdoc}
    */
+  public function getExpression($uuid) {
+    if (isset($this->actions[$uuid])) {
+      return $this->actions[$uuid];
+    }
+    foreach ($this->actions as $action) {
+      if ($action instanceof ExpressionContainerInterface) {
+        $nested_action = $action->getExpression($uuid);
+        if ($nested_action) {
+          return $nested_action;
+        }
+      }
+    }
+    return FALSE;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function deleteExpression($uuid) {
-    unset($this->actions[$uuid]);
+    if (isset($this->actions[$uuid])) {
+      unset($this->actions[$uuid]);
+      return TRUE;
+    }
+    foreach ($this->actions as $action) {
+      if ($action instanceof ExpressionContainerInterface
+        && $action->deleteExpression($uuid)
+      ) {
+        return TRUE;
+      }
+    }
+    return FALSE;
   }
 
 }

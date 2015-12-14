@@ -11,7 +11,7 @@ use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\rules\Condition\ConditionManager;
 use Drupal\rules\Context\ContextConfig;
-use Drupal\rules\Plugin\RulesExpression\ReactionRule;
+use Drupal\rules\Entity\ReactionRuleConfig;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -43,7 +43,7 @@ class AddConditionForm extends FormBase {
   /**
    * {@inheritdoc}
    */
-  public function buildForm(array $form, FormStateInterface $form_state, ReactionRule $rules_reaction_rule = NULL) {
+  public function buildForm(array $form, FormStateInterface $form_state, ReactionRuleConfig $rules_reaction_rule = NULL) {
     $form_state->set('rule', $rules_reaction_rule);
     $condition_name = $form_state->getValue('condition');
 

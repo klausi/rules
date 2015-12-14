@@ -11,6 +11,7 @@ use Drupal\Component\Uuid\Php;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\rules\Context\ContextConfig;
 use Drupal\rules\Context\ContextDefinition;
+use Drupal\rules\Engine\RulesComponent;
 use Drupal\Tests\rules\Integration\RulesEntityIntegrationTestBase;
 
 /**
@@ -32,11 +33,7 @@ class AutoSaveTest extends RulesEntityIntegrationTestBase {
    * Tests auto saving after an action execution.
    */
   public function testActionAutoSave() {
-    $rule = $this->rulesExpressionManager->createRule([
-      'context_definitions' => [
-        'entity' => ContextDefinition::create('entity')->toArray(),
-      ],
-    ]);
+    $rule = $this->rulesExpressionManager->createRule();
     // Just leverage the entity save action, which by default uses auto-saving.
     $rule->addAction('rules_entity_save', ContextConfig::create()
       ->map('entity', 'entity')
@@ -45,8 +42,10 @@ class AutoSaveTest extends RulesEntityIntegrationTestBase {
     $entity = $this->prophesizeEntity(EntityInterface::class);
     $entity->save()->shouldBeCalledTimes(1);
 
-    $rule->setContextValue('entity', $entity->reveal());
-    $rule->execute();
+    RulesComponent::create($rule)
+      ->addContextDefinition('entity', ContextDefinition::create('entity'))
+      ->setContextValue('entity', $entity->reveal())
+      ->execute();
   }
 
 }

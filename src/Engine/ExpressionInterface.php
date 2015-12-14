@@ -8,21 +8,21 @@
 namespace Drupal\rules\Engine;
 
 use Drupal\Component\Plugin\ConfigurablePluginInterface;
-use Drupal\Component\Plugin\ContextAwarePluginInterface;
 use Drupal\Core\Executable\ExecutableInterface;
-use Drupal\rules\Context\ContextProviderInterface;
 
 /**
  * Defines the interface for Rules expressions.
  *
  * @see \Drupal\rules\Engine\ExpressionManager
  */
-interface ExpressionInterface extends ExecutableInterface, ContextAwarePluginInterface, ContextProviderInterface, ConfigurablePluginInterface {
+interface ExpressionInterface extends ExecutableInterface, ConfigurablePluginInterface {
 
   /**
    * Execute the expression with a given Rules state.
    *
-   * @param \Drupal\rules\Engine\RulesStateInterface $state
+   * Note that this does not auto-save any changes.
+   *
+   * @param \Drupal\rules\Engine\ExecutionStateInterface $state
    *   The state with all the execution variables in it.
    *
    * @return null|bool
@@ -30,9 +30,9 @@ interface ExpressionInterface extends ExecutableInterface, ContextAwarePluginInt
    *   by conditions that return their evaluation result.
    *
    * @throws \Drupal\rules\Exception\RulesEvaluationException
-   *   In case the Rules expression triggers errors during execution.
+   *   Thrown if the Rules expression triggers errors during execution.
    */
-  public function executeWithState(RulesStateInterface $state);
+  public function executeWithState(ExecutionStateInterface $state);
 
   /**
    * Returns the form handling class for this expression.

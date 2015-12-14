@@ -16,7 +16,7 @@ use Drupal\rules\Engine\ConditionExpressionContainerInterface;
 use Drupal\rules\Engine\ConditionExpressionInterface;
 use Drupal\rules\Engine\ExpressionInterface;
 use Drupal\rules\Engine\ExpressionManagerInterface;
-use Drupal\rules\Engine\RulesStateInterface;
+use Drupal\rules\Engine\ExecutionStateInterface;
 use Drupal\rules\Exception\InvalidExpressionException;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -27,9 +27,12 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  * nest several rules into one rule. This is the functionality of so called
  * "rule sets" in Drupal 7.
  *
+ * @todo rename the form class to just RuleForm.
+ *
  * @RulesExpression(
  *   id = "rules_rule",
- *   label = @Translation("A rule, executing actions when conditions are met.")
+ *   label = @Translation("A rule, executing actions when conditions are met."),
+ *   form_class = "\Drupal\rules\Form\Expression\ReactionRuleForm"
  * )
  */
 class Rule extends ExpressionBase implements RuleInterface, ContainerFactoryPluginInterface {
@@ -88,7 +91,7 @@ class Rule extends ExpressionBase implements RuleInterface, ContainerFactoryPlug
   /**
    * {@inheritdoc}
    */
-  public function executeWithState(RulesStateInterface $state) {
+  public function executeWithState(ExecutionStateInterface $state) {
     // Evaluate the rule's conditions.
     if (!$this->conditions->isEmpty() && !$this->conditions->executeWithState($state)) {
       // Do not run the actions if the conditions are not met.
@@ -191,11 +194,23 @@ class Rule extends ExpressionBase implements RuleInterface, ContainerFactoryPlug
   /**
    * {@inheritdoc}
    */
+  public function getExpression($uuid) {
+    $condition = $this->conditions->getExpression($uuid);
+    if ($condition) {
+      return $condition;
+    }
+    return $this->actions->getExpression($uuid);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function deleteExpression($uuid) {
-    // The expression can either be in our condition or action set, so just
-    // delete it from both.
-    $this->conditions->deleteExpression($uuid);
-    $this->actions->deleteExpression($uuid);
+    $deleted = $this->conditions->deleteExpression($uuid);
+    if (!$deleted) {
+      $deleted = $this->actions->deleteExpression($uuid);
+    }
+    return $deleted;
   }
 
 }

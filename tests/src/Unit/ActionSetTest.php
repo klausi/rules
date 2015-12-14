@@ -8,9 +8,9 @@
 namespace Drupal\Tests\rules\Unit;
 
 use Drupal\Component\Uuid\Php;
-use Drupal\rules\Engine\RulesStateInterface;
 use Drupal\rules\Plugin\RulesExpression\ActionSet;
 use Drupal\rules\Plugin\RulesExpression\RulesAction;
+use Drupal\rules\Engine\ExecutionStateInterface;
 use Prophecy\Argument;
 
 /**
@@ -41,7 +41,7 @@ class ActionSetTest extends RulesUnitTestBase {
   public function testActionExecution() {
     // The method on the test action must be called once.
     $this->testActionExpression->executeWithState(
-      Argument::type(RulesStateInterface::class))->shouldBeCalledTimes(1);
+      Argument::type(ExecutionStateInterface::class))->shouldBeCalledTimes(1);
 
     $this->actionSet->addExpressionObject($this->testActionExpression->reveal())->execute();
   }
@@ -52,7 +52,7 @@ class ActionSetTest extends RulesUnitTestBase {
   public function testTwoActionExecution() {
     // The method on the test action must be called twice.
     $this->testActionExpression->executeWithState(
-      Argument::type(RulesStateInterface::class))->shouldBeCalledTimes(2);
+      Argument::type(ExecutionStateInterface::class))->shouldBeCalledTimes(2);
 
     $this->actionSet->addExpressionObject($this->testActionExpression->reveal())
       ->addExpressionObject($this->testActionExpression->reveal())
@@ -65,7 +65,7 @@ class ActionSetTest extends RulesUnitTestBase {
   public function testNestedActionExecution() {
     // The method on the test action must be called twice.
     $this->testActionExpression->executeWithState(
-      Argument::type(RulesStateInterface::class))->shouldBeCalledTimes(2);
+      Argument::type(ExecutionStateInterface::class))->shouldBeCalledTimes(2);
 
     $inner = new ActionSet([], '', [], $this->expressionManager->reveal(), new Php());
     $inner->addExpressionObject($this->testActionExpression->reveal());
@@ -73,6 +73,16 @@ class ActionSetTest extends RulesUnitTestBase {
     $this->actionSet->addExpressionObject($this->testActionExpression->reveal())
       ->addExpressionObject($inner)
       ->execute();
+  }
+
+  /**
+   * Tests that a nested action can be retrieved by UUID.
+   */
+  public function testLookupAction() {
+    $this->actionSet->addExpressionObject($this->testActionExpression->reveal());
+    $uuid = $this->actionSet->getIterator()->key();
+    $this->assertSame($this->testActionExpression->reveal(), $this->actionSet->getExpression($uuid));
+    $this->assertFalse($this->actionSet->getExpression('invalid UUID'));
   }
 
   /**
@@ -88,7 +98,7 @@ class ActionSetTest extends RulesUnitTestBase {
     $this->actionSet->deleteExpression($uuid);
     // Now only the second action remains.
     foreach ($this->actionSet as $action) {
-      $this->assertEquals($second_action->reveal(), $action);
+      $this->assertSame($second_action->reveal(), $action);
     }
   }
 
