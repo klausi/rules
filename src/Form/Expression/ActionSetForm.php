@@ -74,8 +74,8 @@ class ActionSetForm implements ExpressionFormInterface {
       '#theme' => 'menu_local_action',
       '#link' => [
         'title' => $this->t('Add action'),
-        'url' => Url::fromRoute('rules.reaction_rule.condition.add', [
-          'rules_reaction_rule' => $this->actionSet->getRoot()->getConfigEntityId(),
+        'url' => Url::fromRoute('rules.reaction_rule.action.add', [
+          'reaction_config' => $this->actionSet->getRoot()->getConfigEntityId(),
         ]),
       ],
     ];

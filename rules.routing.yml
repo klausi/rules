@@ -94,6 +94,19 @@ rules.reaction_rule.condition.add:
   requirements:
     _permission: 'administer rules+administer rules reactions'
 
+rules.reaction_rule.action.add:
+  path: '/admin/config/workflow/rules/reactions/edit/{reaction_config}/add/action'
+  defaults:
+    _form: '\Drupal\rules\Form\AddActionForm'
+    _title: 'Add action'
+  options:
+    parameters:
+      reaction_config:
+        type: entity:rules_reaction_rule
+    _admin_route: TRUE
+  requirements:
+    _permission: 'administer rules+administer rules reactions'
+
 rules.reaction_rule.expression.delete:
   path: '/admin/config/workflow/rules/reactions/edit/{rules_reaction_rule}/delete/{uuid}'
   defaults:
