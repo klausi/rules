@@ -97,8 +97,8 @@ rules.reaction_rule.condition.add:
 rules.reaction_rule.condition.delete:
   path: '/admin/config/workflow/rules/reactions/edit/{rules_reaction_rule}/delete/{uuid}'
   defaults:
-    _form: '\Drupal\rules\Form\DeleteElementForm'
-    _title: 'Delete element'
+    _form: '\Drupal\rules\Form\DeleteExpressionForm'
+    _title: 'Delete expression'
   options:
     parameters:
       rules_reaction_rule:

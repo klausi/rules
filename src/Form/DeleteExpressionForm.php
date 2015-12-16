@@ -2,7 +2,7 @@
 
 /**
  * @file
- * Contains \Drupal\rules\Form\DeleteElementForm.
+ * Contains \Drupal\rules\Form\DeleteExpressionForm.
  */
 
 namespace Drupal\rules\Form;
@@ -13,19 +13,19 @@ use Drupal\rules\Entity\ReactionRuleConfig;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 /**
- * Removes an element from a rule.
+ * Removes an expression from a rule.
  */
-class DeleteElementForm extends ConfirmFormBase {
+class DeleteExpressionForm extends ConfirmFormBase {
 
   /**
-   * The reaction rule the element is deleted from.
+   * The reaction rule config the expression is deleted from.
    *
-   * @var \Drupal\rules\Entity\ReactionRule
+   * @var \Drupal\rules\Entity\ReactionRuleConfig
    */
-  protected $rule;
+  protected $ruleConfig;
 
   /**
-   * The UUID of the element in the rule.
+   * The UUID of the expression in the rule.
    *
    * @var string
    */
@@ -35,14 +35,14 @@ class DeleteElementForm extends ConfirmFormBase {
    * {@inheritdoc}
    */
   public function getFormId() {
-    return 'rules_delete_element';
+    return 'rules_delete_expression';
   }
 
   /**
    * {@inheritdoc}
    */
   public function buildForm(array $form, FormStateInterface $form_state, ReactionRuleConfig $rules_reaction_rule = NULL, $uuid = NULL) {
-    $this->rule = $rules_reaction_rule;
+    $this->ruleConfig = $rules_reaction_rule;
     $this->uuid = $uuid;
     return parent::buildForm($form, $form_state);
   }
@@ -58,7 +58,7 @@ class DeleteElementForm extends ConfirmFormBase {
    * {@inheritdoc}
    */
   public function getQuestion() {
-    $rule_expression = $this->rule->getExpression();
+    $rule_expression = $this->ruleConfig->getExpression();
     $expression_inside = $rule_expression->getExpression($this->uuid);
     if (!$expression_inside) {
       throw new NotFoundHttpException();
@@ -66,7 +66,7 @@ class DeleteElementForm extends ConfirmFormBase {
 
     return $this->t('Are you sure you want to delete %title from %rule?', [
       '%title' => $expression_inside->getLabel(),
-      '%rule' => $this->rule->label(),
+      '%rule' => $this->ruleConfig->label(),
     ]);
   }
 
@@ -74,19 +74,19 @@ class DeleteElementForm extends ConfirmFormBase {
    * {@inheritdoc}
    */
   public function getCancelUrl() {
-    return $this->rule->urlInfo();
+    return $this->ruleConfig->urlInfo();
   }
 
   /**
    * {@inheritdoc}
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
-    $expression = $this->rule->getExpression();
+    $expression = $this->ruleConfig->getExpression();
     $expression->deleteExpression($this->uuid);
     // Set the expression again so that the config is copied over to the
     // config entity.
-    $this->rule->setExpression($expression);
-    $this->rule->save();
+    $this->ruleConfig->setExpression($expression);
+    $this->ruleConfig->save();
 
     drupal_set_message($this->t('Your changes have been saved.'));
     $form_state->setRedirectUrl($this->getCancelUrl());
