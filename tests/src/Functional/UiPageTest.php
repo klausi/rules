@@ -81,7 +81,7 @@ class UiPageTest extends BrowserTestBase {
    * Tests that deleting an expression from a rule works.
    */
   public function testDeleteExpressionInRule() {
-    // Setup a rule with one condition;
+    // Setup a rule with one condition.
     $this->testCreateReactionRule();
 
     $this->getSession()->getPage()->findLink('Delete')->click();
