@@ -43,8 +43,8 @@ class AddConditionForm extends FormBase {
   /**
    * {@inheritdoc}
    */
-  public function buildForm(array $form, FormStateInterface $form_state, ReactionRuleConfig $rules_reaction_rule = NULL) {
-    $form_state->set('rule', $rules_reaction_rule);
+  public function buildForm(array $form, FormStateInterface $form_state, ReactionRuleConfig $reaction_config = NULL) {
+    $form_state->set('reaction_config', $reaction_config);
     $condition_name = $form_state->getValue('condition');
 
     // Step 1 of the multistep form.
@@ -118,8 +118,8 @@ class AddConditionForm extends FormBase {
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
     if ($form_state->getTriggeringElement()['#name'] == 'save') {
-      $rule = $form_state->get('rule');
-      $expression = $rule->getExpression();
+      $reaction_config = $form_state->get('reaction_config');
+      $expression = $reaction_config->getExpression();
 
       $context_config = ContextConfig::create();
       foreach ($form_state->getValue('context') as $context_name => $value) {
@@ -129,13 +129,13 @@ class AddConditionForm extends FormBase {
       $expression->addCondition($form_state->getValue('condition'), $context_config);
       // Set the expression again so that the config is copied over to the
       // config entity.
-      $rule->setExpression($expression);
-      $rule->save();
+      $reaction_config->setExpression($expression);
+      $reaction_config->save();
 
       drupal_set_message($this->t('Your changes have been saved.'));
 
       $form_state->setRedirect('entity.rules_reaction_rule.edit_form', [
-        'rules_reaction_rule' => $rule->id(),
+        'rules_reaction_rule' => $reaction_config->id(),
       ]);
     }
     else {
