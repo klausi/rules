@@ -89,12 +89,7 @@ class AddConditionForm extends FormBase {
 
     $form['context']['#tree'] = TRUE;
     foreach ($context_defintions as $context_name => $context_definition) {
-      $form['context'][$context_name] = [
-        '#type' => 'textfield',
-        '#title' => $context_definition->getLabel(),
-        '#description' => $context_definition->getDescription(),
-        '#required' => $context_definition->isRequired(),
-      ];
+      $form = $this->buildContextForm($form, $form_state, $context_name, $context_definition);
     }
 
     $form['save'] = [
@@ -104,6 +99,40 @@ class AddConditionForm extends FormBase {
     ];
 
     return $form;
+  }
+
+  /**
+   * Provides the form part for a context parameter.
+   */
+  public function buildContextForm(array $form, FormStateInterface $form_state, $context_name, $context_definition) {
+    $form['context'][$context_name] = [
+      '#type' => 'fieldset',
+      '#title' => $context_definition->getLabel(),
+    ];
+    $form['context'][$context_name]['setting'] = [
+      '#type' => 'textfield',
+      '#title' => $this->t('Value'),
+      '#description' => $context_definition->getDescription(),
+      '#required' => $context_definition->isRequired(),
+    ];
+
+    $mode = 'input';
+    $value = $mode == 'selector' ? $this->t('Switch to the direct input mode') : $this->t('Switch to data selection');
+    $form['context'][$context_name]['switch_button'] = [
+      '#type' => 'submit',
+      '#name' => 'context_' . $context_name,
+      '#attributes' => ['class' => ['rules-switch-button']],
+      '#parameter' => $context_name,
+      '#value' => $value,
+      '#submit' => ['::switchContextMode'],
+      // Do not validate!
+      '#limit_validation_errors' => [],
+    ];
+    return $form;
+  }
+
+  public function switchContextMode(array &$form, FormStateInterface $form_state) {
+    $form_state->setRebuild();
   }
 
   /**
@@ -123,7 +152,7 @@ class AddConditionForm extends FormBase {
 
       $context_config = ContextConfig::create();
       foreach ($form_state->getValue('context') as $context_name => $value) {
-        $context_config->setValue($context_name, $value);
+        $context_config->setValue($context_name, $value['setting']);
       }
 
       $expression->addCondition($form_state->getValue('condition'), $context_config);
