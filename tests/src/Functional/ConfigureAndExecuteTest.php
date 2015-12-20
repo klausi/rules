@@ -30,12 +30,18 @@ class ConfigureAndExecuteTest extends BrowserTestBase {
    */
   protected $profile = 'minimal';
 
+  /**
+   * {@inheritdoc}
+   */
   public function setUp() {
     parent::setUp();
-    $type = entity_create('node_type', [
-      'type' => 'article',
-      'name' => 'Article',
-    ]);
+
+    // Create an article content type that we will use for testing.
+    $type = $this->container->get('entity_type.manager')->getStorage('node_type')
+      ->create([
+        'type' => 'article',
+        'name' => 'Article',
+      ]);
     $type->save();
     $this->container->get('router.builder')->rebuild();
 
@@ -45,7 +51,11 @@ class ConfigureAndExecuteTest extends BrowserTestBase {
    * Tests creation of a rule and then triggering its execution.
    */
   public function testConfigureAndExecute() {
-    $account = $this->drupalCreateUser(['create article content', 'administer rules', 'administer site configuration']);
+    $account = $this->drupalCreateUser([
+      'create article content',
+      'administer rules',
+      'administer site configuration',
+    ]);
     $this->drupalLogin($account);
 
     $this->drupalGet('admin/config/workflow/rules');
@@ -56,10 +66,8 @@ class ConfigureAndExecuteTest extends BrowserTestBase {
 
     $this->getSession()->getPage()->findField('Label')->setValue('Test rule');
     $this->getSession()->getPage()->findField('Machine-readable name')->setValue('test_rule');
+    $this->getSession()->getPage()->findField('React on event')->setValue('rules_entity_presave:node');
     $this->getSession()->getPage()->findButton('Save')->click();
-
-    $this->assertSession()->statusCodeEquals(200);
-    $this->assertSession()->pageTextContains('Reaction rule Test rule has been created.');
 
     $this->getSession()->getPage()->findLink('Add condition')->click();
 
@@ -83,9 +91,7 @@ class ConfigureAndExecuteTest extends BrowserTestBase {
     $this->getSession()->getPage()->findButton('Save')->click();
 
     // Rebuild the container so that the new Rules event is picked up.
-    //$this->container->get('kernel')->rebuildContainer();
     $this->drupalGet('admin/config/development/performance');
-    //file_put_contents(DRUPAL_ROOT . '/test.html', $this->getSession()->getPage()->getContent());
     $this->getSession()->getPage()->findButton('Clear all caches')->click();
 
     // Add a node now and check if our rule triggers.
