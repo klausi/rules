@@ -7,14 +7,12 @@
 
 namespace Drupal\Tests\rules\Functional;
 
-use Drupal\simpletest\BrowserTestBase;
-
 /**
  * Tests that a rule can be configured and triggered when a node is edited.
  *
  * @group rules_ui
  */
-class ConfigureAndExecuteTest extends BrowserTestBase {
+class ConfigureAndExecuteTest extends RulesBrowserTestBase {
 
   /**
    * Modules to enable.
@@ -62,42 +60,42 @@ class ConfigureAndExecuteTest extends BrowserTestBase {
 
     // Set up a rule that will show a system message if the title of a node
     // matches "Test title".
-    $this->getSession()->getPage()->findLink('Add reaction rule')->click();
+    $this->findLink('Add reaction rule')->click();
 
-    $this->getSession()->getPage()->findField('Label')->setValue('Test rule');
-    $this->getSession()->getPage()->findField('Machine-readable name')->setValue('test_rule');
-    $this->getSession()->getPage()->findField('React on event')->setValue('rules_entity_presave:node');
-    $this->getSession()->getPage()->findButton('Save')->click();
+    $this->findField('Label')->setValue('Test rule');
+    $this->findField('Machine-readable name')->setValue('test_rule');
+    $this->findField('React on event')->setValue('rules_entity_presave:node');
+    $this->findButton('Save')->click();
 
-    $this->getSession()->getPage()->findLink('Add condition')->click();
+    $this->findLink('Add condition')->click();
 
-    $this->getSession()->getPage()->findField('Condition')->setValue('rules_data_comparison');
-    $this->getSession()->getPage()->findButton('Continue')->click();
+    $this->findField('Condition')->setValue('rules_data_comparison');
+    $this->findButton('Continue')->click();
 
     // @todo this should not be necessary once the data context is set to
     // selector by default anyway.
-    $this->getSession()->getPage()->findButton('Switch to data selection')->click();
-    $this->getSession()->getPage()->findField('context[data][setting]')->setValue('node:title:0:value');
+    $this->findButton('Switch to data selection')->click();
+    $this->findField('context[data][setting]')->setValue('node:title:0:value');
 
-    $this->getSession()->getPage()->findField('context[value][setting]')->setValue('Test title');
-    $this->getSession()->getPage()->findButton('Save')->click();
+    $this->findField('context[value][setting]')->setValue('Test title');
+    $this->findButton('Save')->click();
 
-    $this->getSession()->getPage()->findLink('Add action')->click();
-    $this->getSession()->getPage()->findField('Action')->setValue('rules_system_message');
-    $this->getSession()->getPage()->findButton('Continue')->click();
+    $this->findLink('Add action')->click();
+    $this->findField('Action')->setValue('rules_system_message');
+    $this->findButton('Continue')->click();
 
-    $this->getSession()->getPage()->findField('context[message]')->setValue('Title matched "Test title"!');
-    $this->getSession()->getPage()->findField('context[type]')->setValue('status');
-    $this->getSession()->getPage()->findButton('Save')->click();
+    $this->findField('context[message]')->setValue('Title matched "Test title"!');
+    $this->findField('context[type]')->setValue('status');
+    $this->findButton('Save')->click();
 
     // Rebuild the container so that the new Rules event is picked up.
     $this->drupalGet('admin/config/development/performance');
-    $this->getSession()->getPage()->findButton('Clear all caches')->click();
+    $this->findButton('Clear all caches')->click();
 
     // Add a node now and check if our rule triggers.
     $this->drupalGet('node/add/article');
-    $this->getSession()->getPage()->findField('Title')->setValue('Test title');
-    $this->getSession()->getPage()->findButton('Save')->click();
+    $this->findField('Title')->setValue('Test title');
+    $this->findButton('Save')->click();
 
     $this->assertSession()->pageTextContains('Title matched "Test title"!');
   }
