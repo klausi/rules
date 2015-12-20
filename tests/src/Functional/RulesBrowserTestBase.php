@@ -18,7 +18,7 @@ abstract class RulesBrowserTestBase extends BrowserTestBase {
    * Finds link with specified locator.
    *
    * @param string $locator
-   *   link id, title, text or image alt.
+   *   Link id, title, text or image alt.
    *
    * @return NodeElement|null
    */
@@ -30,24 +30,64 @@ abstract class RulesBrowserTestBase extends BrowserTestBase {
    * Finds field (input, textarea, select) with specified locator.
    *
    * @param string $locator
-   *   input id, name or label.
+   *   Input id, name or label.
    *
    * @return NodeElement|null
    */
-   public function findField($locator) {
-     return $this->getSession()->getPage()->findField($locator);
-   }
+  public function findField($locator) {
+    return $this->getSession()->getPage()->findField($locator);
+  }
 
   /**
-   * Finds button (input[type=submit|image|button|reset], button) with specified locator.
+   * Finds button with specified locator.
    *
    * @param string $locator
-   *   button id, value or alt.
+   *   Button id, value or alt.
    *
    * @return NodeElement|null
    */
-   public function findButton($locator) {
-     return $this->getSession()->getPage()->findButton($locator);
-   }
+  public function findButton($locator) {
+    return $this->getSession()->getPage()->findButton($locator);
+  }
+
+  /**
+   * Clicks link with specified locator.
+   *
+   * @param string $locator
+   *   Link id, title, text or image alt.
+   *
+   * @throws ElementNotFoundException
+   */
+  public function clickLink($locator) {
+    $this->getSession()->getPage()->clickLink($locator);
+  }
+
+  /**
+   * Presses button with specified locator.
+   *
+   * @param string $locator
+   *   Button id, value or alt.
+   *
+   * @throws ElementNotFoundException
+   */
+  public function pressButton($locator) {
+    $this->getSession()->getPage()->pressButton($locator);
+  }
+
+  /**
+   * Fills in field (input, textarea, select) with specified locator.
+   *
+   * @param string $locator
+   *   Input id, name or label.
+   * @param string $value
+   *   Value.
+   *
+   * @throws ElementNotFoundException
+   *
+   * @see NodeElement::setValue
+   */
+  public function fillField($locator, $value) {
+    $this->getSession()->getPage()->fillField($locator, $value);
+  }
 
 }

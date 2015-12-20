@@ -60,42 +60,42 @@ class ConfigureAndExecuteTest extends RulesBrowserTestBase {
 
     // Set up a rule that will show a system message if the title of a node
     // matches "Test title".
-    $this->findLink('Add reaction rule')->click();
+    $this->clickLink('Add reaction rule');
 
-    $this->findField('Label')->setValue('Test rule');
-    $this->findField('Machine-readable name')->setValue('test_rule');
-    $this->findField('React on event')->setValue('rules_entity_presave:node');
-    $this->findButton('Save')->click();
+    $this->fillField('Label', 'Test rule');
+    $this->fillField('Machine-readable name', 'test_rule');
+    $this->fillField('React on event', 'rules_entity_presave:node');
+    $this->pressButton('Save');
 
-    $this->findLink('Add condition')->click();
+    $this->clickLink('Add condition');
 
-    $this->findField('Condition')->setValue('rules_data_comparison');
-    $this->findButton('Continue')->click();
+    $this->fillField('Condition', 'rules_data_comparison');
+    $this->pressButton('Continue');
 
     // @todo this should not be necessary once the data context is set to
     // selector by default anyway.
-    $this->findButton('Switch to data selection')->click();
-    $this->findField('context[data][setting]')->setValue('node:title:0:value');
+    $this->pressButton('Switch to data selection');
+    $this->fillField('context[data][setting]', 'node:title:0:value');
 
-    $this->findField('context[value][setting]')->setValue('Test title');
-    $this->findButton('Save')->click();
+    $this->fillField('context[value][setting]', 'Test title');
+    $this->pressButton('Save');
 
-    $this->findLink('Add action')->click();
-    $this->findField('Action')->setValue('rules_system_message');
-    $this->findButton('Continue')->click();
+    $this->clickLink('Add action');
+    $this->fillField('Action', 'rules_system_message');
+    $this->pressButton('Continue');
 
-    $this->findField('context[message]')->setValue('Title matched "Test title"!');
-    $this->findField('context[type]')->setValue('status');
-    $this->findButton('Save')->click();
+    $this->fillField('context[message]', 'Title matched "Test title"!');
+    $this->fillField('context[type]', 'status');
+    $this->pressButton('Save');
 
     // Rebuild the container so that the new Rules event is picked up.
     $this->drupalGet('admin/config/development/performance');
-    $this->findButton('Clear all caches')->click();
+    $this->pressButton('Clear all caches');
 
     // Add a node now and check if our rule triggers.
     $this->drupalGet('node/add/article');
-    $this->findField('Title')->setValue('Test title');
-    $this->findButton('Save')->click();
+    $this->fillField('Title', 'Test title');
+    $this->pressButton('Save');
 
     $this->assertSession()->pageTextContains('Title matched "Test title"!');
   }
