@@ -20,7 +20,7 @@ abstract class RulesBrowserTestBase extends BrowserTestBase {
    * @param string $locator
    *   Link id, title, text or image alt.
    *
-   * @return NodeElement|null
+   * @return \Behat\Mink\Element\NodeElement|null
    */
   public function findLink($locator) {
     return $this->getSession()->getPage()->findLink($locator);
@@ -32,7 +32,7 @@ abstract class RulesBrowserTestBase extends BrowserTestBase {
    * @param string $locator
    *   Input id, name or label.
    *
-   * @return NodeElement|null
+   * @return \Behat\Mink\Element\NodeElement|null
    */
   public function findField($locator) {
     return $this->getSession()->getPage()->findField($locator);
@@ -44,7 +44,7 @@ abstract class RulesBrowserTestBase extends BrowserTestBase {
    * @param string $locator
    *   Button id, value or alt.
    *
-   * @return NodeElement|null
+   * @return \Behat\Mink\Element\NodeElement|null
    */
   public function findButton($locator) {
     return $this->getSession()->getPage()->findButton($locator);
@@ -56,7 +56,7 @@ abstract class RulesBrowserTestBase extends BrowserTestBase {
    * @param string $locator
    *   Link id, title, text or image alt.
    *
-   * @throws ElementNotFoundException
+   * @throws \Behat\Mink\Exception\ElementNotFoundException
    */
   public function clickLink($locator) {
     $this->getSession()->getPage()->clickLink($locator);
@@ -68,7 +68,7 @@ abstract class RulesBrowserTestBase extends BrowserTestBase {
    * @param string $locator
    *   Button id, value or alt.
    *
-   * @throws ElementNotFoundException
+   * @throws \Behat\Mink\Exception\ElementNotFoundException
    */
   public function pressButton($locator) {
     $this->getSession()->getPage()->pressButton($locator);
@@ -82,9 +82,9 @@ abstract class RulesBrowserTestBase extends BrowserTestBase {
    * @param string $value
    *   Value.
    *
-   * @throws ElementNotFoundException
+   * @throws \Behat\Mink\Exception\ElementNotFoundException
    *
-   * @see NodeElement::setValue
+   * @see \Behat\Mink\Element\NodeElement::setValue
    */
   public function fillField($locator, $value) {
     $this->getSession()->getPage()->fillField($locator, $value);
