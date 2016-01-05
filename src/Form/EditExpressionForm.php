@@ -9,21 +9,12 @@ namespace Drupal\rules\Form;
 
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\rules\Engine\ExpressionManagerInterface;
 use Drupal\rules\Entity\ReactionRuleConfig;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * UI form to edit an expression like a condition or action in a rule.
  */
 class EditExpressionForm extends FormBase {
-
-  /**
-   * The Rules expression manager to get expression plugins.
-   *
-   * @var ExpressionManagerInterface
-   */
-  protected $expressionManager;
 
   /**
    * The reaction rule config the expression is edited on.
@@ -38,20 +29,6 @@ class EditExpressionForm extends FormBase {
    * @var string
    */
   protected $uuid;
-
-  /**
-   * Creates a new object of this class.
-   */
-  public function __construct(ExpressionManagerInterface $expression_manager) {
-    $this->expressionManager = $expression_manager;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public static function create(ContainerInterface $container) {
-    return new static($container->get('plugin.manager.rules_expression'));
-  }
 
   /**
    * {@inheritdoc}

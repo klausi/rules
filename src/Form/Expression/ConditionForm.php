@@ -11,7 +11,6 @@ use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\rules\Condition\ConditionManager;
 use Drupal\rules\Context\ContextConfig;
-use Drupal\rules\Core\RulesConditionInterface;
 use Drupal\rules\Engine\ConditionExpressionInterface;
 use Drupal\rules\Form\Expression\ExpressionFormInterface;
 
@@ -26,14 +25,14 @@ class ConditionForm implements ExpressionFormInterface {
   /**
    * The condition plugin manager.
    *
-   * @var ConditionManager
+   * @var \Drupal\rules\Condition\ConditionManager
    */
   protected $conditionManager;
 
   /**
    * The condition expression that is edited in the form.
    *
-   * @var ConditionExpressionInterface
+   * @var \Drupal\rules\Engine\ConditionExpressionInterface
    */
   protected $conditionExpression;
 
@@ -85,7 +84,7 @@ class ConditionForm implements ExpressionFormInterface {
     }
 
     // Step 2 of the form.
-    /** @var RulesConditionInterface $condition */
+    /** @var \Drupal\rules\Core\RulesConditionInterface $condition */
     $condition = $this->conditionManager->createInstance($condition_name);
 
     $form['summary'] = [
