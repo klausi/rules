@@ -50,6 +50,12 @@ class ConditionForm implements ExpressionFormInterface {
    */
   public function form(array $form, FormStateInterface $form_state) {
     $condition_name = $form_state->get('condition');
+    $configuration = $this->conditionExpression->getConfiguration();
+    if (empty($condition_name)) {
+      if (!empty($configuration['condition_id'])) {
+        $condition_name = $configuration['condition_id'];
+      }
+    }
 
     // Step 1 of the multistep form.
     if (!$condition_name) {
@@ -72,6 +78,7 @@ class ConditionForm implements ExpressionFormInterface {
         '#type' => 'submit',
         '#value' => $this->t('Continue'),
         '#name' => 'continue',
+        '#submit' => [static::class . '::submitFirstStep'],
       ];
 
       return $form;
@@ -93,7 +100,7 @@ class ConditionForm implements ExpressionFormInterface {
 
     $form['context']['#tree'] = TRUE;
     foreach ($context_defintions as $context_name => $context_definition) {
-      $form = $this->buildContextForm($form, $form_state, $context_name, $context_definition);
+      $form = $this->buildContextForm($form, $form_state, $context_name, $context_definition, $configuration);
     }
 
     $form['save'] = [
@@ -106,39 +113,30 @@ class ConditionForm implements ExpressionFormInterface {
   }
 
   /**
+   * Submit callback: save the selected condition in the first step.
+   */
+  public function submitFirstStep(array &$form, FormStateInterface $form_state) {
+    $form_state->set('condition', $form_state->getValue('condition'));
+    $form_state->setRebuild();
+  }
+
+  /**
    * {@inheritdoc}
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
-    if ($form_state->getTriggeringElement()['#name'] == 'save') {
-      $reaction_config = $form_state->get('reaction_config');
-      $expression = $reaction_config->getExpression();
-
-      $context_config = ContextConfig::create();
-      foreach ($form_state->getValue('context') as $context_name => $value) {
-        if ($form_state->get("context_$context_name") == 'selector') {
-          $context_config->map($context_name, $value['setting']);
-        }
-        else {
-          $context_config->setValue($context_name, $value['setting']);
-        }
+    $context_config = ContextConfig::create();
+    foreach ($form_state->getValue('context') as $context_name => $value) {
+      if ($form_state->get("context_$context_name") == 'selector') {
+        $context_config->map($context_name, $value['setting']);
       }
-
-      $expression->addCondition($form_state->getValue('condition'), $context_config);
-      // Set the expression again so that the config is copied over to the
-      // config entity.
-      $reaction_config->setExpression($expression);
-      $reaction_config->save();
-
-      drupal_set_message($this->t('Your changes have been saved.'));
-
-      $form_state->setRedirect('entity.rules_reaction_rule.edit_form', [
-        'rules_reaction_rule' => $reaction_config->id(),
-      ]);
+      else {
+        $context_config->setValue($context_name, $value['setting']);
+      }
     }
-    else {
-      $form_state->set('condition', $form_state->getValue('condition'));
-      $form_state->setRebuild();
-    }
+
+    $configuration = $context_config->toArray();
+    $configuration['condition_id'] = $form_state->getValue('condition');
+    $this->conditionExpression->setConfiguration($configuration);
   }
 
 }

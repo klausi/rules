@@ -76,6 +76,7 @@ class ActionForm implements ExpressionFormInterface {
         '#type' => 'submit',
         '#value' => $this->t('Continue'),
         '#name' => 'continue',
+        '#submit' => [static::class . '::submitFirstStep'],
       ];
 
       return $form;
@@ -109,39 +110,29 @@ class ActionForm implements ExpressionFormInterface {
   }
 
   /**
+   * Submit callback: save the selected action in the first step.
+   */
+  public function submitFirstStep(array &$form, FormStateInterface $form_state) {
+    $form_state->set('action', $form_state->getValue('action'));
+    $form_state->setRebuild();
+  }
+
+  /**
    * {@inheritdoc}
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
-    if ($form_state->getTriggeringElement()['#name'] == 'save') {
-      $reaction_config = $form_state->get('reaction_config');
-      $rule_expression = $reaction_config->getExpression();
-
-      $context_config = ContextConfig::create();
-      foreach ($form_state->getValue('context') as $context_name => $value) {
-        if ($form_state->get("context_$context_name") == 'selector') {
-          $context_config->map($context_name, $value['setting']);
-        }
-        else {
-          $context_config->setValue($context_name, $value['setting']);
-        }
+    $context_config = ContextConfig::create();
+    foreach ($form_state->getValue('context') as $context_name => $value) {
+      if ($form_state->get("context_$context_name") == 'selector') {
+        $context_config->map($context_name, $value['setting']);
       }
-
-      $rule_expression->addAction($form_state->getValue('action'), $context_config);
-      // Set the expression again so that the config is copied over to the
-      // config entity.
-      $reaction_config->setExpression($rule_expression);
-      $reaction_config->save();
-
-      drupal_set_message($this->t('Your changes have been saved.'));
-
-      $form_state->setRedirect('entity.rules_reaction_rule.edit_form', [
-        'rules_reaction_rule' => $reaction_config->id(),
-      ]);
+      else {
+        $context_config->setValue($context_name, $value['setting']);
+      }
     }
-    else {
-      $form_state->set('action', $form_state->getValue('action'));
-      $form_state->setRebuild();
-    }
+    $configuration = $context_config->toArray();
+    $configuration['action_id'] = $form_state->getValue('action');
+    $this->actionExpression->setConfiguration($configuration);
   }
 
 }

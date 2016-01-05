@@ -26,6 +26,20 @@ class AddExpressionForm extends FormBase {
   protected $expressionManager;
 
   /**
+   * The reaction rule config the expression is added to.
+   *
+   * @var \Drupal\rules\Entity\ReactionRuleConfig
+   */
+  protected $ruleConfig;
+
+  /**
+   * The expression ID that is added, example: 'rules_action'.
+   *
+   * @var string
+   */
+  protected $expressionId;
+
+  /**
    * Creates a new object of this class.
    */
   public function __construct(ExpressionManagerInterface $expression_manager) {
@@ -43,9 +57,10 @@ class AddExpressionForm extends FormBase {
    * {@inheritdoc}
    */
   public function buildForm(array $form, FormStateInterface $form_state, ReactionRuleConfig $reaction_config = NULL, $expression_id = NULL) {
+    $this->ruleConfig = $reaction_config;
+    $this->expressionId = $expression_id;
+
     $expression = $this->expressionManager->createInstance($expression_id);
-    $form_state->set('reaction_config', $reaction_config);
-    $form_state->set('expression', $expression);
     $form_handler = $expression->getFormHandler();
     $form = $form_handler->form($form, $form_state);
     return $form;
@@ -62,9 +77,22 @@ class AddExpressionForm extends FormBase {
    * {@inheritdoc}
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
-    $expression = $form_state->get('expression');
+    $expression = $this->expressionManager->createInstance($this->expressionId);
     $form_handler = $expression->getFormHandler();
     $form_handler->submitForm($form, $form_state);
+
+    $rule_expression = $this->ruleConfig->getExpression();
+    $rule_expression->addExpressionObject($expression);
+    // Set the expression again so that the config is copied over to the
+    // config entity.
+    $this->ruleConfig->setExpression($rule_expression);
+    $this->ruleConfig->save();
+
+    drupal_set_message($this->t('Your changes have been saved.'));
+
+    $form_state->setRedirect('entity.rules_reaction_rule.edit_form', [
+      'rules_reaction_rule' => $this->ruleConfig->id(),
+    ]);
   }
 
   /**
