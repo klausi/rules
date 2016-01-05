@@ -17,6 +17,7 @@ use Drupal\rules\Engine\ConditionExpressionContainerInterface;
  */
 class ConditionContainerForm implements ExpressionFormInterface {
 
+  use ExpressionFormTrait;
   use StringTranslationTrait;
 
   /**
@@ -74,8 +75,9 @@ class ConditionContainerForm implements ExpressionFormInterface {
       '#theme' => 'menu_local_action',
       '#link' => [
         'title' => $this->t('Add condition'),
-        'url' => Url::fromRoute('rules.reaction_rule.condition.add', [
+        'url' => Url::fromRoute('rules.reaction_rule.expression.add', [
           'reaction_config' => $this->conditionContainer->getRoot()->getConfigEntityId(),
+          'expression_id' => 'rules_condition',
         ]),
       ],
     ];

@@ -2,10 +2,10 @@
 
 /**
  * @file
- * Contains \Drupal\rules\Form\ContextFormTrait.
+ * Contains \Drupal\rules\Form\Expression\ContextFormTrait.
  */
 
-namespace Drupal\rules\Form;
+namespace Drupal\rules\Form\Expression;
 
 use Drupal\Core\Form\FormStateInterface;
 
@@ -47,7 +47,7 @@ trait ContextFormTrait {
       '#attributes' => ['class' => ['rules-switch-button']],
       '#parameter' => $context_name,
       '#value' => $value,
-      '#submit' => ['::switchContextMode'],
+      '#submit' => [static::class . '::switchContextMode'],
       // Do not validate!
       '#limit_validation_errors' => [],
     ];

@@ -2,51 +2,52 @@
 
 /**
  * @file
- * Contains \Drupal\rules\Form\AddActionForm.
+ * Contains \Drupal\rules\Form\Expression\ActionForm.
  */
 
-namespace Drupal\rules\Form;
+namespace Drupal\rules\Form\Expression;
 
-use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\rules\Context\ContextConfig;
 use Drupal\rules\Core\RulesActionManagerInterface;
-use Drupal\rules\Entity\ReactionRuleConfig;
-use Symfony\Component\DependencyInjection\ContainerInterface;
+use Drupal\rules\Engine\ActionExpressionInterface;
 
 /**
- * UI form for adding a Rules action.
+ * UI form for adding/editing a Rules action.
  */
-class AddActionForm extends FormBase {
+class ActionForm implements ExpressionFormInterface {
 
   use ContextFormTrait;
+  use ExpressionFormTrait;
+  use StringTranslationTrait;
 
   /**
    * The action plugin manager.
    *
-   * @var \Drupal\rules\Core\RulesActionManagerInterface
+   * @var RulesActionManagerInterface
    */
   protected $actionManager;
 
   /**
+   * The action expression that is edited in the form.
+   *
+   * @var ActionExpressionInterface
+   */
+  protected $actionExpression;
+
+  /**
    * Creates a new object of this class.
    */
-  public function __construct(RulesActionManagerInterface $action_manager) {
+  public function __construct(ActionExpressionInterface $action_expression, RulesActionManagerInterface $action_manager) {
     $this->actionManager = $action_manager;
+    $this->actionExpression = $action_expression;
   }
 
   /**
    * {@inheritdoc}
    */
-  public static function create(ContainerInterface $container) {
-    return new static($container->get('plugin.manager.rules_action'));
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function buildForm(array $form, FormStateInterface $form_state, ReactionRuleConfig $reaction_config = NULL) {
-    $form_state->set('reaction_config', $reaction_config);
+  public function form(array $form, FormStateInterface $form_state) {
     $action_name = $form_state->get('action');
 
     // Step 1 of the multistep form.
@@ -105,17 +106,10 @@ class AddActionForm extends FormBase {
   /**
    * {@inheritdoc}
    */
-  public function getFormId() {
-    return 'rules_reaction_action_add';
-  }
-
-  /**
-   * {@inheritdoc}
-   */
   public function submitForm(array &$form, FormStateInterface $form_state) {
     if ($form_state->getTriggeringElement()['#name'] == 'save') {
       $reaction_config = $form_state->get('reaction_config');
-      $expression = $reaction_config->getExpression();
+      $rule_expression = $reaction_config->getExpression();
 
       $context_config = ContextConfig::create();
       foreach ($form_state->getValue('context') as $context_name => $value) {
@@ -127,10 +121,10 @@ class AddActionForm extends FormBase {
         }
       }
 
-      $expression->addAction($form_state->getValue('action'), $context_config);
+      $rule_expression->addAction($form_state->getValue('action'), $context_config);
       // Set the expression again so that the config is copied over to the
       // config entity.
-      $reaction_config->setExpression($expression);
+      $reaction_config->setExpression($rule_expression);
       $reaction_config->save();
 
       drupal_set_message($this->t('Your changes have been saved.'));

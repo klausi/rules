@@ -25,7 +25,8 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  *
  * @RulesExpression(
  *   id = "rules_action",
- *   label = @Translation("An executable action.")
+ *   label = @Translation("An executable action."),
+ *   form_class = "\Drupal\rules\Form\Expression\ActionForm"
  * )
  */
 class RulesAction extends ExpressionBase implements ContainerFactoryPluginInterface, ActionExpressionInterface {
@@ -141,6 +142,16 @@ class RulesAction extends ExpressionBase implements ContainerFactoryPluginInterf
   public function getLabel() {
     $definition = $this->actionManager->getDefinition($this->configuration['action_id']);
     return $this->t('Action: @label', ['@label' => $definition['label']]);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getFormHandler() {
+    if (isset($this->pluginDefinition['form_class'])) {
+      $class_name = $this->pluginDefinition['form_class'];
+      return new $class_name($this, $this->actionManager);
+    }
   }
 
 }

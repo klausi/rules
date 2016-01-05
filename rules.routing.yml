@@ -81,24 +81,11 @@ entity.rules_component.delete_form:
   requirements:
     _permission: 'administer rules+administer rules components'
 
-rules.reaction_rule.condition.add:
-  path: '/admin/config/workflow/rules/reactions/edit/{reaction_config}/add/condition'
+rules.reaction_rule.expression.add:
+  path: '/admin/config/workflow/rules/reactions/edit/{reaction_config}/add/{expression_id}'
   defaults:
-    _form: '\Drupal\rules\Form\AddConditionForm'
-    _title: 'Add condition'
-  options:
-    parameters:
-      reaction_config:
-        type: entity:rules_reaction_rule
-    _admin_route: TRUE
-  requirements:
-    _permission: 'administer rules+administer rules reactions'
-
-rules.reaction_rule.action.add:
-  path: '/admin/config/workflow/rules/reactions/edit/{reaction_config}/add/action'
-  defaults:
-    _form: '\Drupal\rules\Form\AddActionForm'
-    _title: 'Add action'
+    _form: '\Drupal\rules\Form\AddExpressionForm'
+    _title_callback: '\Drupal\rules\Form\AddExpressionForm::getTitle'
   options:
     parameters:
       reaction_config:

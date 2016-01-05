@@ -18,6 +18,7 @@ use Drupal\rules\Engine\ActionExpressionContainerInterface;
 class ActionSetForm implements ExpressionFormInterface {
 
   use StringTranslationTrait;
+  use ExpressionFormTrait;
 
   /**
    * The rule expression object this form is for.
@@ -74,8 +75,9 @@ class ActionSetForm implements ExpressionFormInterface {
       '#theme' => 'menu_local_action',
       '#link' => [
         'title' => $this->t('Add action'),
-        'url' => Url::fromRoute('rules.reaction_rule.action.add', [
+        'url' => Url::fromRoute('rules.reaction_rule.expression.add', [
           'reaction_config' => $this->actionSet->getRoot()->getConfigEntityId(),
+          'expression_id' => 'rules_action',
         ]),
       ],
     ];
