@@ -48,6 +48,12 @@ class ActionForm implements ExpressionFormInterface {
    */
   public function form(array $form, FormStateInterface $form_state) {
     $action_name = $form_state->get('action');
+    $configuration = $this->actionExpression->getConfiguration();
+    if (empty($action_name)) {
+      if (!empty($configuration['action_id'])) {
+        $action_name = $configuration['action_id'];
+      }
+    }
 
     // Step 1 of the multistep form.
     if (!$action_name) {
@@ -90,7 +96,7 @@ class ActionForm implements ExpressionFormInterface {
 
     $form['context']['#tree'] = TRUE;
     foreach ($context_defintions as $context_name => $context_definition) {
-      $form = $this->buildContextForm($form, $form_state, $context_name, $context_definition);
+      $form = $this->buildContextForm($form, $form_state, $context_name, $context_definition, $configuration);
     }
 
     $form['save'] = [

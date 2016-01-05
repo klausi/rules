@@ -56,6 +56,13 @@ class ActionSetForm implements ExpressionFormInterface {
           'data' => [
             '#type' => 'dropbutton',
             '#links' => [
+              'edit' => [
+                'title' => $this->t('Edit'),
+                'url' => Url::fromRoute('rules.reaction_rule.expression.edit', [
+                  'reaction_config' => $this->actionSet->getRoot()->getConfigEntityId(),
+                  'uuid' => $uuid,
+                ]),
+              ],
               'delete' => [
                 'title' => $this->t('Delete'),
                 'url' => Url::fromRoute('rules.reaction_rule.expression.delete', [

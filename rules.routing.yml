@@ -94,6 +94,19 @@ rules.reaction_rule.expression.add:
   requirements:
     _permission: 'administer rules+administer rules reactions'
 
+rules.reaction_rule.expression.edit:
+  path: '/admin/config/workflow/rules/reactions/edit/{reaction_config}/edit/{uuid}'
+  defaults:
+    _form: '\Drupal\rules\Form\EditExpressionForm'
+    _title_callback: '\Drupal\rules\Form\EditExpressionForm::getTitle'
+  options:
+    parameters:
+      reaction_config:
+        type: entity:rules_reaction_rule
+    _admin_route: TRUE
+  requirements:
+    _permission: 'administer rules+administer rules reactions'
+
 rules.reaction_rule.expression.delete:
   path: '/admin/config/workflow/rules/reactions/edit/{rules_reaction_rule}/delete/{uuid}'
   defaults:
