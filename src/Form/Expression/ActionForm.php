@@ -19,7 +19,6 @@ use Drupal\rules\Engine\ActionExpressionInterface;
 class ActionForm implements ExpressionFormInterface {
 
   use ContextFormTrait;
-  use ExpressionFormTrait;
   use StringTranslationTrait;
 
   /**

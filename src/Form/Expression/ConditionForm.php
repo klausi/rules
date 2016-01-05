@@ -2,51 +2,53 @@
 
 /**
  * @file
- * Contains \Drupal\rules\Form\AddConditionForm.
+ * Contains \Drupal\rules\Form\Expression\ConditionForm.
  */
 
-namespace Drupal\rules\Form;
+namespace Drupal\rules\Form\Expression;
 
-use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\rules\Condition\ConditionManager;
 use Drupal\rules\Context\ContextConfig;
-use Drupal\rules\Entity\ReactionRuleConfig;
-use Symfony\Component\DependencyInjection\ContainerInterface;
+use Drupal\rules\Core\RulesConditionInterface;
+use Drupal\rules\Engine\ConditionExpressionInterface;
+use Drupal\rules\Form\Expression\ExpressionFormInterface;
 
 /**
- * UI form for adding a Rules condition.
+ * UI form for adding/editing a Rules condition.
  */
-class AddConditionForm extends FormBase {
+class ConditionForm implements ExpressionFormInterface {
 
   use ContextFormTrait;
+  use StringTranslationTrait;
 
   /**
    * The condition plugin manager.
    *
-   * @var \Drupal\rules\Condition\ConditionManager
+   * @var ConditionManager
    */
   protected $conditionManager;
 
   /**
+   * The condition expression that is edited in the form.
+   *
+   * @var ConditionExpressionInterface
+   */
+  protected $conditionExpression;
+
+  /**
    * Creates a new object of this class.
    */
-  public function __construct(ConditionManager $condition_manager) {
+  public function __construct(ConditionExpressionInterface $condition_expression, ConditionManager $condition_manager) {
     $this->conditionManager = $condition_manager;
+    $this->conditionExpression = $condition_expression;
   }
 
   /**
    * {@inheritdoc}
    */
-  public static function create(ContainerInterface $container) {
-    return new static($container->get('plugin.manager.condition'));
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function buildForm(array $form, FormStateInterface $form_state, ReactionRuleConfig $reaction_config = NULL) {
-    $form_state->set('reaction_config', $reaction_config);
+  public function form(array $form, FormStateInterface $form_state) {
     $condition_name = $form_state->get('condition');
 
     // Step 1 of the multistep form.
@@ -76,7 +78,7 @@ class AddConditionForm extends FormBase {
     }
 
     // Step 2 of the form.
-    /** @var \Drupal\rules\Core\RulesConditionInterface $condition */
+    /** @var RulesConditionInterface $condition */
     $condition = $this->conditionManager->createInstance($condition_name);
 
     $form['summary'] = [
@@ -101,13 +103,6 @@ class AddConditionForm extends FormBase {
     ];
 
     return $form;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function getFormId() {
-    return 'rules_reaction_condition_add';
   }
 
   /**

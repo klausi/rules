@@ -14,7 +14,7 @@ use Drupal\rules\Entity\ReactionRuleConfig;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
- *
+ * UI form to add an expression like a condition or action to a rule.
  */
 class AddExpressionForm extends FormBase {
 
@@ -67,8 +67,12 @@ class AddExpressionForm extends FormBase {
     $form_handler->submitForm($form, $form_state);
   }
 
-  public function getTitle() {
-    return 'foo';
+  /**
+   * Provides the page title on the form.
+   */
+  public function getTitle(ReactionRuleConfig $reaction_config, $expression_id) {
+    $expression = $this->expressionManager->createInstance($expression_id);
+    return $this->t('Add @expression', ['@expression' => $expression->getLabel()]);
   }
 
 }
