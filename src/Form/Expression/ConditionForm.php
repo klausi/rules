@@ -50,10 +50,8 @@ class ConditionForm implements ExpressionFormInterface {
   public function form(array $form, FormStateInterface $form_state) {
     $condition_name = $form_state->get('condition');
     $configuration = $this->conditionExpression->getConfiguration();
-    if (empty($condition_name)) {
-      if (!empty($configuration['condition_id'])) {
-        $condition_name = $configuration['condition_id'];
-      }
+    if (empty($condition_name) && !empty($configuration['condition_id'])) {
+      $condition_name = $configuration['condition_id'];
     }
 
     // Step 1 of the multistep form.

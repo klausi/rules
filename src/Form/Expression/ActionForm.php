@@ -49,10 +49,8 @@ class ActionForm implements ExpressionFormInterface {
   public function form(array $form, FormStateInterface $form_state) {
     $action_name = $form_state->get('action');
     $configuration = $this->actionExpression->getConfiguration();
-    if (empty($action_name)) {
-      if (!empty($configuration['action_id'])) {
-        $action_name = $configuration['action_id'];
-      }
+    if (empty($action_name) && !empty($configuration['action_id'])) {
+      $action_name = $configuration['action_id'];
     }
 
     // Step 1 of the multistep form.
