@@ -84,4 +84,32 @@ interface ExpressionInterface extends ExecutableInterface, ConfigurablePluginInt
    */
   public function getLabel();
 
+  /**
+   * Verifies that this expression is configured correctly.
+   *
+   * Example: all variable names used in the expression are available.
+   *
+   * @param \Drupal\rules\Engine\ConfigurationState $config_state
+   *   The configuration state used to hold available data definitions of
+   *   variables.
+   *
+   * @throws \Drupal\rules\Exception\IntegrityException
+   */
+  public function integrityCheck(ConfigurationState $config_state);
+
+  /**
+   * Verifies that the expression is valid up until a nested expression.
+   *
+   * @param string $uuid
+   *   The UUID of the nested expression until the integrity check should be
+   *   performed. Once the nested expression is reached the integrity check
+   *   stops.
+   * @param \Drupal\rules\Engine\ConfigurationState $config_state
+   *   The configuration state used to hold available data definitions of
+   *   variables.
+   *
+   * @throws \Drupal\rules\Exception\IntegrityException
+   */
+  public function integrityCheckUntil($uuid, ConfigurationState $config_state);
+
 }

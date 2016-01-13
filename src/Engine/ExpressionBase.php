@@ -175,4 +175,20 @@ abstract class ExpressionBase extends PluginBase implements ExpressionInterface 
     return $this->pluginDefinition['label'];
   }
 
+  /**
+   * {@inheritdoc}
+   */
+  public function integrityCheck(ConfigurationState $config_state) {
+    // Empty default implementation: throw no excpetion, pretend everything is
+    // alright.
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function integrityCheckUntil($uuid, ConfigurationState $config_state) {
+    // Empty default implementation: throw no excpetion, pretend everything is
+    // alright.
+  }
+
 }
