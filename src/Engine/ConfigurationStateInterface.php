@@ -61,7 +61,7 @@ interface ConfigurationStateInterface {
    * Applies a data selector and returns the corresponding data definition.
    *
    * @param string $selector
-   *   The selector, example: node:title:value
+   *   The selector, example: "node:title:value".
    * @param string $langcode
    *   The langauge code.
    *
