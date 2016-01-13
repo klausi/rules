@@ -12,6 +12,7 @@ use Drupal\rules\Context\ContextConfig;
 use Drupal\rules\Engine\ExpressionBase;
 use Drupal\rules\Engine\ActionExpressionContainerInterface;
 use Drupal\rules\Engine\ActionExpressionInterface;
+use Drupal\rules\Engine\ConfigurationState;
 use Drupal\rules\Engine\ConditionExpressionContainerInterface;
 use Drupal\rules\Engine\ConditionExpressionInterface;
 use Drupal\rules\Engine\ExpressionInterface;
@@ -211,6 +212,29 @@ class Rule extends ExpressionBase implements RuleInterface, ContainerFactoryPlug
       $deleted = $this->actions->deleteExpression($uuid);
     }
     return $deleted;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function integrityCheck(ConfigurationState $config_state) {
+    $this->conditions->integrityCheck($config_state);
+    $this->actions->integrityCheck($config_state);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function integrityCheckUntil($uuid, ConfigurationState $config_state) {
+    $found = $this->conditions->integrityCheckUntil($uuid, $config_state);
+    if ($found) {
+      return TRUE;
+    }
+    $found = $this->actions->integrityCheckUntil($uuid, $config_state);
+    if ($found) {
+      return TRUE;
+    }
+    return FALSE;
   }
 
 }

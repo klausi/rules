@@ -35,4 +35,20 @@ class IntegrityCheckTest extends RulesEntityIntegrationTestBase {
     $this->assertNull(NULL, 'Integrity check invocation works.');
   }
 
+  /**
+   * Tests that a wrongly configured variable name triggers an exception.
+   *
+   * @expectedException \Drupal\rules\Exception\IntegrityException
+   * @expectedExceptionMessage Data selector unknown_variable for context entity is invalid.
+   */
+  public function testUnknownVariable() {
+    $rule = $this->rulesExpressionManager->createRule();
+    $rule->addAction('rules_entity_save', ContextConfig::create()
+      ->map('entity', 'unknown_variable')
+    );
+
+    $config_state = ConfigurationState::create([]);
+    $rule->integrityCheck($config_state);
+  }
+
 }

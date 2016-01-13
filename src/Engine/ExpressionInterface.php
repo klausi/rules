@@ -108,6 +108,10 @@ interface ExpressionInterface extends ExecutableInterface, ConfigurablePluginInt
    *   The configuration state used to hold available data definitions of
    *   variables.
    *
+   * @return bool
+   *   TRUE if the UUID was found and integrity checking has been done up to
+   *   that point. FALSE otherwise.
+   *
    * @throws \Drupal\rules\Exception\IntegrityException
    */
   public function integrityCheckUntil($uuid, ConfigurationState $config_state);

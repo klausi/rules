@@ -12,6 +12,7 @@ use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\rules\Context\ContextConfig;
 use Drupal\rules\Engine\ActionExpressionContainerInterface;
 use Drupal\rules\Engine\ActionExpressionInterface;
+use Drupal\rules\Engine\ConfigurationState;
 use Drupal\rules\Engine\ExpressionBase;
 use Drupal\rules\Engine\ExpressionContainerInterface;
 use Drupal\rules\Engine\ExpressionInterface;
@@ -175,6 +176,33 @@ class ActionSet extends ExpressionBase implements ActionExpressionContainerInter
       if ($action instanceof ExpressionContainerInterface
         && $action->deleteExpression($uuid)
       ) {
+        return TRUE;
+      }
+    }
+    return FALSE;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function integrityCheck(ConfigurationState $config_state) {
+    foreach ($this->actions as $action) {
+      $action->integrityCheck($config_state);
+    }
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function integrityCheckUntil($uuid, ConfigurationState $config_state) {
+    foreach ($this->actions as $action_uuid => $action) {
+      // Stop once we found the matching UUID.
+      if ($action_uuid === $uuid) {
+        $action->integrityCheck($config_state);
+        return TRUE;
+      }
+      $found = $action->integrityCheckUntil($uuid, $config_state);
+      if ($found) {
         return TRUE;
       }
     }
