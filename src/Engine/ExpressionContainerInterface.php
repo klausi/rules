@@ -72,4 +72,23 @@ interface ExpressionContainerInterface extends ExpressionInterface, \IteratorAgg
    */
   public function deleteExpression($uuid);
 
+  /**
+   * Verifies that the expression is valid up until a nested expression.
+   *
+   * @param string $uuid
+   *   The UUID of the nested expression until the integrity check should be
+   *   performed. Once the nested expression is reached the integrity check
+   *   stops.
+   * @param \Drupal\rules\Engine\ConfigurationStateInterface $config_state
+   *   The configuration state used to hold available data definitions of
+   *   variables.
+   *
+   * @return bool
+   *   TRUE if the UUID was found and integrity checking has been done up to
+   *   that point. FALSE otherwise.
+   *
+   * @throws \Drupal\rules\Exception\IntegrityException
+   */
+  public function integrityCheckUntil($uuid, ConfigurationStateInterface $config_state);
+
 }

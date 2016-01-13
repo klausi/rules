@@ -206,9 +206,14 @@ abstract class ConditionExpressionContainer extends ExpressionBase implements Co
         $condition->integrityCheck($config_state);
         return TRUE;
       }
-      $found = $condition->integrityCheckUntil($uuid, $config_state);
-      if ($found) {
-        return TRUE;
+      if ($condition instanceof ExpressionContainerInterface) {
+        $found = $condition->integrityCheckUntil($uuid, $config_state);
+        if ($found) {
+          return TRUE;
+        }
+      }
+      else {
+        $condition->integrityCheck($config_state);
       }
     }
     return FALSE;

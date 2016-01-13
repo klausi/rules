@@ -12,9 +12,6 @@ use Drupal\Core\TypedData\DataDefinitionInterface;
 
 /**
  * The state used during configuration time holding data definitions.
- *
- * @todo create interface for this.
- * @todo move integrityCheckUntil() to expression container interface.
  */
 class ConfigurationState implements ConfigurationStateInterface {
 

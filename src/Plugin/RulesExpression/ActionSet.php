@@ -201,9 +201,14 @@ class ActionSet extends ExpressionBase implements ActionExpressionContainerInter
         $action->integrityCheck($config_state);
         return TRUE;
       }
-      $found = $action->integrityCheckUntil($uuid, $config_state);
-      if ($found) {
-        return TRUE;
+      if ($action instanceof ExpressionContainerInterface) {
+        $found = $action->integrityCheckUntil($uuid, $config_state);
+        if ($found) {
+          return TRUE;
+        }
+      }
+      else {
+        $action->integrityCheck($config_state);
       }
     }
     return FALSE;

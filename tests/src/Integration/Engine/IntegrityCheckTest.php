@@ -51,4 +51,28 @@ class IntegrityCheckTest extends RulesEntityIntegrationTestBase {
     $rule->integrityCheck($config_state);
   }
 
+  /**
+   * Tests that the integrity check with UUID works.
+   */
+  public function testCheckUuid() {
+    $rule = $this->rulesExpressionManager->createRule();
+    // Just use a rule with 2 dummy actions.
+    $rule->addAction('rules_entity_save', ContextConfig::create()
+      ->map('entity', 'entity'))
+    ->addAction('rules_entity_save', ContextConfig::create()
+      ->map('entity', 'entity')
+    );
+
+    $config_state = ConfigurationState::create([
+      'entity' => $this->typedDataManager->createDataDefinition('entity'),
+    ]);
+    // Get the UUID of the second action.
+    $iterator = $rule->getIterator();
+    $iterator->next();
+    $uuid = $iterator->key();
+    $rule->integrityCheckUntil($uuid, $config_state);
+    // @todo PHPunit has no ->pass() method, so this is ugly.
+    $this->assertNull(NULL, 'Integrity check invocation works.');
+  }
+
 }
