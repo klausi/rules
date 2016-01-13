@@ -190,7 +190,7 @@ abstract class ConditionExpressionContainer extends ExpressionBase implements Co
   /**
    * {@inheritdoc}
    */
-  public function integrityCheck(ConfigurationState $config_state) {
+  public function integrityCheck(ConfigurationStateInterface $config_state) {
     foreach ($this->conditions as $condition) {
       $condition->integrityCheck($config_state);
     }
@@ -199,7 +199,7 @@ abstract class ConditionExpressionContainer extends ExpressionBase implements Co
   /**
    * {@inheritdoc}
    */
-  public function integrityCheckUntil($uuid, ConfigurationState $config_state) {
+  public function integrityCheckUntil($uuid, ConfigurationStateInterface $config_state) {
     foreach ($this->conditions as $condition_uuid => $condition) {
       // Stop once we found the matching UUID.
       if ($condition_uuid === $uuid) {

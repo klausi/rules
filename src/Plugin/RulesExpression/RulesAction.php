@@ -13,7 +13,7 @@ use Drupal\rules\Context\ContextHandlerTrait;
 use Drupal\rules\Context\DataProcessorManager;
 use Drupal\rules\Core\RulesActionManagerInterface;
 use Drupal\rules\Engine\ActionExpressionInterface;
-use Drupal\rules\Engine\ConfigurationState;
+use Drupal\rules\Engine\ConfigurationStateInterface;
 use Drupal\rules\Engine\ExpressionBase;
 use Drupal\rules\Engine\ExecutionStateInterface;
 use Drupal\rules\Engine\IntegrityCheckTrait;
@@ -163,7 +163,7 @@ class RulesAction extends ExpressionBase implements ContainerFactoryPluginInterf
   /**
    * {@inheritdoc}
    */
-  public function integrityCheck(ConfigurationState $config_state) {
+  public function integrityCheck(ConfigurationStateInterface $config_state) {
     $action = $this->actionManager->createInstance($this->configuration['action_id']);
 
     $this->doIntegrityCheck($action, $config_state);

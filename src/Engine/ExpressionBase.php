@@ -178,7 +178,7 @@ abstract class ExpressionBase extends PluginBase implements ExpressionInterface 
   /**
    * {@inheritdoc}
    */
-  public function integrityCheck(ConfigurationState $config_state) {
+  public function integrityCheck(ConfigurationStateInterface $config_state) {
     // Empty default implementation: throw no excpetion, pretend everything is
     // alright.
   }
@@ -186,7 +186,7 @@ abstract class ExpressionBase extends PluginBase implements ExpressionInterface 
   /**
    * {@inheritdoc}
    */
-  public function integrityCheckUntil($uuid, ConfigurationState $config_state) {
+  public function integrityCheckUntil($uuid, ConfigurationStateInterface $config_state) {
     // Empty default implementation: throw no excpetion, pretend everything is
     // alright.
   }

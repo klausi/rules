@@ -8,12 +8,15 @@
 namespace Drupal\rules\Engine;
 
 use Drupal\Core\Language\LanguageInterface;
-use Drupal\rules\Exception\RulesEvaluationException;
+use Drupal\Core\TypedData\DataDefinitionInterface;
 
 /**
  * The state used during configuration time holding data definitions.
+ *
+ * @todo create interface for this.
+ * @todo move integrityCheckUntil() to expression container interface.
  */
-class ConfigurationState {
+class ConfigurationState implements ConfigurationStateInterface {
 
   /**
    * The known data definitions.
@@ -23,12 +26,7 @@ class ConfigurationState {
   protected $dataDefinitions = [];
 
   /**
-   * Creates the object.
-   *
-   * @param \Drupal\Core\TypedData\DataDefinitionInterface[] $data_definitions
-   *   (optional) Data definitions to initialize this state with.
-   *
-   * @return static
+   * {@inheritdoc}
    */
   public static function create($data_definitions = []) {
     return new static($data_definitions);
@@ -48,7 +46,7 @@ class ConfigurationState {
   /**
    * {@inheritdoc}
    */
-  public function addDataDefinition($name, \Drupal\Core\TypedData\DataDefinitionInterface $definition) {
+  public function addDataDefinition($name, DataDefinitionInterface $definition) {
     $this->dataDefinitions[$name] = $definition;
     return $this;
   }
@@ -57,10 +55,7 @@ class ConfigurationState {
    * {@inheritdoc}
    */
   public function getDataDefinition($name) {
-    if (!array_key_exists($name, $this->dataDefinitions)) {
-      throw new RulesEvaluationException("Unable to get variable $name, it is not defined.");
-    }
-    return $this->variables[$name];
+    // @todo do we need this?
   }
 
   /**

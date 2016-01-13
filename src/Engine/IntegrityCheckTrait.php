@@ -20,13 +20,13 @@ trait IntegrityCheckTrait {
    *
    * @param CoreContextAwarePluginInterface $plugin
    *   The plugin with its defined context.
-   * @param \Drupal\rules\Engine\ConfigurationState $config_state
+   * @param \Drupal\rules\Engine\ConfigurationStateInterface $config_state
    *   The current configuration state with all defined variables that are
    *   available.
    *
    * @throws \Drupal\rules\Exception\IntegrityException
    */
-  protected function doIntegrityCheck(CoreContextAwarePluginInterface $plugin, ConfigurationState $config_state) {
+  protected function doIntegrityCheck(CoreContextAwarePluginInterface $plugin, ConfigurationStateInterface $config_state) {
     $context_definitions = $plugin->getContextDefinitions();
     foreach ($context_definitions as $name => $definition) {
       // Check if a data selector is configured that maps to the state.

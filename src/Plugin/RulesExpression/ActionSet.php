@@ -12,7 +12,7 @@ use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\rules\Context\ContextConfig;
 use Drupal\rules\Engine\ActionExpressionContainerInterface;
 use Drupal\rules\Engine\ActionExpressionInterface;
-use Drupal\rules\Engine\ConfigurationState;
+use Drupal\rules\Engine\ConfigurationStateInterface;
 use Drupal\rules\Engine\ExpressionBase;
 use Drupal\rules\Engine\ExpressionContainerInterface;
 use Drupal\rules\Engine\ExpressionInterface;
@@ -185,7 +185,7 @@ class ActionSet extends ExpressionBase implements ActionExpressionContainerInter
   /**
    * {@inheritdoc}
    */
-  public function integrityCheck(ConfigurationState $config_state) {
+  public function integrityCheck(ConfigurationStateInterface $config_state) {
     foreach ($this->actions as $action) {
       $action->integrityCheck($config_state);
     }
@@ -194,7 +194,7 @@ class ActionSet extends ExpressionBase implements ActionExpressionContainerInter
   /**
    * {@inheritdoc}
    */
-  public function integrityCheckUntil($uuid, ConfigurationState $config_state) {
+  public function integrityCheckUntil($uuid, ConfigurationStateInterface $config_state) {
     foreach ($this->actions as $action_uuid => $action) {
       // Stop once we found the matching UUID.
       if ($action_uuid === $uuid) {

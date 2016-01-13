@@ -89,13 +89,13 @@ interface ExpressionInterface extends ExecutableInterface, ConfigurablePluginInt
    *
    * Example: all variable names used in the expression are available.
    *
-   * @param \Drupal\rules\Engine\ConfigurationState $config_state
+   * @param \Drupal\rules\Engine\ConfigurationStateInterface $config_state
    *   The configuration state used to hold available data definitions of
    *   variables.
    *
    * @throws \Drupal\rules\Exception\IntegrityException
    */
-  public function integrityCheck(ConfigurationState $config_state);
+  public function integrityCheck(ConfigurationStateInterface $config_state);
 
   /**
    * Verifies that the expression is valid up until a nested expression.
@@ -104,7 +104,7 @@ interface ExpressionInterface extends ExecutableInterface, ConfigurablePluginInt
    *   The UUID of the nested expression until the integrity check should be
    *   performed. Once the nested expression is reached the integrity check
    *   stops.
-   * @param \Drupal\rules\Engine\ConfigurationState $config_state
+   * @param \Drupal\rules\Engine\ConfigurationStateInterface $config_state
    *   The configuration state used to hold available data definitions of
    *   variables.
    *
@@ -114,6 +114,6 @@ interface ExpressionInterface extends ExecutableInterface, ConfigurablePluginInt
    *
    * @throws \Drupal\rules\Exception\IntegrityException
    */
-  public function integrityCheckUntil($uuid, ConfigurationState $config_state);
+  public function integrityCheckUntil($uuid, ConfigurationStateInterface $config_state);
 
 }
