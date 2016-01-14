@@ -75,7 +75,7 @@ class ConfigureAndExecuteTest extends RulesBrowserTestBase {
     // @todo this should not be necessary once the data context is set to
     // selector by default anyway.
     $this->pressButton('Switch to data selection');
-    $this->fillField('context[data][setting]', 'node:title:0:value');
+    $this->fillField('context[data][setting]', 'node.title.0.value');
 
     $this->fillField('context[value][setting]', 'Test title');
     $this->pressButton('Save');
