@@ -18,6 +18,8 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  */
 class AddExpressionForm extends FormBase {
 
+  use TempStoreTrait;
+
   /**
    * The Rules expression manager to get expression plugins.
    *

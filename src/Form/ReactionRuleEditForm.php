@@ -7,6 +7,7 @@
 
 namespace Drupal\rules\Form;
 
+use Drupal\Core\Datetime\DateFormatterInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\rules\Engine\RulesEventManager;
 use Drupal\user\SharedTempStoreFactory;
@@ -27,28 +28,25 @@ class ReactionRuleEditForm extends RulesComponentFormBase {
   protected $eventManager;
 
   /**
-   * The temp store factory used to temporary save changes to the rule.
+   * The date formatter service.
    *
-   * @var Drupal\user\SharedTempStoreFactory
+   * @var \Drupal\Core\Datetime\DateFormatterInterface
    */
-  protected $tempStoreFactory;
+  protected $dateFormatter;
 
   /**
    * Constructs a new object of this class.
-   *
-   * @param \Drupal\rules\Engine\RulesEventManager $event_manager
-   *   The event plugin manager.
    */
-  public function __construct(RulesEventManager $event_manager, SharedTempStoreFactory $temp_store_factory) {
+  public function __construct(RulesEventManager $event_manager, DateFormatterInterface $date_formatter) {
     $this->eventManager = $event_manager;
-    $this->tempStoreFactory = $temp_store_factory;
+    $this->dateFormatter = $date_formatter;
   }
 
   /**
    * {@inheritdoc}
    */
   public static function create(ContainerInterface $container) {
-    return new static($container->get('plugin.manager.rules_event'), $container->get('user.shared_tempstore'));
+    return new static($container->get('plugin.manager.rules_event'), $container->get('date.formatter'));
   }
 
   /**
@@ -59,7 +57,7 @@ class ReactionRuleEditForm extends RulesComponentFormBase {
       $lock = $this->getLockMetaData();
       $username = array(
         '#theme' => 'username',
-        '#account' => $this->entityManager->getStorage('user')->load($lock->user),
+        '#account' => $this->entityManager->getStorage('user')->load($lock->owner),
       );
       $lock_message_substitutions = array(
         '@user' => drupal_render($username),
@@ -112,8 +110,7 @@ class ReactionRuleEditForm extends RulesComponentFormBase {
   public function save(array $form, FormStateInterface $form_state) {
     parent::save($form, $form_state);
     // Also remove the temporarily stored rule, it has been persisted now.
-    $store = $this->tempStoreFactory->get('rules');
-    $store->delete($this->entity->id());
+    $this->deleteFromTempStore();
 
     drupal_set_message($this->t('Reaction rule %label has been updated.', ['%label' => $this->entity->label()]));
   }

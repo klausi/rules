@@ -72,6 +72,10 @@ trait TempStoreTrait {
     return FALSE;
   }
 
+  protected function deleteFromTempStore() {
+    $this->getTempStore()->delete($this->getRuleConfig()->id());
+  }
+
   protected function getRuleConfig() {
     return $this->ruleConfig;
   }
