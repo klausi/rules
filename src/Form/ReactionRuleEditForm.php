@@ -10,7 +10,6 @@ namespace Drupal\rules\Form;
 use Drupal\Core\Datetime\DateFormatterInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\rules\Engine\RulesEventManager;
-use Drupal\user\SharedTempStoreFactory;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -46,43 +45,14 @@ class ReactionRuleEditForm extends RulesComponentFormBase {
    * {@inheritdoc}
    */
   public static function create(ContainerInterface $container) {
-    return new static($container->get('plugin.manager.rules_event'), $container->get('date.formatter'));
+    return new static($container->get('plugin.manager.rules_event'));
   }
 
   /**
    * {@inheritdoc}
    */
   public function form(array $form, FormStateInterface $form_state) {
-    if ($this->isLocked()) {
-      $lock = $this->getLockMetaData();
-      $username = array(
-        '#theme' => 'username',
-        '#account' => $this->entityManager->getStorage('user')->load($lock->owner),
-      );
-      $lock_message_substitutions = array(
-        '@user' => drupal_render($username),
-        '@age' => $this->dateFormatter->formatTimeDiffSince($lock->updated),
-        //':url' => $view->url('break-lock-form'),
-        ':url' => 'example',
-      );
-      $form['locked'] = array(
-        '#type' => 'container',
-        '#attributes' => array('class' => array('rules-locked', 'messages', 'messages--warning')),
-        '#children' => $this->t('This rule is being edited by user @user, and is therefore locked from editing by others. This lock is @age old. Click here to <a href=":url">break this lock</a>.', $lock_message_substitutions),
-        '#weight' => -10,
-      );
-    }
-    else {
-      $form['changed'] = array(
-        '#type' => 'container',
-        '#attributes' => array('class' => array('rules-changed', 'messages', 'messages--warning')),
-        '#children' => $this->t('You have unsaved changes.'),
-        '#weight' => -10,
-      );
-      if (!$this->isEdited()) {
-        $form['changed']['#attributes']['class'][] = 'js-hide';
-      }
-    }
+    $this->addLockInformation($form);
 
     $event_name = $this->entity->getEvent();
     $event_definition = $this->eventManager->getDefinition($event_name);
