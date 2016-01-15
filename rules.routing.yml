@@ -33,6 +33,11 @@ entity.rules_reaction_rule.edit_form:
   defaults:
     _entity_form: 'rules_reaction_rule.edit'
     _title_callback: '\Drupal\rules\Form\ReactionRuleEditForm::getTitle'
+  options:
+    parameters:
+      rules_reaction_rule:
+        tempstore: TRUE
+        type: entity:rules_reaction_rule
   requirements:
     _permission: 'administer rules+administer rules reactions'
 
@@ -88,6 +93,7 @@ rules.reaction_rule.expression.add:
     parameters:
       reaction_config:
         type: entity:rules_reaction_rule
+        tempstore: TRUE
     _admin_route: TRUE
   requirements:
     _permission: 'administer rules+administer rules reactions'
@@ -101,6 +107,7 @@ rules.reaction_rule.expression.edit:
     parameters:
       reaction_config:
         type: entity:rules_reaction_rule
+        tempstore: TRUE
     _admin_route: TRUE
   requirements:
     _permission: 'administer rules+administer rules reactions'
@@ -114,6 +121,7 @@ rules.reaction_rule.expression.delete:
     parameters:
       rules_reaction_rule:
         type: entity:rules_reaction_rule
+        tempstore: TRUE
     _admin_route: TRUE
   requirements:
     _permission: 'administer rules+administer rules reactions'
