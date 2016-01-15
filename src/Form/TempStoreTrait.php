@@ -7,7 +7,9 @@
 
 namespace Drupal\rules\Form;
 
+use Drupal\Core\Datetime\DateFormatterInterface;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Url;
 use Drupal\user\SharedTempStoreFactory;
 
 /**
@@ -35,13 +37,6 @@ trait TempStoreTrait {
    * @var \Drupal\Core\Datetime\DateFormatterInterface
    */
   protected $dateFormatter;
-
-  /**
-   * The entity type manager service.
-   *
-   * @var type
-   */
-  protected $entityTypeManager;
 
   /**
    * Retrieves the temporary storage service if not already present.
@@ -230,8 +225,9 @@ trait TempStoreTrait {
     $lock_message_substitutions = array(
       '@user' => drupal_render($username),
       '@age' => $this->getDateFormatter()->formatTimeDiffSince($lock->updated),
-      //':url' => $view->url('break-lock-form'),
-      ':url' => 'example',
+      ':url' => Url::fromRoute('entity.rules_reaction_rule.break_lock_form', [
+        'rules_reaction_rule' => $this->getRuleConfig()->id(),
+      ])->toString(),
     );
     return $this->t('This rule is being edited by user @user, and is therefore locked from editing by others. This lock is @age old. Click here to <a href=":url">break this lock</a>.', $lock_message_substitutions);
   }

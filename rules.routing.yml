@@ -48,6 +48,13 @@ entity.rules_reaction_rule.delete_form:
   requirements:
     _permission: 'administer rules+administer rules reactions'
 
+entity.rules_reaction_rule.break_lock_form:
+  path: '/admin/config/workflow/rules/reactions/break-lock/{rules_reaction_rule}'
+  defaults:
+    _entity_form: 'rules_reaction_rule.break_lock'
+    _title: 'Break lock'
+  requirements:
+    _permission: 'administer rules+administer rules reactions'
 
 ### Rules Components
 entity.rules_component.collection:

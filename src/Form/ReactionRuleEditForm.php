@@ -27,18 +27,10 @@ class ReactionRuleEditForm extends RulesComponentFormBase {
   protected $eventManager;
 
   /**
-   * The date formatter service.
-   *
-   * @var \Drupal\Core\Datetime\DateFormatterInterface
-   */
-  protected $dateFormatter;
-
-  /**
    * Constructs a new object of this class.
    */
-  public function __construct(RulesEventManager $event_manager, DateFormatterInterface $date_formatter) {
+  public function __construct(RulesEventManager $event_manager) {
     $this->eventManager = $event_manager;
-    $this->dateFormatter = $date_formatter;
   }
 
   /**
