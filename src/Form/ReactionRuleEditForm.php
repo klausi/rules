@@ -17,6 +17,8 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  */
 class ReactionRuleEditForm extends RulesComponentFormBase {
 
+  use TempStoreTrait;
+
   /**
    * The event plugin manager.
    *
@@ -53,6 +55,37 @@ class ReactionRuleEditForm extends RulesComponentFormBase {
    * {@inheritdoc}
    */
   public function form(array $form, FormStateInterface $form_state) {
+    if ($this->isLocked()) {
+      $lock = $this->getLockMetaData();
+      $username = array(
+        '#theme' => 'username',
+        '#account' => $this->entityManager->getStorage('user')->load($lock->user),
+      );
+      $lock_message_substitutions = array(
+        '@user' => drupal_render($username),
+        '@age' => $this->dateFormatter->formatTimeDiffSince($lock->updated),
+        //':url' => $view->url('break-lock-form'),
+        ':url' => 'example',
+      );
+      $form['locked'] = array(
+        '#type' => 'container',
+        '#attributes' => array('class' => array('rules-locked', 'messages', 'messages--warning')),
+        '#children' => $this->t('This rule is being edited by user @user, and is therefore locked from editing by others. This lock is @age old. Click here to <a href=":url">break this lock</a>.', $lock_message_substitutions),
+        '#weight' => -10,
+      );
+    }
+    else {
+      $form['changed'] = array(
+        '#type' => 'container',
+        '#attributes' => array('class' => array('rules-changed', 'messages', 'messages--warning')),
+        '#children' => $this->t('You have unsaved changes.'),
+        '#weight' => -10,
+      );
+      if (!$this->isEdited()) {
+        $form['changed']['#attributes']['class'][] = 'js-hide';
+      }
+    }
+
     $event_name = $this->entity->getEvent();
     $event_definition = $this->eventManager->getDefinition($event_name);
     $form['event']['#markup'] = $this->t('Event: @label (@name)', [
@@ -90,6 +123,10 @@ class ReactionRuleEditForm extends RulesComponentFormBase {
    */
   public function getTitle($rules_reaction_rule) {
     return $this->t('Edit reaction rule "@label"', ['@label' => $rules_reaction_rule->label()]);
+  }
+
+  protected function getRuleConfig() {
+    return $this->entity;
   }
 
 }

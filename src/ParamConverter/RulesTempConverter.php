@@ -54,7 +54,7 @@ class RulesTempConverter extends EntityConverter {
     }
 
     // Now check if there is also a version being edited and return that.
-    $store = $this->tempStoreFactory->get('rules');
+    $store = $this->tempStoreFactory->get($entity->getEntityTypeId());
     $edited_entity = $store->get($value);
     if ($edited_entity) {
       return $edited_entity;

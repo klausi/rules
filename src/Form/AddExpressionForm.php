@@ -86,9 +86,8 @@ class AddExpressionForm extends FormBase {
     // Set the expression again so that the config is copied over to the
     // config entity.
     $this->ruleConfig->setExpression($rule_expression);
-    $this->ruleConfig->save();
 
-    drupal_set_message($this->t('Your changes have been saved.'));
+    $this->saveToTempStore();
 
     $form_state->setRedirect('entity.rules_reaction_rule.edit_form', [
       'rules_reaction_rule' => $this->ruleConfig->id(),

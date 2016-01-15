@@ -16,6 +16,8 @@ use Drupal\rules\Entity\ReactionRuleConfig;
  */
 class EditExpressionForm extends FormBase {
 
+  use TempStoreTrait;
+
   /**
    * The reaction rule config the expression is edited on.
    *
@@ -66,9 +68,8 @@ class EditExpressionForm extends FormBase {
     // Set the expression again so that the config is copied over to the
     // config entity.
     $this->ruleConfig->setExpression($rule_expression);
-    $this->ruleConfig->save();
 
-    drupal_set_message($this->t('Your changes have been saved.'));
+    $this->saveToTempStore();
 
     $form_state->setRedirect('entity.rules_reaction_rule.edit_form', [
       'rules_reaction_rule' => $this->ruleConfig->id(),
