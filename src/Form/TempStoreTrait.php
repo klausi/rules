@@ -181,20 +181,20 @@ trait TempStoreTrait {
    */
   protected function addLockInformation(array &$form) {
     if ($this->isLocked()) {
-      $form['locked'] = array(
+      $form['locked'] = [
         '#type' => 'container',
-        '#attributes' => array('class' => array('rules-locked', 'messages', 'messages--warning')),
+        '#attributes' => ['class' => ['rules-locked', 'messages', 'messages--warning']],
         '#children' => $this->lockInformationMessage(),
         '#weight' => -10,
-      );
+      ];
     }
     else {
-      $form['changed'] = array(
+      $form['changed'] = [
         '#type' => 'container',
-        '#attributes' => array('class' => array('rules-changed', 'messages', 'messages--warning')),
+        '#attributes' => ['class' => ['rules-changed', 'messages', 'messages--warning']],
         '#children' => $this->t('You have unsaved changes.'),
         '#weight' => -10,
-      );
+      ];
       if (!$this->isEdited()) {
         $form['changed']['#attributes']['class'][] = 'js-hide';
       }
@@ -218,17 +218,17 @@ trait TempStoreTrait {
    */
   protected function lockInformationMessage() {
     $lock = $this->getLockMetaData();
-    $username = array(
+    $username = [
       '#theme' => 'username',
       '#account' => $this->getEntityTypeManager()->getStorage('user')->load($lock->owner),
-    );
-    $lock_message_substitutions = array(
+    ];
+    $lock_message_substitutions = [
       '@user' => drupal_render($username),
       '@age' => $this->getDateFormatter()->formatTimeDiffSince($lock->updated),
       ':url' => Url::fromRoute('entity.rules_reaction_rule.break_lock_form', [
         'rules_reaction_rule' => $this->getRuleConfig()->id(),
       ])->toString(),
-    );
+    ];
     return $this->t('This rule is being edited by user @user, and is therefore locked from editing by others. This lock is @age old. Click here to <a href=":url">break this lock</a>.', $lock_message_substitutions);
   }
 

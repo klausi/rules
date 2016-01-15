@@ -59,7 +59,7 @@ class RulesTempConverter extends EntityConverter {
     if ($edited_entity) {
       return $edited_entity;
     }
-      
+
     return $entity;
   }
 

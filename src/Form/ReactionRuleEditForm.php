@@ -7,7 +7,6 @@
 
 namespace Drupal\rules\Form;
 
-use Drupal\Core\Datetime\DateFormatterInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\rules\Engine\RulesEventManager;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -84,6 +83,11 @@ class ReactionRuleEditForm extends RulesComponentFormBase {
     return $this->t('Edit reaction rule "@label"', ['@label' => $rules_reaction_rule->label()]);
   }
 
+  /**
+   * Returns the entity object, which is the rules config on this class.
+   *
+   * @see \Drupal\rules\Form\TempStoreTrait
+   */
   protected function getRuleConfig() {
     return $this->entity;
   }

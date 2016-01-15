@@ -10,6 +10,7 @@ namespace Drupal\rules\Form;
 use Drupal\Core\Entity\EntityConfirmFormBase;
 use Drupal\Core\Entity\EntityManagerInterface;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Render\RendererInterface;
 use Drupal\user\SharedTempStoreFactory;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -33,16 +34,19 @@ class BreakLockForm extends EntityConfirmFormBase {
   protected $tempStoreFactory;
 
   /**
-   * Constructs a \Drupal\rules\Form\BreakLockForm object.
+   * The rendering service.
    *
-   * @param \Drupal\Core\Entity\EntityManagerInterface $entity_manager
-   *   The Entity manager.
-   * @param \Drupal\user\SharedTempStoreFactory $temp_store_factory
-   *   The factory for the temp store object.
+   * @var \Drupal\Core\Render\RendererInterface
    */
-  public function __construct(EntityManagerInterface $entity_manager, SharedTempStoreFactory $temp_store_factory) {
+  protected $renderer;
+
+  /**
+   * Constructor.
+   */
+  public function __construct(EntityManagerInterface $entity_manager, SharedTempStoreFactory $temp_store_factory, RendererInterface $renderer) {
     $this->entityManager = $entity_manager;
     $this->tempStoreFactory = $temp_store_factory;
+    $this->renderer = $renderer;
   }
 
   /**
@@ -51,7 +55,8 @@ class BreakLockForm extends EntityConfirmFormBase {
   public static function create(ContainerInterface $container) {
     return new static(
       $container->get('entity.manager'),
-      $container->get('user.shared_tempstore')
+      $container->get('user.shared_tempstore'),
+      $container->get('renderer')
     );
   }
 
@@ -66,7 +71,7 @@ class BreakLockForm extends EntityConfirmFormBase {
    * {@inheritdoc}
    */
   public function getQuestion() {
-    return $this->t('Do you want to break the lock on rule %name?', array('%name' => $this->entity->id()));
+    return $this->t('Do you want to break the lock on rule %name?', ['%name' => $this->entity->id()]);
   }
 
   /**
@@ -76,11 +81,13 @@ class BreakLockForm extends EntityConfirmFormBase {
     $store = $this->tempStoreFactory->get($this->entity->getEntityTypeId());
     $locked = $store->getMetadata($this->entity->id());
     $account = $this->entityManager->getStorage('user')->load($locked->owner);
-    $username = array(
+    $username = [
       '#theme' => 'username',
       '#account' => $account,
-    );
-    return $this->t('By breaking this lock, any unsaved changes made by @user will be lost.', array('@user' => drupal_render($username)));
+    ];
+    return $this->t('By breaking this lock, any unsaved changes made by @user will be lost.', [
+      '@user' => $this->renderer->render($username),
+    ]);
   }
 
   /**
@@ -103,7 +110,7 @@ class BreakLockForm extends EntityConfirmFormBase {
   public function buildForm(array $form, FormStateInterface $form_state) {
     $store = $this->tempStoreFactory->get($this->entity->getEntityTypeId());
     if (!$store->getMetadata($this->entity->id())) {
-      $form['message']['#markup'] = $this->t('There is no lock on rule %name to break.', array('%name' => $this->entity->id()));
+      $form['message']['#markup'] = $this->t('There is no lock on rule %name to break.', ['%name' => $this->entity->id()]);
       return $form;
     }
     return parent::buildForm($form, $form_state);
