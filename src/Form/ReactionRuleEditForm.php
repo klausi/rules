@@ -9,6 +9,7 @@ namespace Drupal\rules\Form;
 
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\rules\Engine\RulesEventManager;
+use Drupal\user\SharedTempStoreFactory;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -24,20 +25,28 @@ class ReactionRuleEditForm extends RulesComponentFormBase {
   protected $eventManager;
 
   /**
+   * The temp store factory used to temporary save changes to the rule.
+   *
+   * @var Drupal\user\SharedTempStoreFactory
+   */
+  protected $tempStoreFactory;
+
+  /**
    * Constructs a new object of this class.
    *
    * @param \Drupal\rules\Engine\RulesEventManager $event_manager
    *   The event plugin manager.
    */
-  public function __construct(RulesEventManager $event_manager) {
+  public function __construct(RulesEventManager $event_manager, SharedTempStoreFactory $temp_store_factory) {
     $this->eventManager = $event_manager;
+    $this->tempStoreFactory = $temp_store_factory;
   }
 
   /**
    * {@inheritdoc}
    */
   public static function create(ContainerInterface $container) {
-    return new static($container->get('plugin.manager.rules_event'));
+    return new static($container->get('plugin.manager.rules_event'), $container->get('user.shared_tempstore'));
   }
 
   /**
@@ -69,6 +78,10 @@ class ReactionRuleEditForm extends RulesComponentFormBase {
    */
   public function save(array $form, FormStateInterface $form_state) {
     parent::save($form, $form_state);
+    // Also remove the temporarily stored rule, it has been persisted now.
+    $store = $this->tempStoreFactory->get('rules');
+    $store->delete($this->entity->id());
+
     drupal_set_message($this->t('Reaction rule %label has been updated.', ['%label' => $this->entity->label()]));
   }
 
