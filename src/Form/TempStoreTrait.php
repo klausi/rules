@@ -87,7 +87,8 @@ trait TempStoreTrait {
   /**
    * Retrieves the entity type manager service if not already present.
    *
-   * @return type
+   * @return \Drupal\Core\Entity\EntityTypeManagerInterface
+   *   The entity type manager.
    */
   protected function getEntityTypeManager() {
     if (!isset($this->entityTypeManager)) {
@@ -183,7 +184,9 @@ trait TempStoreTrait {
     if ($this->isLocked()) {
       $form['locked'] = [
         '#type' => 'container',
-        '#attributes' => ['class' => ['rules-locked', 'messages', 'messages--warning']],
+        '#attributes' => [
+          'class' => ['rules-locked', 'messages', 'messages--warning'],
+        ],
         '#children' => $this->lockInformationMessage(),
         '#weight' => -10,
       ];
@@ -191,7 +194,9 @@ trait TempStoreTrait {
     else {
       $form['changed'] = [
         '#type' => 'container',
-        '#attributes' => ['class' => ['rules-changed', 'messages', 'messages--warning']],
+        '#attributes' => [
+          'class' => ['rules-changed', 'messages', 'messages--warning'],
+        ],
         '#children' => $this->t('You have unsaved changes.'),
         '#weight' => -10,
       ];
