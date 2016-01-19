@@ -183,7 +183,7 @@ class RulesCondition extends ExpressionBase implements ConditionExpressionInterf
       'negate' => $this->configuration['negate'],
     ]);
 
-    $this->doIntegrityCheck($condition, $config_state);
+    return $this->doIntegrityCheck($condition, $config_state);
   }
 
 }

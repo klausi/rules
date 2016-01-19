@@ -24,9 +24,11 @@ trait IntegrityCheckTrait {
    *   The current configuration state with all defined variables that are
    *   available.
    *
-   * @throws \Drupal\rules\Exception\IntegrityException
+   * @return \Drupal\rules\Engine\IntegrityViolationList
+   *   The list of integrity violations.
    */
   protected function doIntegrityCheck(CoreContextAwarePluginInterface $plugin, ConfigurationStateInterface $config_state) {
+    $violation_list = new IntegrityViolationList();
     $context_definitions = $plugin->getContextDefinitions();
     foreach ($context_definitions as $name => $definition) {
       // Check if a data selector is configured that maps to the state.
@@ -34,10 +36,15 @@ trait IntegrityCheckTrait {
         $data_definition = $config_state->applyDataSelector($this->configuration['context_mapping'][$name]);
 
         if ($data_definition === NULL) {
-          throw new IntegrityException('Data selector ' . $this->configuration['context_mapping'][$name] . " for context $name is invalid.");
+          $violation = new IntegrityViolation();
+          $violation->setMessage('Data selector ' . $this->configuration['context_mapping'][$name] . " for context $name is invalid.");
+          $violation->setContextName($name);
+          $violation_list->add($violation);
         }
       }
     }
+
+    return $violation_list;
   }
 
 }

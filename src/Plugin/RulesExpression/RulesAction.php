@@ -166,7 +166,7 @@ class RulesAction extends ExpressionBase implements ContainerFactoryPluginInterf
   public function integrityCheck(ConfigurationStateInterface $config_state) {
     $action = $this->actionManager->createInstance($this->configuration['action_id']);
 
-    $this->doIntegrityCheck($action, $config_state);
+    return $this->doIntegrityCheck($action, $config_state);
   }
 
 }

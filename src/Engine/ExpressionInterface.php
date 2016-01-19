@@ -93,7 +93,7 @@ interface ExpressionInterface extends ExecutableInterface, ConfigurablePluginInt
    *   The configuration state used to hold available data definitions of
    *   variables.
    *
-   * @throws \Drupal\rules\Exception\IntegrityException
+   * @return \Drupal\rules\Engine\IntegrityViolationList
    */
   public function integrityCheck(ConfigurationStateInterface $config_state);
 

@@ -13,11 +13,12 @@ use Drupal\rules\Context\ContextConfig;
 use Drupal\rules\Engine\ActionExpressionContainerInterface;
 use Drupal\rules\Engine\ActionExpressionInterface;
 use Drupal\rules\Engine\ConfigurationStateInterface;
+use Drupal\rules\Engine\ExecutionStateInterface;
 use Drupal\rules\Engine\ExpressionBase;
 use Drupal\rules\Engine\ExpressionContainerInterface;
 use Drupal\rules\Engine\ExpressionInterface;
 use Drupal\rules\Engine\ExpressionManagerInterface;
-use Drupal\rules\Engine\ExecutionStateInterface;
+use Drupal\rules\Engine\IntegrityViolationList;
 use Drupal\rules\Exception\InvalidExpressionException;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -186,32 +187,11 @@ class ActionSet extends ExpressionBase implements ActionExpressionContainerInter
    * {@inheritdoc}
    */
   public function integrityCheck(ConfigurationStateInterface $config_state) {
+    $violation_list = new IntegrityViolationList();
     foreach ($this->actions as $action) {
-      $action->integrityCheck($config_state);
+      $violation_list->addAll($action->integrityCheck($config_state));
     }
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function integrityCheckUntil($uuid, ConfigurationStateInterface $config_state) {
-    foreach ($this->actions as $action_uuid => $action) {
-      // Stop once we found the matching UUID.
-      if ($action_uuid === $uuid) {
-        $action->integrityCheck($config_state);
-        return TRUE;
-      }
-      if ($action instanceof ExpressionContainerInterface) {
-        $found = $action->integrityCheckUntil($uuid, $config_state);
-        if ($found) {
-          return TRUE;
-        }
-      }
-      else {
-        $action->integrityCheck($config_state);
-      }
-    }
-    return FALSE;
+    return $violation_list;
   }
 
 }

@@ -191,32 +191,11 @@ abstract class ConditionExpressionContainer extends ExpressionBase implements Co
    * {@inheritdoc}
    */
   public function integrityCheck(ConfigurationStateInterface $config_state) {
+    $violation_list = new IntegrityViolationList();
     foreach ($this->conditions as $condition) {
-      $condition->integrityCheck($config_state);
+      $violation_list->addAll($condition->integrityCheck($config_state));
     }
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function integrityCheckUntil($uuid, ConfigurationStateInterface $config_state) {
-    foreach ($this->conditions as $condition_uuid => $condition) {
-      // Stop once we found the matching UUID.
-      if ($condition_uuid === $uuid) {
-        $condition->integrityCheck($config_state);
-        return TRUE;
-      }
-      if ($condition instanceof ExpressionContainerInterface) {
-        $found = $condition->integrityCheckUntil($uuid, $config_state);
-        if ($found) {
-          return TRUE;
-        }
-      }
-      else {
-        $condition->integrityCheck($config_state);
-      }
-    }
-    return FALSE;
+    return $violation_list;
   }
 
 }

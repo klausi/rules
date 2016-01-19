@@ -9,15 +9,16 @@ namespace Drupal\rules\Plugin\RulesExpression;
 
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\rules\Context\ContextConfig;
-use Drupal\rules\Engine\ExpressionBase;
 use Drupal\rules\Engine\ActionExpressionContainerInterface;
 use Drupal\rules\Engine\ActionExpressionInterface;
-use Drupal\rules\Engine\ConfigurationStateInterface;
 use Drupal\rules\Engine\ConditionExpressionContainerInterface;
 use Drupal\rules\Engine\ConditionExpressionInterface;
+use Drupal\rules\Engine\ConfigurationStateInterface;
+use Drupal\rules\Engine\ExecutionStateInterface;
+use Drupal\rules\Engine\ExpressionBase;
 use Drupal\rules\Engine\ExpressionInterface;
 use Drupal\rules\Engine\ExpressionManagerInterface;
-use Drupal\rules\Engine\ExecutionStateInterface;
+use Drupal\rules\Engine\IntegrityViolationList;
 use Drupal\rules\Exception\InvalidExpressionException;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -218,23 +219,9 @@ class Rule extends ExpressionBase implements RuleInterface, ContainerFactoryPlug
    * {@inheritdoc}
    */
   public function integrityCheck(ConfigurationStateInterface $config_state) {
-    $this->conditions->integrityCheck($config_state);
-    $this->actions->integrityCheck($config_state);
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function integrityCheckUntil($uuid, ConfigurationStateInterface $config_state) {
-    $found = $this->conditions->integrityCheckUntil($uuid, $config_state);
-    if ($found) {
-      return TRUE;
-    }
-    $found = $this->actions->integrityCheckUntil($uuid, $config_state);
-    if ($found) {
-      return TRUE;
-    }
-    return FALSE;
+    $violation_list = $this->conditions->integrityCheck($config_state);
+    $violation_list->addAll($this->actions->integrityCheck($config_state));
+    return $violation_list;
   }
 
 }
