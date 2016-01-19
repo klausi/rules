@@ -27,6 +27,9 @@ class ReactionRuleEditForm extends RulesComponentFormBase {
 
   /**
    * Constructs a new object of this class.
+   *
+   * @param \Drupal\rules\Engine\RulesEventManager $event_manager
+   *   The event plugin manager.
    */
   public function __construct(RulesEventManager $event_manager) {
     $this->eventManager = $event_manager;
