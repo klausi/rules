@@ -192,8 +192,12 @@ abstract class ConditionExpressionContainer extends ExpressionBase implements Co
    */
   public function integrityCheck(ConfigurationStateInterface $config_state) {
     $violation_list = new IntegrityViolationList();
-    foreach ($this->conditions as $condition) {
-      $violation_list->addAll($condition->integrityCheck($config_state));
+    foreach ($this->conditions as $uuid => $condition) {
+      $condition_violations = $condition->integrityCheck($config_state);
+      foreach ($condition_violations as $violation) {
+        $violation->setUuid($uuid);
+      }
+      $violation_list->addAll($condition_violations);
     }
     return $violation_list;
   }

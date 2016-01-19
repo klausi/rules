@@ -8,7 +8,6 @@
 namespace Drupal\rules\Engine;
 
 use Drupal\Core\Plugin\ContextAwarePluginInterface as CoreContextAwarePluginInterface;
-use Drupal\rules\Exception\IntegrityException;
 
 /**
  * Provides shared integrity checking methods for conditions and actions.

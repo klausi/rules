@@ -57,20 +57,26 @@ class IntegrityCheckTest extends RulesEntityIntegrationTestBase {
     $rule = $this->rulesExpressionManager->createRule();
     // Just use a rule with 2 dummy actions.
     $rule->addAction('rules_entity_save', ContextConfig::create()
-          ->map('entity', 'entity'))
+          ->map('entity', 'unknown_variable_1'))
         ->addAction('rules_entity_save', ContextConfig::create()
-          ->map('entity', 'entity'));
+          ->map('entity', 'unknown_variable_2'));
 
     $config_state = ConfigurationState::create([
       'entity' => $this->typedDataManager->createDataDefinition('entity'),
     ]);
+
+    $all_violations = $rule->integrityCheck($config_state);
+    $this->assertEquals(2, iterator_count($all_violations));
+
     // Get the UUID of the second action.
     $iterator = $rule->getIterator();
     $iterator->next();
     $uuid = $iterator->key();
-    $rule->integrityCheckUntil($uuid, $config_state);
-    // @todo PHPunit has no ->pass() method, so this is ugly.
-    $this->assertNull(NULL, 'Integrity check invocation works.');
+
+    $uuid_violations = $all_violations->getFor($uuid);
+    $this->assertEquals(1, count($uuid_violations));
+    $violation = reset($uuid_violations);
+    $this->assertEquals('Data selector unknown_variable_2 for context entity is invalid.', $violation->getMessage());
   }
 
 }

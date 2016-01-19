@@ -9,12 +9,34 @@ namespace Drupal\rules\Engine;
 
 class IntegrityViolation {
 
-  public function setMessage($message) {}
+  protected $message;
 
-  public function getMessage() {}
+  protected $contextName;
 
-  public function getContextName() {}
+  protected $uuid;
 
-  public function setContextName() {}
+  public function setMessage($message) {
+    $this->message = $message;
+  }
+
+  public function getMessage() {
+    return $this->message;
+  }
+
+  public function getContextName() {
+    return $this->contextName;
+  }
+
+  public function setContextName($context_name) {
+    $this->contextName = $context_name;
+  }
+
+  public function getUuid() {
+    return $this->uuid;
+  }
+
+  public function setUuid($uuid) {
+    $this->uuid = $uuid;
+  }
 
 }

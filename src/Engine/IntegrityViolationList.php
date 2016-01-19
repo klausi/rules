@@ -49,6 +49,19 @@ class IntegrityViolationList implements \IteratorAggregate {
   /**
    * {@inheritdoc}
    */
+  public function getFor($uuid) {
+    $uuid_violations = [];
+    foreach ($this->violations as $violation) {
+      if ($violation->getUuid() === $uuid) {
+        $uuid_violations[] = $violation;
+      }
+    }
+    return $uuid_violations;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function getIterator() {
     return new \ArrayIterator($this->violations);
   }
