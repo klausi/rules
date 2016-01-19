@@ -54,6 +54,8 @@ class UiPageTest extends RulesBrowserTestBase {
 
     $this->fillField('Label', 'Test rule');
     $this->fillField('Machine-readable name', 'test_rule');
+    $this->fillField('React on event', 'rules_entity_insert:node');
+
     $this->pressButton('Save');
 
     $this->assertSession()->statusCodeEquals(200);
@@ -68,7 +70,10 @@ class UiPageTest extends RulesBrowserTestBase {
     $this->pressButton('Save');
 
     $this->assertSession()->statusCodeEquals(200);
-    $this->assertSession()->pageTextContains('Your changes have been saved.');
+    $this->assertSession()->pageTextContains('You have unsaved changes.');
+
+    $this->pressButton('Save');
+    $this->assertSession()->pageTextContains('Reaction rule Test rule has been updated. ');
   }
 
   /**
@@ -82,7 +87,10 @@ class UiPageTest extends RulesBrowserTestBase {
     $this->assertSession()->pageTextContains('Are you sure you want to delete Condition: Node is promoted from Test rule?');
 
     $this->pressButton('Delete');
-    $this->assertSession()->pageTextContains('Your changes have been saved.');
+    $this->assertSession()->pageTextContains('You have unsaved changes.');
+
+    $this->pressButton('Save');
+    $this->assertSession()->pageTextContains('Reaction rule Test rule has been updated. ');
   }
 
 }
