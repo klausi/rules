@@ -8,7 +8,7 @@
 namespace Drupal\rules\Form;
 
 use Drupal\Core\Entity\EntityConfirmFormBase;
-use Drupal\Core\Entity\EntityManagerInterface;
+use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Render\RendererInterface;
 use Drupal\user\SharedTempStoreFactory;
@@ -22,9 +22,9 @@ class BreakLockForm extends EntityConfirmFormBase {
   /**
    * Stores the Entity manager.
    *
-   * @var \Drupal\Core\Entity\EntityManagerInterface
+   * @var \Drupal\Core\Entity\EntityTypeManagerInterface
    */
-  protected $entityManager;
+  protected $entityTypeManager;
 
   /**
    * The temporary storage factory.
@@ -43,8 +43,8 @@ class BreakLockForm extends EntityConfirmFormBase {
   /**
    * Constructor.
    */
-  public function __construct(EntityManagerInterface $entity_manager, SharedTempStoreFactory $temp_store_factory, RendererInterface $renderer) {
-    $this->entityManager = $entity_manager;
+  public function __construct(EntityTypeManagerInterface $entity_type_manager, SharedTempStoreFactory $temp_store_factory, RendererInterface $renderer) {
+    $this->entityTypeManager = $entity_type_manager;
     $this->tempStoreFactory = $temp_store_factory;
     $this->renderer = $renderer;
   }
@@ -54,7 +54,7 @@ class BreakLockForm extends EntityConfirmFormBase {
    */
   public static function create(ContainerInterface $container) {
     return new static(
-      $container->get('entity.manager'),
+      $container->get('entity_type.manager'),
       $container->get('user.shared_tempstore'),
       $container->get('renderer')
     );
@@ -80,7 +80,7 @@ class BreakLockForm extends EntityConfirmFormBase {
   public function getDescription() {
     $store = $this->tempStoreFactory->get($this->entity->getEntityTypeId());
     $locked = $store->getMetadata($this->entity->id());
-    $account = $this->entityManager->getStorage('user')->load($locked->owner);
+    $account = $this->entityTypeManager->getStorage('user')->load($locked->owner);
     $username = [
       '#theme' => 'username',
       '#account' => $account,
