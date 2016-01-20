@@ -9,6 +9,7 @@ namespace Drupal\rules\Form;
 
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\rules\Engine\ConfigurationState;
 use Drupal\rules\Entity\ReactionRuleConfig;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
@@ -60,7 +61,10 @@ class EditExpressionForm extends FormBase {
   /**
    * {@inheritdoc}
    */
-  public function submitForm(array &$form, FormStateInterface $form_state) {
+  public function validateForm(array &$form, FormStateInterface $form_state) {
+    // In order to validdate the whole rule we need to invoke the submission
+    // handler of the expression form. That way the expression is changed and we
+    // can validate the change for integrity afterwards
     $rule_expression = $this->ruleConfig->getExpression();
     $expression = $rule_expression->getExpression($this->uuid);
     $form_handler = $expression->getFormHandler();
@@ -69,7 +73,19 @@ class EditExpressionForm extends FormBase {
     // Set the expression again so that the config is copied over to the
     // config entity.
     $this->ruleConfig->setExpression($rule_expression);
+    $config_state = ConfigurationState::createFromConfig($this->ruleConfig);
+    $all_violations = $rule_expression->integrityCheck($config_state);
+    $local_violations = $all_violations->getFor($this->uuid);
 
+    foreach ($local_violations as $violation) {
+      $form_state->setError($form, $violation->getMessage());
+    }
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function submitForm(array &$form, FormStateInterface $form_state) {
     $this->saveToTempStore();
 
     $form_state->setRedirect('entity.rules_reaction_rule.edit_form', [

@@ -121,6 +121,13 @@ class ReactionRuleConfig extends ConfigEntityBase {
   protected $module = 'rules';
 
   /**
+   * The event name this reaction rule is reacting on.
+   *
+   * @var string
+   */
+  protected $event;
+
+  /**
    * Sets a Rules expression instance for this Reaction rule.
    *
    * @param \Drupal\rules\Engine\ExpressionInterface $expression
