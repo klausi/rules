@@ -18,7 +18,9 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
  */
 class EditExpressionForm extends FormBase {
 
-  use TempStoreTrait;
+  use TempStoreTrait {
+    validateForm as lockValidateForm;
+  }
 
   /**
    * The reaction rule config the expression is edited on.
@@ -62,18 +64,18 @@ class EditExpressionForm extends FormBase {
    * {@inheritdoc}
    */
   public function validateForm(array &$form, FormStateInterface $form_state) {
+    $this->lockValidateForm($form, $form_state);
+
     // In order to validdate the whole rule we need to invoke the submission
     // handler of the expression form. That way the expression is changed and we
     // can validate the change for integrity afterwards
-    $rule_expression = $this->ruleConfig->getExpression();
+    $validation_config = clone $this->ruleConfig;
+    $rule_expression = $validation_config->getExpression();
     $expression = $rule_expression->getExpression($this->uuid);
     $form_handler = $expression->getFormHandler();
     $form_handler->submitForm($form, $form_state);
 
-    // Set the expression again so that the config is copied over to the
-    // config entity.
-    $this->ruleConfig->setExpression($rule_expression);
-    $config_state = ConfigurationState::createFromConfig($this->ruleConfig);
+    $config_state = ConfigurationState::createFromConfig($validation_config);
     $all_violations = $rule_expression->integrityCheck($config_state);
     $local_violations = $all_violations->getFor($this->uuid);
 
@@ -86,6 +88,15 @@ class EditExpressionForm extends FormBase {
    * {@inheritdoc}
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
+    $rule_expression = $this->ruleConfig->getExpression();
+    $expression = $rule_expression->getExpression($this->uuid);
+    $form_handler = $expression->getFormHandler();
+    $form_handler->submitForm($form, $form_state);
+
+    // Set the expression again so that the config is copied over to the
+    // config entity.
+    $this->ruleConfig->setExpression($rule_expression);
+
     $this->saveToTempStore();
 
     $form_state->setRedirect('entity.rules_reaction_rule.edit_form', [
