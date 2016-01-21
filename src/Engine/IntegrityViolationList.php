@@ -8,33 +8,15 @@
 namespace Drupal\rules\Engine;
 
 /**
- *
+ * Collection of integrity violations.
  */
-class IntegrityViolationList implements \IteratorAggregate {
-
-  /**
-   * @var \Drupal\rules\Engine\IntegrityViolation[]
-   */
-  protected $violations = array();
-
-  /**
-   * Constructor.
-   *
-   * @param \Drupal\rules\Engine\IntegrityViolation[] $violations
-   *   The violations to add to the list
-   */
-  public function __construct(array $violations = array()) {
-
-    foreach ($violations as $violation) {
-      $this->add($violation);
-    }
-  }
+class IntegrityViolationList extends \ArrayIterator {
 
   /**
    * {@inheritdoc}
    */
   public function add(IntegrityViolation $violation) {
-    $this->violations[] = $violation;
+    $this[] = $violation;
   }
 
   /**
@@ -42,7 +24,7 @@ class IntegrityViolationList implements \IteratorAggregate {
    */
   public function addAll(IntegrityViolationList $otherList) {
     foreach ($otherList as $violation) {
-      $this->violations[] = $violation;
+      $this[] = $violation;
     }
   }
 
@@ -51,19 +33,12 @@ class IntegrityViolationList implements \IteratorAggregate {
    */
   public function getFor($uuid) {
     $uuid_violations = [];
-    foreach ($this->violations as $violation) {
+    foreach ($this as $violation) {
       if ($violation->getUuid() === $uuid) {
         $uuid_violations[] = $violation;
       }
     }
     return $uuid_violations;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function getIterator() {
-    return new \ArrayIterator($this->violations);
   }
 
 }

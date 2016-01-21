@@ -60,6 +60,8 @@ interface ConfigurationStateInterface {
   /**
    * Applies a data selector and returns the corresponding data definition.
    *
+   * @todo move this to the data fetcher service.
+   *
    * @param string $selector
    *   The selector, example: "node:title:value".
    * @param string $langcode

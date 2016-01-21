@@ -8,7 +8,9 @@
 namespace Drupal\Tests\rules\Integration\Engine;
 
 use Drupal\rules\Context\ContextConfig;
+use Drupal\rules\Context\ContextDefinition;
 use Drupal\rules\Engine\ConfigurationState;
+use Drupal\rules\Engine\RulesComponent;
 use Drupal\Tests\rules\Integration\RulesEntityIntegrationTestBase;
 
 /**
@@ -27,10 +29,9 @@ class IntegrityCheckTest extends RulesEntityIntegrationTestBase {
       ->map('entity', 'entity')
     );
 
-    $config_state = ConfigurationState::create([
-      'entity' => $this->typedDataManager->createDataDefinition('entity'),
-    ]);
-    $violation_list = $rule->checkIntegrity($config_state);
+    $violation_list = RulesComponent::create($rule)
+      ->addContextDefinition('entity', ContextDefinition::create('entity'))
+      ->checkIntegrity();
     $this->assertEquals(iterator_count($violation_list), 0);
   }
 
@@ -43,10 +44,10 @@ class IntegrityCheckTest extends RulesEntityIntegrationTestBase {
       ->map('entity', 'unknown_variable')
     );
 
-    $config_state = ConfigurationState::create([]);
-    $violation_list = $rule->checkIntegrity($config_state);
+    $violation_list = RulesComponent::create($rule)
+      ->checkIntegrity();
     $this->assertEquals(iterator_count($violation_list), 1);
-    $violation = $violation_list->getIterator()->current();
+    $violation = $violation_list[0];
     $this->assertEquals('Data selector unknown_variable for context entity is invalid.', $violation->getMessage());
   }
 
@@ -61,11 +62,10 @@ class IntegrityCheckTest extends RulesEntityIntegrationTestBase {
         ->addAction('rules_entity_save', ContextConfig::create()
           ->map('entity', 'unknown_variable_2'));
 
-    $config_state = ConfigurationState::create([
-      'entity' => $this->typedDataManager->createDataDefinition('entity'),
-    ]);
+    $all_violations = RulesComponent::create($rule)
+      ->addContextDefinition('entity', ContextDefinition::create('entity'))
+      ->checkIntegrity();
 
-    $all_violations = $rule->checkIntegrity($config_state);
     $this->assertEquals(2, iterator_count($all_violations));
 
     // Get the UUID of the second action.
@@ -75,7 +75,7 @@ class IntegrityCheckTest extends RulesEntityIntegrationTestBase {
 
     $uuid_violations = $all_violations->getFor($uuid);
     $this->assertEquals(1, count($uuid_violations));
-    $violation = reset($uuid_violations);
+    $violation = $uuid_violations[0];
     $this->assertEquals('Data selector unknown_variable_2 for context entity is invalid.', $violation->getMessage());
   }
 

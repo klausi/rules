@@ -80,6 +80,7 @@ class ConfigurationState implements ConfigurationStateInterface {
    * {@inheritdoc}
    */
   public function applyDataSelector($selector, $langcode = LanguageInterface::LANGCODE_NOT_SPECIFIED) {
+    // @todo This will be moved to the data fetcher service.
     $parts = explode(':', $selector, 2);
 
     if (count($parts) == 1 && isset($this->dataDefinitions[$parts[0]])) {

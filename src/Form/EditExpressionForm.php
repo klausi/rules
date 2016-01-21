@@ -9,7 +9,7 @@ namespace Drupal\rules\Form;
 
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\rules\Engine\ConfigurationState;
+use Drupal\rules\Engine\RulesComponent;
 use Drupal\rules\Entity\ReactionRuleConfig;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
@@ -75,8 +75,9 @@ class EditExpressionForm extends FormBase {
     $form_handler = $expression->getFormHandler();
     $form_handler->submitForm($form, $form_state);
 
-    $config_state = ConfigurationState::createFromConfig($validation_config);
-    $all_violations = $rule_expression->checkIntegrity($config_state);
+    $all_violations = RulesComponent::create($rule_expression)
+      ->addContextDefinitionsFrom($validation_config)
+      ->checkIntegrity();
     $local_violations = $all_violations->getFor($this->uuid);
 
     foreach ($local_violations as $violation) {
