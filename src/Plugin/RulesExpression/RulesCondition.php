@@ -178,12 +178,12 @@ class RulesCondition extends ExpressionBase implements ConditionExpressionInterf
   /**
    * {@inheritdoc}
    */
-  public function integrityCheck(ConfigurationStateInterface $config_state) {
+  public function checkIntegrity(ConfigurationStateInterface $config_state) {
     $condition = $this->conditionManager->createInstance($this->configuration['condition_id'], [
       'negate' => $this->configuration['negate'],
     ]);
 
-    return $this->doIntegrityCheck($condition, $config_state);
+    return $this->doCheckIntegrity($condition, $config_state);
   }
 
 }

@@ -94,7 +94,8 @@ interface ExpressionInterface extends ExecutableInterface, ConfigurablePluginInt
    *   variables.
    *
    * @return \Drupal\rules\Engine\IntegrityViolationList
+   *   A list object containing \Drupal\rules\Engine\IntegrityViolation objects.
    */
-  public function integrityCheck(ConfigurationStateInterface $config_state);
+  public function checkIntegrity(ConfigurationStateInterface $config_state);
 
 }

@@ -26,7 +26,7 @@ trait IntegrityCheckTrait {
    * @return \Drupal\rules\Engine\IntegrityViolationList
    *   The list of integrity violations.
    */
-  protected function doIntegrityCheck(CoreContextAwarePluginInterface $plugin, ConfigurationStateInterface $config_state) {
+  protected function doCheckIntegrity(CoreContextAwarePluginInterface $plugin, ConfigurationStateInterface $config_state) {
     $violation_list = new IntegrityViolationList();
     $context_definitions = $plugin->getContextDefinitions();
     foreach ($context_definitions as $name => $definition) {

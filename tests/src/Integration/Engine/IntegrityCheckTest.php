@@ -30,7 +30,7 @@ class IntegrityCheckTest extends RulesEntityIntegrationTestBase {
     $config_state = ConfigurationState::create([
       'entity' => $this->typedDataManager->createDataDefinition('entity'),
     ]);
-    $violation_list = $rule->integrityCheck($config_state);
+    $violation_list = $rule->checkIntegrity($config_state);
     $this->assertEquals(iterator_count($violation_list), 0);
   }
 
@@ -44,7 +44,7 @@ class IntegrityCheckTest extends RulesEntityIntegrationTestBase {
     );
 
     $config_state = ConfigurationState::create([]);
-    $violation_list = $rule->integrityCheck($config_state);
+    $violation_list = $rule->checkIntegrity($config_state);
     $this->assertEquals(iterator_count($violation_list), 1);
     $violation = $violation_list->getIterator()->current();
     $this->assertEquals('Data selector unknown_variable for context entity is invalid.', $violation->getMessage());
@@ -65,7 +65,7 @@ class IntegrityCheckTest extends RulesEntityIntegrationTestBase {
       'entity' => $this->typedDataManager->createDataDefinition('entity'),
     ]);
 
-    $all_violations = $rule->integrityCheck($config_state);
+    $all_violations = $rule->checkIntegrity($config_state);
     $this->assertEquals(2, iterator_count($all_violations));
 
     // Get the UUID of the second action.

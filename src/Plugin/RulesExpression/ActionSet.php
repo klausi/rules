@@ -186,10 +186,10 @@ class ActionSet extends ExpressionBase implements ActionExpressionContainerInter
   /**
    * {@inheritdoc}
    */
-  public function integrityCheck(ConfigurationStateInterface $config_state) {
+  public function checkIntegrity(ConfigurationStateInterface $config_state) {
     $violation_list = new IntegrityViolationList();
     foreach ($this->actions as $uuid => $action) {
-      $action_violations = $action->integrityCheck($config_state);
+      $action_violations = $action->checkIntegrity($config_state);
       foreach ($action_violations as $violation) {
         $violation->setUuid($uuid);
       }

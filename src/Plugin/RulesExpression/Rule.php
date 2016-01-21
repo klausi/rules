@@ -217,9 +217,9 @@ class Rule extends ExpressionBase implements RuleInterface, ContainerFactoryPlug
   /**
    * {@inheritdoc}
    */
-  public function integrityCheck(ConfigurationStateInterface $config_state) {
-    $violation_list = $this->conditions->integrityCheck($config_state);
-    $violation_list->addAll($this->actions->integrityCheck($config_state));
+  public function checkIntegrity(ConfigurationStateInterface $config_state) {
+    $violation_list = $this->conditions->checkIntegrity($config_state);
+    $violation_list->addAll($this->actions->checkIntegrity($config_state));
     return $violation_list;
   }
 

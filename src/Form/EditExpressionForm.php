@@ -76,7 +76,7 @@ class EditExpressionForm extends FormBase {
     $form_handler->submitForm($form, $form_state);
 
     $config_state = ConfigurationState::createFromConfig($validation_config);
-    $all_violations = $rule_expression->integrityCheck($config_state);
+    $all_violations = $rule_expression->checkIntegrity($config_state);
     $local_violations = $all_violations->getFor($this->uuid);
 
     foreach ($local_violations as $violation) {
