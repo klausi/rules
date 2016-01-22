@@ -7,6 +7,7 @@
 
 namespace Drupal\rules\Plugin\TypedDataFilter;
 
+use Drupal\Core\Render\BubbleableMetadata;
 use Drupal\Core\TypedData\DataDefinitionInterface;
 use Drupal\Core\TypedData\Type\StringInterface;
 use Drupal\rules\TypedData\DataFilterBase;
@@ -17,7 +18,6 @@ use Drupal\rules\TypedData\DataFilterBase;
  * @DataFilter(
  *   id = "default",
  *   label = @Translation("Applies a default-value if there is no value."),
- *   allowNull = true,
  * )
  */
 class DefaultFilter extends DataFilterBase {
@@ -25,7 +25,7 @@ class DefaultFilter extends DataFilterBase {
   /**
    * {@inheritdoc}
    */
-  public function filter(DataDefinitionInterface $definition, $value, array $arguments) {
+  public function filter(DataDefinitionInterface $definition, $value, array $arguments, BubbleableMetadata $bubbleable_metadata = NULL) {
     return isset($value) ? $value : $arguments[0];
   }
 
@@ -41,6 +41,13 @@ class DefaultFilter extends DataFilterBase {
    */
   public function filtersTo(DataDefinitionInterface $definition, array $arguments) {
     return $definition;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function allowsNullValues() {
+    return TRUE;
   }
 
   /**
