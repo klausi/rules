@@ -89,12 +89,13 @@ class ActionSet extends ExpressionBase implements ActionExpressionContainerInter
   /**
    * {@inheritdoc}
    */
-  public function addExpressionObject(ExpressionInterface $expression) {
+  public function addExpressionObject(ExpressionInterface $expression, $return_uuid = FALSE) {
     if (!$expression instanceof ActionExpressionInterface) {
       throw new InvalidExpressionException();
     }
-    $this->actions[$this->uuidService->generate()] = $expression;
-    return $this;
+    $uuid = $this->uuidService->generate();
+    $this->actions[$uuid] = $expression;
+    return $return_uuid ? $uuid : $this;
   }
 
   /**

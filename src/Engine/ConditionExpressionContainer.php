@@ -74,12 +74,13 @@ abstract class ConditionExpressionContainer extends ExpressionBase implements Co
   /**
    * {@inheritdoc}
    */
-  public function addExpressionObject(ExpressionInterface $expression) {
+  public function addExpressionObject(ExpressionInterface $expression, $return_uuid = FALSE) {
     if (!$expression instanceof ConditionExpressionInterface) {
       throw new InvalidExpressionException();
     }
-    $this->conditions[$this->uuidService->generate()] = $expression;
-    return $this;
+    $uuid = $this->uuidService->generate();
+    $this->conditions[$uuid] = $expression;
+    return $return_uuid ? $uuid : $this;
   }
 
   /**
