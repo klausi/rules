@@ -8,7 +8,6 @@
 namespace Drupal\Tests\rules\Kernel\TypedData;
 
 use Drupal\Core\Entity\TypedData\EntityDataDefinition;
-use Drupal\Core\Render\BubbleableMetadata;
 use Drupal\KernelTests\KernelTestBase;
 use Drupal\field\Entity\FieldConfig;
 use Drupal\field\Entity\FieldStorageConfig;
@@ -86,61 +85,91 @@ class DataDefinitionFetcherTest extends KernelTestBase {
   }
 
   /**
-   * @cover fetchDataByPropertyPath
+   * @covers ::fetchDefinitionByPropertyPath
    */
   public function testFetchingByBasicPropertyPath() {
-    $this->assertEquals(
-      $this->node->title->value,
-      $this->typedDataManager->getDataFetcher()
-        ->fetchDataByPropertyPath($this->node->getTypedData(), 'title.0.value')
-        ->getValue()
-    );
+    $target_definition = $this->node
+      ->getTypedData()
+      ->getDataDefinition()
+      ->getPropertyDefinition('title')
+      ->getItemDefinition()
+      ->getPropertyDefinition('value');
+
+    $fetched_definition = $this->typedDataManager
+      ->getDataFetcher()
+      ->fetchDefinitionByPropertyPath(
+        $this->node->getTypedData()->getDataDefinition(),
+        'title.0.value'
+      );
+
+    $this->assertSame($target_definition, $fetched_definition);
   }
 
   /**
-   * @cover fetchDataBySubPaths
+   * @covers ::fetchDefinitionBySubPaths
    */
-  /*public function testFetchingByBasicSubPath() {
-    $this->assertEquals(
-      $this->node->title->value,
-      $this->typedDataManager->getDataFetcher()
-        ->fetchDataBySubPaths($this->node->getTypedData(), ['title', '0', 'value'])
-        ->getValue()
-    );
+  public function testFetchingByBasicSubPath() {
+    $target_definition = $this->node
+      ->getTypedData()
+      ->getDataDefinition()
+      ->getPropertyDefinition('title')
+      ->getItemDefinition()
+      ->getPropertyDefinition('value');
+
+    $fetched_definition = $this->typedDataManager
+      ->getDataFetcher()
+      ->fetchDefinitionBySubPaths(
+        $this->node->getTypedData()->getDataDefinition(),
+        ['title', '0', 'value']
+      );
+
+    $this->assertSame($target_definition, $fetched_definition);
+  }
+
+  /**
+   * @covers ::fetchDefinitionByPropertyPath
+   */
+  public function testFetchingEntityReference() {
+    $target_definition = $this->node
+      ->getTypedData()
+      ->getDataDefinition()
+      ->getPropertyDefinition('uid')
+      ->getItemDefinition()
+      ->getPropertyDefinition('entity');
+
+    $fetched_definition = $this->typedDataManager
+      ->getDataFetcher()
+      ->fetchDefinitionByPropertyPath(
+        $this->node->getTypedData()->getDataDefinition(),
+        'uid.entity'
+      );
+
+    $this->assertSame($target_definition, $fetched_definition);
   }
 
   /**
    * @cover fetchDataByPropertyPath
    */
-  /*public function testFetchingEntityReference() {
-    $user = $this->entityTypeManager->getStorage('user')
-      ->create([
-        'name' => 'test',
-        'type' => 'user',
-      ]);
-    $this->node->uid->entity = $user;
+  public function testFetchingAcrossReferences() {
+    $target_definition = $this->node
+      ->getTypedData()
+      ->getDataDefinition()
+      ->getPropertyDefinition('uid')
+      ->getItemDefinition()
+      ->getPropertyDefinition('entity')
+      ->getTargetDefinition()
+      ->getPropertyDefinition('name')
+      ->getItemDefinition()
+      ->getPropertyDefinition('value');
 
-    $fetched_user = $this->typedDataManager->getDataFetcher()
-      ->fetchDataByPropertyPath($this->node->getTypedData(), 'uid.entity')
-      ->getValue();
-    $this->assertSame($fetched_user, $user);
-  }
+    $fetched_definition = $this->typedDataManager
+      ->getDataFetcher()
+      ->fetchDefinitionByPropertyPath(
+        $this->node->getTypedData()->getDataDefinition(),
+        'uid.entity.name.value'
+      );
 
-  /**
-   * @cover fetchDataByPropertyPath
-   */
-  /*public function testFetchingAcrossReferences() {
-    $user = $this->entityTypeManager->getStorage('user')
-      ->create([
-        'name' => 'test',
-        'type' => 'user',
-      ]);
-    $this->node->uid->entity = $user;
-
-    $fetched_value = $this->typedDataManager->getDataFetcher()
-      ->fetchDataByPropertyPath($this->node->getTypedData(), 'uid.entity.name.value')
-      ->getValue();
-    $this->assertSame($fetched_value, 'test');
+    $this->assertSame($target_definition, $fetched_definition);
   }
 
   /**

@@ -109,7 +109,7 @@ class DataFetcher implements DataFetcherInterface {
    */
   public function fetchDefinitionByPropertyPath(DataDefinitionInterface $data_definition, $property_path, $langcode = NULL) {
     $sub_paths = explode('.', $property_path);
-    return $this->fetchDataBySubPaths($data_definition, $sub_paths, $langcode);
+    return $this->fetchDefinitionBySubPaths($data_definition, $sub_paths, $langcode);
   }
 
   /**
@@ -137,8 +137,11 @@ class DataFetcher implements DataFetcherInterface {
           $data_definition = $data_definition->getItemDefinition();
         }
         // Drill down to the next step in the data selector.
-        else if ($data_definition instanceof ComplexDataDefinitionInterface) {
+        if ($data_definition instanceof ComplexDataDefinitionInterface) {
           $data_definition = $data_definition->getPropertyDefinition($name);
+        }
+        else if ($data_definition instanceof ListDataDefinitionInterface) {
+          $data_definition = $data_definition->getItemDefinition();
         }
         else {
           $current_selector_string = implode('.', $current_selector);
