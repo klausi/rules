@@ -11,6 +11,7 @@ use Drupal\Core\Cache\CacheableDependencyInterface;
 use Drupal\Core\Render\AttachmentsInterface;
 use Drupal\Core\Render\BubbleableMetadata;
 use Drupal\Core\TypedData\ComplexDataInterface;
+use Drupal\Core\TypedData\DataDefinitionInterface;
 use Drupal\Core\TypedData\DataReferenceInterface;
 use Drupal\Core\TypedData\Exception\MissingDataException;
 use Drupal\Core\TypedData\ListInterface;
@@ -26,7 +27,7 @@ class DataFetcher implements DataFetcherInterface {
   /**
    * {@inheritdoc}
    */
-  public function fetchByPropertyPath(TypedDataInterface $typed_data, $property_path, BubbleableMetadata $bubbleable_metadata = NULL, $langcode = NULL) {
+  public function fetchDataByPropertyPath(TypedDataInterface $typed_data, $property_path, BubbleableMetadata $bubbleable_metadata = NULL, $langcode = NULL) {
     $sub_paths = explode('.', $property_path);
     return $this->fetchBySubPaths($typed_data, $sub_paths, $bubbleable_metadata, $langcode);
   }
@@ -34,7 +35,7 @@ class DataFetcher implements DataFetcherInterface {
   /**
    * {@inheritdoc}
    */
-  public function fetchBySubPaths(TypedDataInterface $typed_data, array $sub_paths, BubbleableMetadata $bubbleable_metadata = NULL, $langcode = NULL) {
+  public function fetchDataBySubPaths(TypedDataInterface $typed_data, array $sub_paths, BubbleableMetadata $bubbleable_metadata = NULL, $langcode = NULL) {
     $current_selector = [];
     $bubbleable_metadata = $bubbleable_metadata ?: new BubbleableMetadata();
 
@@ -98,6 +99,21 @@ class DataFetcher implements DataFetcherInterface {
       $current_selector = implode('.', $current_selector);
       throw new \InvalidArgumentException("Unable to apply data selector '$selector' at '$current_selector': " . $e->getMessage());
     }
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function fetchDefinitionByPropertyPath(DataDefinitionInterface $data_definition, $property_path, $langcode = NULL) {
+    $sub_paths = explode('.', $property_path);
+    return $this->fetchBySubPaths($data_definition, $sub_paths, $langcode);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function fetchDefinitionBySubPaths(DataDefinitionInterface $data_definition, string $sub_paths, $langcode = NULL) {
+
   }
 
   /**
