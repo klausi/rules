@@ -148,7 +148,7 @@ class DataDefinitionFetcherTest extends KernelTestBase {
   }
 
   /**
-   * @cover fetchDataByPropertyPath
+   * @cover fetchDefinitionByPropertyPath
    */
   public function testFetchingAcrossReferences() {
     $target_definition = $this->node
@@ -173,34 +173,37 @@ class DataDefinitionFetcherTest extends KernelTestBase {
   }
 
   /**
-   * @cover fetchDataByPropertyPath
+   * @covers ::fetchDefinitionByPropertyPath
    */
-  /*public function testFetchingNonExistingEntityReference() {
-    $fetched_user = $this->typedDataManager->getDataFetcher()
-      ->fetchDataByPropertyPath($this->node->getTypedData(), 'uid.0.entity')
-      ->getValue();
-    $this->assertNull($fetched_user);
+  public function testFetchingAtValidPositions() {
+    $target_definition = $this->node
+      ->getTypedData()
+      ->getDataDefinition()
+      ->getPropertyDefinition('field_integer')
+      ->getItemDefinition()
+      ->getPropertyDefinition('value');
+
+    $fetched_definition = $this->typedDataManager
+      ->getDataFetcher()
+      ->fetchDefinitionByPropertyPath(
+        $this->node->getTypedData()->getDataDefinition(),
+        'field_integer.0.value'
+      );
+
+    $this->assertSame($target_definition, $fetched_definition);
+
+    $fetched_definition = $this->typedDataManager
+      ->getDataFetcher()
+      ->fetchDefinitionByPropertyPath(
+        $this->node->getTypedData()->getDataDefinition(),
+        'field_integer.1.value'
+      );
+
+    $this->assertSame($target_definition, $fetched_definition);
   }
 
   /**
-   * @cover fetchDataByPropertyPath
-   */
-  /*public function testFetchingValueAtValidPositions() {
-    $this->node->field_integer->setValue(['0' => 1, '1' => 2]);
-
-    $fetched_value = $this->typedDataManager->getDataFetcher()
-      ->fetchDataByPropertyPath($this->node->getTypedData(), 'field_integer.0.value')
-      ->getValue();
-    $this->assertEquals($fetched_value, 1);
-
-    $fetched_value = $this->typedDataManager->getDataFetcher()
-      ->fetchDataByPropertyPath($this->node->getTypedData(), 'field_integer.1.value')
-      ->getValue();
-    $this->assertEquals($fetched_value, 2);
-  }
-
-  /**
-   * @cover fetchDataByPropertyPath
+   * @cover fetchDefinitionByPropertyPath
    * @expectedException \Drupal\Core\TypedData\Exception\MissingDataException
    * @expectedExceptionMessage Unable to apply data selector 'field_integer.0.value' at 'field_integer.0'
    */
@@ -209,36 +212,36 @@ class DataDefinitionFetcherTest extends KernelTestBase {
 
     // This should trigger an exception.
     $this->typedDataManager->getDataFetcher()
-      ->fetchDataByPropertyPath($this->node->getTypedData(), 'field_integer.0.value')
+      ->fetchDefinitionByPropertyPath($this->node->getTypedData(), 'field_integer.0.value')
       ->getValue();
   }
 
   /**
-   * @cover fetchDataByPropertyPath
+   * @cover fetchDefinitionByPropertyPath
    * @expectedException \InvalidArgumentException
    * @expectedExceptionMessage Unable to apply data selector 'field_invalid.0.value' at 'field_invalid'
    */
   /*public function festFetchingInvalidProperty() {
     // This should trigger an exception.
     $this->typedDataManager->getDataFetcher()
-      ->fetchDataByPropertyPath($this->node->getTypedData(), 'field_invalid.0.value')
+      ->fetchDefinitionByPropertyPath($this->node->getTypedData(), 'field_invalid.0.value')
       ->getValue();
   }
 
   /**
-   * @cover fetchDataByPropertyPath
+   * @cover fetchDefinitionByPropertyPath
    */
   /*public function testFetchingEmptyProperty() {
     $this->node->field_integer->setValue([]);
 
     $fetched_value = $this->typedDataManager->getDataFetcher()
-      ->fetchDataByPropertyPath($this->node->getTypedData(), 'field_integer')
+      ->fetchDefinitionByPropertyPath($this->node->getTypedData(), 'field_integer')
       ->getValue();
     $this->assertEquals($fetched_value, []);
   }
 
   /**
-   * @cover fetchDataByPropertyPath
+   * @cover fetchDefinitionByPropertyPath
    * @expectedException \Drupal\Core\TypedData\Exception\MissingDataException
    */
   /*public function testFetchingNotExistingListItem() {
@@ -246,12 +249,12 @@ class DataDefinitionFetcherTest extends KernelTestBase {
 
     // This will throw an exception.
     $this->typedDataManager->getDataFetcher()
-      ->fetchDataByPropertyPath($this->node->getTypedData(), 'field_integer.0')
+      ->fetchDefinitionByPropertyPath($this->node->getTypedData(), 'field_integer.0')
       ->getValue();
   }
 
   /**
-   * @cover fetchDataByPropertyPath
+   * @cover fetchDefinitionByPropertyPath
    * @expectedException \Drupal\Core\TypedData\Exception\MissingDataException
    * @expectedExceptionMessageRegExp #Unable to apply data selector 'field_integer.0.value' at 'field_integer':.*#
    */
@@ -259,12 +262,12 @@ class DataDefinitionFetcherTest extends KernelTestBase {
     $data_empty = $this->typedDataManager->create(EntityDataDefinition::create('node'));
     // This should trigger an exception.
     $this->typedDataManager->getDataFetcher()
-      ->fetchDataByPropertyPath($data_empty, 'field_integer.0.value')
+      ->fetchDefinitionByPropertyPath($data_empty, 'field_integer.0.value')
       ->getValue();
   }
 
   /**
-   * @cover fetchDataByPropertyPath
+   * @cover fetchDefinitionByPropertyPath
    */
   /*public function testBubbleableMetadata() {
     $this->node->field_integer->setValue([]);
@@ -281,7 +284,7 @@ class DataDefinitionFetcherTest extends KernelTestBase {
 
     $bubbleable_metadata = new BubbleableMetadata();
     $this->typedDataManager->getDataFetcher()
-      ->fetchDataByPropertyPath($this->node->getTypedData(), 'title.value', $bubbleable_metadata)
+      ->fetchDefinitionByPropertyPath($this->node->getTypedData(), 'title.value', $bubbleable_metadata)
       ->getValue();
 
     $expected = ['node:' . $this->node->id()];
@@ -289,7 +292,7 @@ class DataDefinitionFetcherTest extends KernelTestBase {
 
     // Test cache tags of references are added correctly.
     $this->typedDataManager->getDataFetcher()
-      ->fetchDataByPropertyPath($this->node->getTypedData(), 'uid.entity.name', $bubbleable_metadata)
+      ->fetchDefinitionByPropertyPath($this->node->getTypedData(), 'uid.entity.name', $bubbleable_metadata)
       ->getValue();
 
     $expected = ['node:' . $this->node->id(), 'user:' . $user->id()];
