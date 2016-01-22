@@ -55,7 +55,7 @@ class PlaceholderResolver implements PlaceholderResolverInterface {
           if (!isset($data[$data_name])) {
             throw new MissingDataException("There is no data with the name '$data_name' available.");
           }
-          $fetched_data = $data_fetcher->fetchBySubPaths($data[$data_name], explode(':', $sub_path), $bubbleable_metadata, $options['langcode']);
+          $fetched_data = $data_fetcher->fetchDataBySubPaths($data[$data_name], explode(':', $sub_path), $bubbleable_metadata, $options['langcode']);
           $value = $fetched_data->getString();
           // @todo: Add token formatting support here.
           // Escape the tokens, unless they are explicitly markup.

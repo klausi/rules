@@ -119,14 +119,14 @@ class ExecutionState implements ExecutionStateInterface {
   /**
    * {@inheritdoc}
    */
-  public function fetchByPropertyPath($property_path, $langcode = NULL) {
+  public function fetchDataByPropertyPath($property_path, $langcode = NULL) {
     try {
       $parts = explode('.', $property_path);
       $var_name = array_shift($parts);
       return $this
         ->getTypedDataManager()
         ->getDataFetcher()
-        ->fetchBySubPaths($this->getVariable($var_name), $parts, $langcode);
+        ->fetchDataBySubPaths($this->getVariable($var_name), $parts, $langcode);
     }
     catch (\InvalidArgumentException $e) {
       throw new RulesEvaluationException($e->getMessage());
@@ -150,7 +150,7 @@ class ExecutionState implements ExecutionStateInterface {
   public function autoSave() {
     // Make changes permanent.
     foreach ($this->saveLater as $selector => $flag) {
-      $typed_data = $this->fetchByPropertyPath($selector);
+      $typed_data = $this->fetchDataByPropertyPath($selector);
       // The returned data can be NULL, only save it if we actually have
       // something here.
       if ($typed_data) {
