@@ -36,7 +36,10 @@ trait IntegrityCheckTrait {
 
         if ($data_definition === NULL) {
           $violation = new IntegrityViolation();
-          $violation->setMessage('Data selector ' . $this->configuration['context_mapping'][$name] . " for context $name is invalid.");
+          $violation->setMessage($this->t('Data selector %selector for context %context_name is invalid.', [
+            '%selector' => $this->configuration['context_mapping'][$name],
+            '%context_name' => $definition->getLabel(),
+          ]));
           $violation->setContextName($name);
           $violation_list->add($violation);
         }

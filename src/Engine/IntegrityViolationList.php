@@ -22,8 +22,8 @@ class IntegrityViolationList extends \ArrayIterator {
   /**
    * {@inheritdoc}
    */
-  public function addAll(IntegrityViolationList $otherList) {
-    foreach ($otherList as $violation) {
+  public function addAll(IntegrityViolationList $other_list) {
+    foreach ($other_list as $violation) {
       $this[] = $violation;
     }
   }

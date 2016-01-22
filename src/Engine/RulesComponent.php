@@ -7,7 +7,9 @@
 
 namespace Drupal\rules\Engine;
 
+use Drupal\Core\Config\Entity\ConfigEntityInterface;
 use Drupal\rules\Context\ContextDefinitionInterface;
+use Drupal\rules\Entity\ReactionRuleConfig;
 
 /**
  * Handles executable Rules components.
@@ -116,7 +118,7 @@ class RulesComponent {
    * Example: for a reaction rule config all context definitions of the event
    * will be added.
    *
-   * @param \Drupal\rules\Engine\ConfigEntityInterface $rules_config
+   * @param \Drupal\Core\Config\Entity\ConfigEntityInterface $rules_config
    *   The config entity.
    *
    * @return $this

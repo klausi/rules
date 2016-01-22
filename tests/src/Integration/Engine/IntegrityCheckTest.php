@@ -9,7 +9,6 @@ namespace Drupal\Tests\rules\Integration\Engine;
 
 use Drupal\rules\Context\ContextConfig;
 use Drupal\rules\Context\ContextDefinition;
-use Drupal\rules\Engine\ExecutionMetadataState;
 use Drupal\rules\Engine\RulesComponent;
 use Drupal\Tests\rules\Integration\RulesEntityIntegrationTestBase;
 
@@ -48,7 +47,7 @@ class IntegrityCheckTest extends RulesEntityIntegrationTestBase {
       ->checkIntegrity();
     $this->assertEquals(iterator_count($violation_list), 1);
     $violation = $violation_list[0];
-    $this->assertEquals('Data selector unknown_variable for context entity is invalid.', $violation->getMessage());
+    $this->assertEquals('Data selector <em class="placeholder">unknown_variable</em> for context <em class="placeholder">Entity</em> is invalid.', $violation->getMessage());
   }
 
   /**
@@ -76,7 +75,7 @@ class IntegrityCheckTest extends RulesEntityIntegrationTestBase {
     $uuid_violations = $all_violations->getFor($uuid);
     $this->assertEquals(1, count($uuid_violations));
     $violation = $uuid_violations[0];
-    $this->assertEquals('Data selector unknown_variable_2 for context entity is invalid.', $violation->getMessage());
+    $this->assertEquals('Data selector <em class="placeholder">unknown_variable_2</em> for context <em class="placeholder">Entity</em> is invalid.', (string) $violation->getMessage());
   }
 
 }

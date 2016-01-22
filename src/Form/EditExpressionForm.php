@@ -68,7 +68,7 @@ class EditExpressionForm extends FormBase {
 
     // In order to validdate the whole rule we need to invoke the submission
     // handler of the expression form. That way the expression is changed and we
-    // can validate the change for integrity afterwards
+    // can validate the change for integrity afterwards.
     $validation_config = clone $this->ruleConfig;
     $rule_expression = $validation_config->getExpression();
     $expression = $rule_expression->getExpression($this->uuid);

@@ -86,7 +86,7 @@ class AddExpressionForm extends FormBase {
 
     // In order to validdate the whole rule we need to invoke the submission
     // handler of the expression form. That way the expression is changed and we
-    // can validate the change for integrity afterwards
+    // can validate the change for integrity afterwards.
     $expression = $this->expressionManager->createInstance($this->expressionId);
     $form_handler = $expression->getFormHandler();
     $form_handler->submitForm($form, $form_state);

@@ -7,10 +7,8 @@
 
 namespace Drupal\rules\Engine;
 
-use Drupal\Core\Config\Entity\ConfigEntityInterface;
 use Drupal\Core\Language\LanguageInterface;
 use Drupal\Core\TypedData\DataDefinitionInterface;
-use Drupal\rules\Entity\ReactionRuleConfig;
 
 /**
  * The state used during configuration time holding data definitions.
@@ -30,18 +28,6 @@ class ExecutionMetadataState implements ExecutionMetadataStateInterface {
   public static function create($data_definitions = []) {
     return new static($data_definitions);
     // @todo Initialize the global "site" variable.
-  }
-
-  public static function createFromConfig(ConfigEntityInterface $rules_config) {
-    $state = static::create();
-    if ($rules_config instanceof ReactionRuleConfig) {
-      $event_name = $rules_config->getEvent();
-      $event_definition = \Drupal::service('plugin.manager.rules_event')->getDefinition($event_name);
-      foreach ($event_definition['context'] as $context_name => $context_definition) {
-        $state->addDataDefinition($context_name, $context_definition->getDataDefinition());
-      }
-    }
-    return $state;
   }
 
   /**
@@ -81,9 +67,9 @@ class ExecutionMetadataState implements ExecutionMetadataStateInterface {
    */
   public function applyDataSelector($selector, $langcode = LanguageInterface::LANGCODE_NOT_SPECIFIED) {
     // @todo This will be moved to the data fetcher service.
-    $parts = explode(':', $selector, 2);
+    $parts = explode('.', $selector, 2);
 
-    if (count($parts) == 1 && isset($this->dataDefinitions[$parts[0]])) {
+    if (isset($this->dataDefinitions[$parts[0]])) {
       return $this->dataDefinitions[$parts[0]];
     }
     return NULL;
