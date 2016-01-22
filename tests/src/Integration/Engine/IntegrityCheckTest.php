@@ -9,7 +9,7 @@ namespace Drupal\Tests\rules\Integration\Engine;
 
 use Drupal\rules\Context\ContextConfig;
 use Drupal\rules\Context\ContextDefinition;
-use Drupal\rules\Engine\ConfigurationState;
+use Drupal\rules\Engine\ExecutionMetadataState;
 use Drupal\rules\Engine\RulesComponent;
 use Drupal\Tests\rules\Integration\RulesEntityIntegrationTestBase;
 

@@ -231,8 +231,8 @@ class RulesComponent {
       $data_definitions[$name] = $context_definition->getDataDefinition();
     }
 
-    $config_state = ConfigurationState::create($data_definitions);
-    return $this->expression->checkIntegrity($config_state);
+    $metadata_state = ExecutionMetadataState::create($data_definitions);
+    return $this->expression->checkIntegrity($metadata_state);
   }
 
 }

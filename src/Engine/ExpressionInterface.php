@@ -89,13 +89,13 @@ interface ExpressionInterface extends ExecutableInterface, ConfigurablePluginInt
    *
    * Example: all variable names used in the expression are available.
    *
-   * @param \Drupal\rules\Engine\ConfigurationStateInterface $config_state
+   * @param \Drupal\rules\Engine\ExecutionMetadataStateInterface $metadata_state
    *   The configuration state used to hold available data definitions of
    *   variables.
    *
    * @return \Drupal\rules\Engine\IntegrityViolationList
    *   A list object containing \Drupal\rules\Engine\IntegrityViolation objects.
    */
-  public function checkIntegrity(ConfigurationStateInterface $config_state);
+  public function checkIntegrity(ExecutionMetadataStateInterface $metadata_state);
 
 }

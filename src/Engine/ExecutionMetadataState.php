@@ -2,7 +2,7 @@
 
 /**
  * @file
- * Contains \Drupal\rules\Engine\ConfigurationState.
+ * Contains \Drupal\rules\Engine\ExecutionMetadataState.
  */
 
 namespace Drupal\rules\Engine;
@@ -15,7 +15,7 @@ use Drupal\rules\Entity\ReactionRuleConfig;
 /**
  * The state used during configuration time holding data definitions.
  */
-class ConfigurationState implements ConfigurationStateInterface {
+class ExecutionMetadataState implements ExecutionMetadataStateInterface {
 
   /**
    * The known data definitions.

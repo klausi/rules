@@ -2,7 +2,7 @@
 
 /**
  * @file
- * Contains \Drupal\rules\Engine\ConfigurationStateInterface.
+ * Contains \Drupal\rules\Engine\ExecutionMetadataStateInterface.
  */
 
 namespace Drupal\rules\Engine;
@@ -12,8 +12,14 @@ use Drupal\Core\TypedData\DataDefinitionInterface;
 
 /**
  * The state used during configuration time holding data definitions.
+ *
+ * This is mostly used for integrity checks to validate the configuration of a
+ * rule. The metadata state is passed down the expression tree where data
+ * definitions can be modified or added. Nested expression in the tree then get
+ * the updated metadata state and can make use of the updated variable data
+ * definitions.
  */
-interface ConfigurationStateInterface {
+interface ExecutionMetadataStateInterface {
 
   /**
    * Creates the object.

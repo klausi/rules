@@ -12,7 +12,7 @@ use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\rules\Context\ContextHandlerTrait;
 use Drupal\rules\Context\DataProcessorManager;
 use Drupal\rules\Engine\ConditionExpressionInterface;
-use Drupal\rules\Engine\ConfigurationStateInterface;
+use Drupal\rules\Engine\ExecutionMetadataStateInterface;
 use Drupal\rules\Engine\ExpressionBase;
 use Drupal\rules\Engine\ExecutionStateInterface;
 use Drupal\rules\Engine\IntegrityCheckTrait;
@@ -178,12 +178,12 @@ class RulesCondition extends ExpressionBase implements ConditionExpressionInterf
   /**
    * {@inheritdoc}
    */
-  public function checkIntegrity(ConfigurationStateInterface $config_state) {
+  public function checkIntegrity(ExecutionMetadataStateInterface $metadata_state) {
     $condition = $this->conditionManager->createInstance($this->configuration['condition_id'], [
       'negate' => $this->configuration['negate'],
     ]);
 
-    return $this->doCheckIntegrity($condition, $config_state);
+    return $this->doCheckIntegrity($condition, $metadata_state);
   }
 
 }

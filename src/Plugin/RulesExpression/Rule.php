@@ -13,7 +13,7 @@ use Drupal\rules\Engine\ActionExpressionContainerInterface;
 use Drupal\rules\Engine\ActionExpressionInterface;
 use Drupal\rules\Engine\ConditionExpressionContainerInterface;
 use Drupal\rules\Engine\ConditionExpressionInterface;
-use Drupal\rules\Engine\ConfigurationStateInterface;
+use Drupal\rules\Engine\ExecutionMetadataStateInterface;
 use Drupal\rules\Engine\ExecutionStateInterface;
 use Drupal\rules\Engine\ExpressionBase;
 use Drupal\rules\Engine\ExpressionInterface;
@@ -217,9 +217,9 @@ class Rule extends ExpressionBase implements RuleInterface, ContainerFactoryPlug
   /**
    * {@inheritdoc}
    */
-  public function checkIntegrity(ConfigurationStateInterface $config_state) {
-    $violation_list = $this->conditions->checkIntegrity($config_state);
-    $violation_list->addAll($this->actions->checkIntegrity($config_state));
+  public function checkIntegrity(ExecutionMetadataStateInterface $metadata_state) {
+    $violation_list = $this->conditions->checkIntegrity($metadata_state);
+    $violation_list->addAll($this->actions->checkIntegrity($metadata_state));
     return $violation_list;
   }
 

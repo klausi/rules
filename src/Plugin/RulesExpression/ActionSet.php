@@ -12,7 +12,7 @@ use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\rules\Context\ContextConfig;
 use Drupal\rules\Engine\ActionExpressionContainerInterface;
 use Drupal\rules\Engine\ActionExpressionInterface;
-use Drupal\rules\Engine\ConfigurationStateInterface;
+use Drupal\rules\Engine\ExecutionMetadataStateInterface;
 use Drupal\rules\Engine\ExecutionStateInterface;
 use Drupal\rules\Engine\ExpressionBase;
 use Drupal\rules\Engine\ExpressionContainerInterface;
@@ -186,10 +186,10 @@ class ActionSet extends ExpressionBase implements ActionExpressionContainerInter
   /**
    * {@inheritdoc}
    */
-  public function checkIntegrity(ConfigurationStateInterface $config_state) {
+  public function checkIntegrity(ExecutionMetadataStateInterface $metadata_state) {
     $violation_list = new IntegrityViolationList();
     foreach ($this->actions as $uuid => $action) {
-      $action_violations = $action->checkIntegrity($config_state);
+      $action_violations = $action->checkIntegrity($metadata_state);
       foreach ($action_violations as $violation) {
         $violation->setUuid($uuid);
       }

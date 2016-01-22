@@ -190,10 +190,10 @@ abstract class ConditionExpressionContainer extends ExpressionBase implements Co
   /**
    * {@inheritdoc}
    */
-  public function checkIntegrity(ConfigurationStateInterface $config_state) {
+  public function checkIntegrity(ExecutionMetadataStateInterface $metadata_state) {
     $violation_list = new IntegrityViolationList();
     foreach ($this->conditions as $uuid => $condition) {
-      $condition_violations = $condition->checkIntegrity($config_state);
+      $condition_violations = $condition->checkIntegrity($metadata_state);
       foreach ($condition_violations as $violation) {
         $violation->setUuid($uuid);
       }
