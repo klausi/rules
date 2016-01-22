@@ -24,6 +24,12 @@ mysql:
   username: root
   encoding: utf8
 
+# Cache composer downloads because composer always runs into Github API timeout
+# problems :-(
+cache:
+  directories:
+    - $HOME/.composer
+
 before_script:
   # Remove Xdebug as we don't need it and it causes
   # PHP Fatal error:  Maximum function nesting level of '256' reached.
@@ -58,6 +64,9 @@ before_script:
 
   # Install PHPCS to check for Drupal coding standards.
   - composer global require drupal/coder
+  # In case the ~/.composer dir is already cached update everything for Coder
+  # and PHPCS.
+  - composer global update
   - ~/.composer/vendor/bin/phpcs --config-set installed_paths ~/.composer/vendor/drupal/coder/coder_sniffer
 
 script:
