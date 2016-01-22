@@ -5,7 +5,9 @@ php:
   - 5.5
   - 5.6
   - 7
-  - hhvm
+  # HHVM is disabled for now because we have not figured out yet how to start a
+  # web server for the browser tests.
+  #- hhvm
 
 env:
   - DRUPAL_CORE=8.0.x
@@ -15,7 +17,7 @@ matrix:
   allow_failures:
     # We cannot use hhvm-nightly since that does not work in Travis CI's old
     # Ubuntu 12.04.
-    - php: hhvm
+    #- php: hhvm
   # Don't wait for the allowed failures to build.
   fast_finish: true
 
@@ -24,8 +26,7 @@ mysql:
   username: root
   encoding: utf8
 
-# Cache composer downloads because composer always runs into Github API timeout
-# problems :-(
+# Cache composer downloads because cloning Coder form drupal.org is very slow :-(
 cache:
   directories:
     - $HOME/.composer
