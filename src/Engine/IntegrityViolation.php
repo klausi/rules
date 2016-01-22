@@ -40,6 +40,7 @@ class IntegrityViolation implements IntegrityViolationInterface {
    */
   public function setMessage(TranslatableMarkup $message) {
     $this->message = $message;
+    return $this;
   }
 
   /**
@@ -52,6 +53,14 @@ class IntegrityViolation implements IntegrityViolationInterface {
   /**
    * {@inheritdoc}
    */
+  public function setContextName($context_name) {
+    $this->contextName = $context_name;
+    return $this;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function getContextName() {
     return $this->contextName;
   }
@@ -59,8 +68,9 @@ class IntegrityViolation implements IntegrityViolationInterface {
   /**
    * {@inheritdoc}
    */
-  public function setContextName($context_name) {
-    $this->contextName = $context_name;
+  public function setUuid($uuid) {
+    $this->uuid = $uuid;
+    return $this;
   }
 
   /**
@@ -68,13 +78,6 @@ class IntegrityViolation implements IntegrityViolationInterface {
    */
   public function getUuid() {
     return $this->uuid;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function setUuid($uuid) {
-    $this->uuid = $uuid;
   }
 
 }

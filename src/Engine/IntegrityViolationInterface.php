@@ -41,6 +41,8 @@ interface IntegrityViolationInterface {
    *
    * @param string $context_name
    *   The context name.
+   *
+   * @return $this
    */
   public function setContextName($context_name);
 
@@ -60,6 +62,8 @@ interface IntegrityViolationInterface {
    *
    * @param string $uuid
    *   The UUID.
+   *
+   * @return $this
    */
   public function setUuid($uuid);
 
