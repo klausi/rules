@@ -118,49 +118,49 @@ class DataFetcher implements DataFetcherInterface {
   public function fetchDefinitionBySubPaths(DataDefinitionInterface $data_definition, array $sub_paths, $langcode = NULL) {
     $current_selector = [];
 
-    try {
-      foreach ($sub_paths as $name) {
-        $current_selector[] = $name;
+    foreach ($sub_paths as $name) {
+      $current_selector[] = $name;
 
-        // If the current data is just a reference then directly dereference the
-        // target.
-        if ($data_definition instanceof DataReferenceDefinitionInterface) {
-          $data_definition = $data_definition->getTargetDefinition();
-        }
+      // If the current data is just a reference then directly dereference the
+      // target.
+      if ($data_definition instanceof DataReferenceDefinitionInterface) {
+        $data_definition = $data_definition->getTargetDefinition();
+      }
 
-        // If this is a list but the selector is not an integer, we forward the
-        // selection to the first element in the list.
-        if ($data_definition instanceof ListDataDefinitionInterface && !ctype_digit($name)) {
-          $data_definition = $data_definition->getItemDefinition();
-        }
+      // If this is a list but the selector is not an integer, we forward the
+      // selection to the first element in the list.
+      if ($data_definition instanceof ListDataDefinitionInterface && !ctype_digit($name)) {
+        $data_definition = $data_definition->getItemDefinition();
+      }
 
-        // Drill down to the next step in the data selector.
-        if ($data_definition instanceof ComplexDataDefinitionInterface) {
-          $data_definition = $data_definition->getPropertyDefinition($name);
-        }
-        elseif ($data_definition instanceof ListDataDefinitionInterface) {
-          $data_definition = $data_definition->getItemDefinition();
+      // Drill down to the next step in the data selector.
+      if ($data_definition instanceof ComplexDataDefinitionInterface) {
+        $data_definition = $data_definition->getPropertyDefinition($name);
+      }
+      elseif ($data_definition instanceof ListDataDefinitionInterface) {
+        $data_definition = $data_definition->getItemDefinition();
+      }
+      else {
+        $current_selector_string = implode('.', $current_selector);
+        if (count($current_selector) > 1) {
+          $parent_property = $current_selector[count($current_selector) - 2];
+          throw new \InvalidArgumentException("The data selector '$current_selector_string' cannot be applied because the parent property '$parent_property' is not a list or a complex structure");
         }
         else {
-          $current_selector_string = implode('.', $current_selector);
-          throw new \InvalidArgumentException("The parent property is not a list or a complex structure at '$current_selector_string'.");
-        }
-
-        // If an accessed property is not existing, $data_definition will be
-        // NULL.
-        if (!isset($data_definition)) {
-          $selector_string = implode('.', $sub_paths);
-          $current_selector_string = implode('.', $current_selector);
-          throw new \InvalidArgumentException("Unable to apply data selector '$selector_string' at '$current_selector_string'");
+          $type = $data_definition->getDataType();
+          throw new \InvalidArgumentException("The data selector '$current_selector_string' cannot be applied because the definition of type '$type' is not a list or a complex structure");
         }
       }
-      return $data_definition;
+
+      // If an accessed property is not existing, $data_definition will be
+      // NULL.
+      if (!isset($data_definition)) {
+        $selector_string = implode('.', $sub_paths);
+        $current_selector_string = implode('.', $current_selector);
+        throw new \InvalidArgumentException("Unable to apply data selector '$selector_string' at '$current_selector_string'");
+      }
     }
-    catch (\InvalidArgumentException $e) {
-      $selector = implode('.', $sub_paths);
-      $current_selector = implode('.', $current_selector);
-      throw new \InvalidArgumentException("Unable to apply data selector '$selector' at '$current_selector': " . $e->getMessage());
-    }
+    return $data_definition;
   }
 
   /**

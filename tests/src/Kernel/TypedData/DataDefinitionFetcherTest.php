@@ -175,7 +175,7 @@ class DataDefinitionFetcherTest extends KernelTestBase {
    * @expectedException \InvalidArgumentException
    * @expectedExceptionMessage Unable to apply data selector 'field_invalid.0.value' at 'field_invalid'
    */
-  public function festFetchingInvalidProperty() {
+  public function testFetchingInvalidProperty() {
     // This should trigger an exception.
     $this->dataFetcher->fetchDefinitionByPropertyPath(
       $this->nodeDefinition,
@@ -211,6 +211,37 @@ class DataDefinitionFetcherTest extends KernelTestBase {
     );
 
     $this->assertSame($target_definition, $fetched_definition);
+  }
+
+  /**
+   * @covers ::fetchDefinitionByPropertyPath
+   * @expectedException \InvalidArgumentException
+   * @expectedExceptionMessage The data selector 'field_integer.0.value.not_existing' cannot be applied because the parent property 'value' is not a list or a complex structure
+   */
+  public function testFetchingNonComplexType() {
+    // This should trigger an exception.
+    $this->dataFetcher->fetchDefinitionByPropertyPath(
+      $this->nodeDefinition,
+      'field_integer.0.value.not_existing'
+    );
+  }
+
+  /**
+   * @covers ::fetchDefinitionByPropertyPath
+   * @expectedException \InvalidArgumentException
+   * @expectedExceptionMessage The data selector 'unknown_property' cannot be applied because the definition of type 'string' is not a list or a complex structure
+   */
+  public function testFetchingFromPrimitive() {
+    $definition = $this->nodeDefinition
+      ->getPropertyDefinition('title')
+      ->getItemDefinition()
+      ->getPropertyDefinition('value');
+
+    // This should trigger an exception.
+    $this->dataFetcher->fetchDefinitionByPropertyPath(
+      $definition,
+      'unknown_property'
+    );
   }
 
 }
