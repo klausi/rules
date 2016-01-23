@@ -12,6 +12,7 @@ use Drupal\Core\TypedData\TypedDataInterface;
 use Drupal\Core\TypedData\TypedDataTrait;
 use Drupal\rules\Context\ContextDefinitionInterface;
 use Drupal\rules\Exception\RulesEvaluationException;
+use Drupal\rules\TypedData\DataFetcherTrait;
 
 /**
  * The rules execution state.
@@ -21,6 +22,7 @@ use Drupal\rules\Exception\RulesEvaluationException;
  */
 class ExecutionState implements ExecutionStateInterface {
 
+  use DataFetcherTrait;
   use TypedDataTrait;
 
   /**
@@ -124,7 +126,6 @@ class ExecutionState implements ExecutionStateInterface {
       $parts = explode('.', $property_path);
       $var_name = array_shift($parts);
       return $this
-        ->getTypedDataManager()
         ->getDataFetcher()
         ->fetchDataBySubPaths($this->getVariable($var_name), $parts, $langcode);
     }

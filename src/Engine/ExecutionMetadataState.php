@@ -9,15 +9,15 @@ namespace Drupal\rules\Engine;
 
 use Drupal\Core\Language\LanguageInterface;
 use Drupal\Core\TypedData\DataDefinitionInterface;
-use Drupal\Core\TypedData\TypedDataTrait;
 use Drupal\rules\Exception\RulesIntegrityException;
+use Drupal\rules\TypedData\DataFetcherTrait;
 
 /**
  * The state used during configuration time holding data definitions.
  */
 class ExecutionMetadataState implements ExecutionMetadataStateInterface {
 
-  use TypedDataTrait;
+  use DataFetcherTrait;
 
   /**
    * The known data definitions.
@@ -77,7 +77,6 @@ class ExecutionMetadataState implements ExecutionMetadataStateInterface {
       $parts = explode('.', $property_path);
       $var_name = array_shift($parts);
       return $this
-        ->getTypedDataManager()
         ->getDataFetcher()
         ->fetchDefinitionBySubPaths($this->getDataDefinition($var_name), $parts, $langcode);
     }
