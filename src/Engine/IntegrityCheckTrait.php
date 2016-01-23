@@ -32,7 +32,7 @@ trait IntegrityCheckTrait {
     foreach ($context_definitions as $name => $definition) {
       // Check if a data selector is configured that maps to the state.
       if (isset($this->configuration['context_mapping'][$name])) {
-        $data_definition = $metadata_state->applyDataSelector($this->configuration['context_mapping'][$name]);
+        $data_definition = $metadata_state->fetchDefinitionByPropertyPath($this->configuration['context_mapping'][$name]);
 
         if ($data_definition === NULL) {
           $violation = new IntegrityViolation();

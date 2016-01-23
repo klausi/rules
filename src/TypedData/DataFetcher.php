@@ -133,6 +133,7 @@ class DataFetcher implements DataFetcherInterface {
         if ($data_definition instanceof ListDataDefinitionInterface && !ctype_digit($name)) {
           $data_definition = $data_definition->getItemDefinition();
         }
+
         // Drill down to the next step in the data selector.
         if ($data_definition instanceof ComplexDataDefinitionInterface) {
           $data_definition = $data_definition->getPropertyDefinition($name);

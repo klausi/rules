@@ -83,11 +83,10 @@ class DataDefinitionFetcherTest extends KernelTestBase {
       ->getItemDefinition()
       ->getPropertyDefinition('value');
 
-    $fetched_definition = $this->dataFetcher
-      ->fetchDefinitionByPropertyPath(
-        $this->nodeDefinition,
-        'title.0.value'
-      );
+    $fetched_definition = $this->dataFetcher->fetchDefinitionByPropertyPath(
+      $this->nodeDefinition,
+      'title.0.value'
+    );
 
     $this->assertSame($target_definition, $fetched_definition);
   }
@@ -101,11 +100,10 @@ class DataDefinitionFetcherTest extends KernelTestBase {
       ->getItemDefinition()
       ->getPropertyDefinition('value');
 
-    $fetched_definition = $this->dataFetcher
-      ->fetchDefinitionBySubPaths(
-        $this->nodeDefinition,
-        ['title', '0', 'value']
-      );
+    $fetched_definition = $this->dataFetcher->fetchDefinitionBySubPaths(
+      $this->nodeDefinition,
+      ['title', '0', 'value']
+    );
 
     $this->assertSame($target_definition, $fetched_definition);
   }
@@ -119,11 +117,10 @@ class DataDefinitionFetcherTest extends KernelTestBase {
       ->getItemDefinition()
       ->getPropertyDefinition('entity');
 
-    $fetched_definition = $this->dataFetcher
-      ->fetchDefinitionByPropertyPath(
-        $this->nodeDefinition,
-        'uid.entity'
-      );
+    $fetched_definition = $this->dataFetcher->fetchDefinitionByPropertyPath(
+      $this->nodeDefinition,
+      'uid.entity'
+    );
 
     $this->assertSame($target_definition, $fetched_definition);
   }
@@ -141,11 +138,10 @@ class DataDefinitionFetcherTest extends KernelTestBase {
       ->getItemDefinition()
       ->getPropertyDefinition('value');
 
-    $fetched_definition = $this->dataFetcher
-      ->fetchDefinitionByPropertyPath(
-        $this->nodeDefinition,
-        'uid.entity.name.value'
-      );
+    $fetched_definition = $this->dataFetcher->fetchDefinitionByPropertyPath(
+      $this->nodeDefinition,
+      'uid.entity.name.value'
+    );
 
     $this->assertSame($target_definition, $fetched_definition);
   }
@@ -159,25 +155,23 @@ class DataDefinitionFetcherTest extends KernelTestBase {
       ->getItemDefinition()
       ->getPropertyDefinition('value');
 
-    $fetched_definition = $this->dataFetcher
-      ->fetchDefinitionByPropertyPath(
-        $this->nodeDefinition,
-        'field_integer.0.value'
-      );
+    $fetched_definition = $this->dataFetcher->fetchDefinitionByPropertyPath(
+      $this->nodeDefinition,
+      'field_integer.0.value'
+    );
 
     $this->assertSame($target_definition, $fetched_definition);
 
-    $fetched_definition = $this->dataFetcher
-      ->fetchDefinitionByPropertyPath(
-        $this->nodeDefinition,
-        'field_integer.1.value'
-      );
+    $fetched_definition = $this->dataFetcher->fetchDefinitionByPropertyPath(
+      $this->nodeDefinition,
+      'field_integer.1.value'
+    );
 
     $this->assertSame($target_definition, $fetched_definition);
   }
 
   /**
-   * @cover fetchDefinitionByPropertyPath
+   * @covers ::fetchDefinitionByPropertyPath
    * @expectedException \InvalidArgumentException
    * @expectedExceptionMessage Unable to apply data selector 'field_invalid.0.value' at 'field_invalid'
    */
@@ -190,19 +184,34 @@ class DataDefinitionFetcherTest extends KernelTestBase {
   }
 
   /**
-   * @cover fetchDefinitionByPropertyPath
+   * @covers ::fetchDefinitionByPropertyPath
    */
   public function testFetchingField() {
     $target_definition = $this->nodeDefinition
       ->getPropertyDefinition('field_integer');
 
-    $fetched_definition = $this->dataFetcher
-      ->fetchDefinitionByPropertyPath(
-        $this->nodeDefinition,
-        'field_integer'
-      );
+    $fetched_definition = $this->dataFetcher->fetchDefinitionByPropertyPath(
+      $this->nodeDefinition,
+      'field_integer'
+    );
 
     $this->assertSame($target_definition, $fetched_definition);
   }
+
+  /**
+   * @covers ::fetchDefinitionByPropertyPath
+   */
+  public function testFetchingReferenceField() {
+    $target_definition = $this->nodeDefinition
+      ->getPropertyDefinition('uid');
+
+    $fetched_definition = $this->dataFetcher->fetchDefinitionByPropertyPath(
+      $this->nodeDefinition,
+      'uid'
+    );
+
+    $this->assertSame($target_definition, $fetched_definition);
+  }
+
 
 }
