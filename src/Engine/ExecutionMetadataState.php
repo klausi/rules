@@ -82,6 +82,7 @@ class ExecutionMetadataState implements ExecutionMetadataStateInterface {
         ->fetchDefinitionBySubPaths($this->getDataDefinition($var_name), $parts, $langcode);
     }
     catch (\InvalidArgumentException $e) {
+      // Pass on the original exception in the exception trace.
       throw new RulesIntegrityException($e->getMessage(), 0, $e);
     }
   }

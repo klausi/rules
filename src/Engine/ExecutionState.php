@@ -129,10 +129,12 @@ class ExecutionState implements ExecutionStateInterface {
         ->fetchDataBySubPaths($this->getVariable($var_name), $parts, $langcode);
     }
     catch (\InvalidArgumentException $e) {
-      throw new RulesEvaluationException($e->getMessage());
+      // Pass on the original exception in the exception trace.
+      throw new RulesEvaluationException($e->getMessage(), 0, $e);
     }
     catch (MissingDataException $e) {
-      throw new RulesEvaluationException($e->getMessage());
+      // Pass on the original exception in the exception trace.
+      throw new RulesEvaluationException($e->getMessage(), 0, $e);
     }
   }
 
