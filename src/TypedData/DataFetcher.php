@@ -126,9 +126,6 @@ class DataFetcher implements DataFetcherInterface {
         // target.
         if ($data_definition instanceof DataReferenceDefinitionInterface) {
           $data_definition = $data_definition->getTargetDefinition();
-          if ($data_definition === NULL) {
-            throw new MissingDataException("The specified reference is NULL.");
-          }
         }
 
         // If this is a list but the selector is not an integer, we forward the
@@ -153,15 +150,10 @@ class DataFetcher implements DataFetcherInterface {
         if (!isset($data_definition)) {
           $selector_string = implode('.', $sub_paths);
           $current_selector_string = implode('.', $current_selector);
-          throw new MissingDataException("Unable to apply data selector '$selector_string' at '$current_selector_string'");
+          throw new \InvalidArgumentException("Unable to apply data selector '$selector_string' at '$current_selector_string'");
         }
       }
       return $data_definition;
-    }
-    catch (MissingDataException $e) {
-      $selector = implode('.', $sub_paths);
-      $current_selector = implode('.', $current_selector);
-      throw new MissingDataException("Unable to apply data selector '$selector' at '$current_selector': " . $e->getMessage());
     }
     catch (\InvalidArgumentException $e) {
       $selector = implode('.', $sub_paths);
