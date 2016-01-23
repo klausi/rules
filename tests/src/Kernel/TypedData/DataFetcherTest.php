@@ -106,7 +106,10 @@ class DataFetcherTest extends KernelTestBase {
     $this->assertEquals(
       $this->node->title->value,
       $this->typedDataManager->getDataFetcher()
-        ->fetchDataBySubPaths($this->node->getTypedData(), ['title', '0', 'value'])
+        ->fetchDataBySubPaths(
+          $this->node->getTypedData(),
+          ['title', '0', 'value']
+        )
         ->getValue()
     );
   }

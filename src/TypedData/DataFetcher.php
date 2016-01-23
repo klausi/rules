@@ -138,7 +138,7 @@ class DataFetcher implements DataFetcherInterface {
         if ($data_definition instanceof ComplexDataDefinitionInterface) {
           $data_definition = $data_definition->getPropertyDefinition($name);
         }
-        else if ($data_definition instanceof ListDataDefinitionInterface) {
+        elseif ($data_definition instanceof ListDataDefinitionInterface) {
           $data_definition = $data_definition->getItemDefinition();
         }
         else {

@@ -45,11 +45,11 @@ class DataDefinitionFetcherTest extends KernelTestBase {
    */
   public function setUp() {
     parent::setUp();
-    $typedDataManager = $this->container->get('typed_data_manager');
-    $this->dataFetcher = $typedDataManager->getDataFetcher();
+    $this->dataFetcher = $this->container->get('typed_data_manager')
+      ->getDataFetcher();
 
-    $entityTypeManager = $this->container->get('entity_type.manager');
-    $entityTypeManager->getStorage('node_type')
+    $entity_type_manager = $this->container->get('entity_type.manager');
+    $entity_type_manager->getStorage('node_type')
       ->create(['type' => 'page'])
       ->save();
 
@@ -66,7 +66,7 @@ class DataDefinitionFetcherTest extends KernelTestBase {
       'bundle' => 'page',
     ])->save();
 
-    $node = $entityTypeManager->getStorage('node')
+    $node = $entity_type_manager->getStorage('node')
       ->create([
         'title' => 'test',
         'type' => 'page',
@@ -212,6 +212,5 @@ class DataDefinitionFetcherTest extends KernelTestBase {
 
     $this->assertSame($target_definition, $fetched_definition);
   }
-
 
 }
