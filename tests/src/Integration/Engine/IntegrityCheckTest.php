@@ -84,4 +84,52 @@ class IntegrityCheckTest extends RulesEntityIntegrationTestBase {
     );
   }
 
+  /**
+   * Tests that an invalid condition plugin ID results in a violation.
+   */
+  public function testInvalidCondition() {
+    $rule = $this->rulesExpressionManager->createRule();
+    $rule->addCondition('invalid_condition_id');
+
+    $violations = RulesComponent::create($rule)->checkIntegrity();
+    $this->assertEquals(1, iterator_count($violations));
+    $this->assertEquals('Condition plugin <em class="placeholder">invalid_condition_id</em> does not exist', (string) $violations[0]->getMessage());
+  }
+
+  /**
+   * Tests that a missing condition plugin ID results in a violation.
+   */
+  public function testMissingCondition() {
+    $rule = $this->rulesExpressionManager->createRule();
+    $rule->addCondition('');
+
+    $violations = RulesComponent::create($rule)->checkIntegrity();
+    $this->assertEquals(1, iterator_count($violations));
+    $this->assertEquals('Condition plugin ID is missing', (string) $violations[0]->getMessage());
+  }
+
+  /**
+   * Tests that an invalid action plugin ID results in a violation.
+   */
+  public function testInvalidAction() {
+    $rule = $this->rulesExpressionManager->createRule();
+    $rule->addAction('invalid_action_id');
+
+    $violations = RulesComponent::create($rule)->checkIntegrity();
+    $this->assertEquals(1, iterator_count($violations));
+    $this->assertEquals('Action plugin <em class="placeholder">invalid_action_id</em> does not exist', (string) $violations[0]->getMessage());
+  }
+
+  /**
+   * Tests that a missing action plugin ID results in a violation.
+   */
+  public function testMissingAction() {
+    $rule = $this->rulesExpressionManager->createRule();
+    $rule->addAction('');
+
+    $violations = RulesComponent::create($rule)->checkIntegrity();
+    $this->assertEquals(1, iterator_count($violations));
+    $this->assertEquals('Action plugin ID is missing', (string) $violations[0]->getMessage());
+  }
+
 }
