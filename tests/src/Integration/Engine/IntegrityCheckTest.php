@@ -132,4 +132,24 @@ class IntegrityCheckTest extends RulesEntityIntegrationTestBase {
     $this->assertEquals('Action plugin ID is missing', (string) $violations[0]->getMessage());
   }
 
+  /**
+   * Tests invalid characters in provided variables.
+   */
+  public function testInvalidProvidedName() {
+    $rule = $this->rulesExpressionManager->createRule();
+
+    // The condition provides a "provided_text" variable.
+    $rule->addCondition('rules_test_provider', ContextConfig::create()
+      ->provideAs('provided_text', 'invalid_näme')
+    );
+
+    $violation_list = RulesComponent::create($rule)
+      ->checkIntegrity();
+    $this->assertEquals(iterator_count($violation_list), 1);
+    $this->assertEquals(
+      'Provided variable name <em class="placeholder">invalid_näme</em> contains not allowed characters.',
+      (string) $violation_list[0]->getMessage()
+    );
+  }
+
 }

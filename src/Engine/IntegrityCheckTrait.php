@@ -8,6 +8,7 @@
 namespace Drupal\rules\Engine;
 
 use Drupal\Core\Plugin\ContextAwarePluginInterface as CoreContextAwarePluginInterface;
+use Drupal\rules\Context\ContextProviderInterface;
 use Drupal\rules\Exception\RulesIntegrityException;
 
 /**
@@ -43,6 +44,23 @@ trait IntegrityCheckTrait {
             '%selector' => $this->configuration['context_mapping'][$name],
             '%context_name' => $definition->getLabel(),
             '@message' => $e->getMessage(),
+          ]));
+          $violation->setContextName($name);
+          $violation_list->add($violation);
+        }
+      }
+    }
+
+    if ($plugin instanceof ContextProviderInterface) {
+      $provided_context_definitions = $plugin->getProvidedContextDefinitions();
+
+      foreach ($provided_context_definitions as $name => $definition) {
+        if (isset($this->configuration['provides_mapping'][$name])
+          && !preg_match('/^[0-9a-zA-Z_]*$/', $this->configuration['provides_mapping'][$name])
+        ) {
+          $violation = new IntegrityViolation();
+          $violation->setMessage($this->t('Provided variable name %name contains not allowed characters.', [
+            '%name' => $this->configuration['provides_mapping'][$name],
           ]));
           $violation->setContextName($name);
           $violation_list->add($violation);
