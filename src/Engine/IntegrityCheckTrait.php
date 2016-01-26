@@ -61,6 +61,18 @@ trait IntegrityCheckTrait {
           $violation_list->add($violation);
         }
       }
+      else if (isset($this->configuration['context_values'][$name])) {
+        if ($definition instanceof ContextDefinitionInterface
+          && $definition->getAssignmentRestriction() === ContextDefinitionInterface::ASSIGNMENT_RESTRICTION_SELECTOR
+        ) {
+          $violation = new IntegrityViolation();
+          $violation->setMessage($this->t('The context %context_name may only be configured using a selector.', [
+            '%context_name' => $definition->getLabel(),
+          ]));
+          $violation->setContextName($name);
+          $violation_list->add($violation);
+        }
+      }
     }
 
     if ($plugin instanceof ContextProviderInterface) {

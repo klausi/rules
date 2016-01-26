@@ -153,7 +153,7 @@ class IntegrityCheckTest extends RulesEntityIntegrationTestBase {
   }
 
   /**
-   * Tests input restrction on contexts.
+   * Tests the input restrction on contexts.
    */
   public function testInputRestriction() {
     $rule = $this->rulesExpressionManager->createRule();
@@ -171,6 +171,28 @@ class IntegrityCheckTest extends RulesEntityIntegrationTestBase {
     $this->assertEquals(iterator_count($violation_list), 1);
     $this->assertEquals(
       'The context <em class="placeholder">Entity type</em> may not be configured using a selector.',
+      (string) $violation_list[0]->getMessage()
+    );
+  }
+
+  /**
+   * Tests the data selector restriction on contexts.
+   */
+  public function testSelectorRestriction() {
+    $rule = $this->rulesExpressionManager->createRule();
+
+    $rule->addAction('rules_data_set', ContextConfig::create()
+      // Setting a data value is only possible with a selector, this will
+      // trigger the violation.
+      ->setValue('data', 'some value')
+      ->setValue('value', 'some new value')
+    );
+
+    $violation_list = RulesComponent::create($rule)
+      ->checkIntegrity();
+    $this->assertEquals(iterator_count($violation_list), 1);
+    $this->assertEquals(
+      'The context <em class="placeholder">Data</em> may only be configured using a selector.',
       (string) $violation_list[0]->getMessage()
     );
   }
