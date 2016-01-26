@@ -61,7 +61,7 @@ trait IntegrityCheckTrait {
           $violation_list->add($violation);
         }
       }
-      else if (isset($this->configuration['context_values'][$name])) {
+      elseif (isset($this->configuration['context_values'][$name])) {
         if ($definition instanceof ContextDefinitionInterface
           && $definition->getAssignmentRestriction() === ContextDefinitionInterface::ASSIGNMENT_RESTRICTION_SELECTOR
         ) {
