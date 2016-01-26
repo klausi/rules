@@ -152,4 +152,27 @@ class IntegrityCheckTest extends RulesEntityIntegrationTestBase {
     );
   }
 
+  /**
+   * Tests input restrction on contexts.
+   */
+  public function testInputRestriction() {
+    $rule = $this->rulesExpressionManager->createRule();
+
+    $rule->addAction('rules_entity_fetch_by_id', ContextConfig::create()
+      // The entity type must be configured as value, so this provokes the
+      // violation.
+      ->map('type', 'variable_1')
+      ->setValue('entity_id', 1)
+    );
+
+    $violation_list = RulesComponent::create($rule)
+      ->addContextDefinition('variable_1', ContextDefinition::create('string'))
+      ->checkIntegrity();
+    $this->assertEquals(iterator_count($violation_list), 1);
+    $this->assertEquals(
+      'The context <em class="placeholder">Entity type</em> may not be configured using a selector.',
+      (string) $violation_list[0]->getMessage()
+    );
+  }
+
 }

@@ -8,6 +8,7 @@
 namespace Drupal\rules\Engine;
 
 use Drupal\Core\Plugin\ContextAwarePluginInterface as CoreContextAwarePluginInterface;
+use Drupal\rules\Context\ContextDefinitionInterface;
 use Drupal\rules\Context\ContextProviderInterface;
 use Drupal\rules\Exception\RulesIntegrityException;
 
@@ -44,6 +45,17 @@ trait IntegrityCheckTrait {
             '%selector' => $this->configuration['context_mapping'][$name],
             '%context_name' => $definition->getLabel(),
             '@message' => $e->getMessage(),
+          ]));
+          $violation->setContextName($name);
+          $violation_list->add($violation);
+        }
+
+        if ($definition instanceof ContextDefinitionInterface
+          && $definition->getAssignmentRestriction() === ContextDefinitionInterface::ASSIGNMENT_RESTRICTION_INPUT
+        ) {
+          $violation = new IntegrityViolation();
+          $violation->setMessage($this->t('The context %context_name may not be configured using a selector.', [
+            '%context_name' => $definition->getLabel(),
           ]));
           $violation->setContextName($name);
           $violation_list->add($violation);
