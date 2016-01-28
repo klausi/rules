@@ -8,6 +8,7 @@
 namespace Drupal\rules\Engine;
 
 use Drupal\Core\Plugin\ContextAwarePluginInterface as CoreContextAwarePluginInterface;
+use Drupal\Core\TypedData\DataDefinitionInterface;
 use Drupal\rules\Context\ContextDefinitionInterface;
 use Drupal\rules\Context\ContextProviderInterface;
 use Drupal\rules\Exception\RulesIntegrityException;
@@ -38,6 +39,8 @@ trait IntegrityCheckTrait {
       if (isset($this->configuration['context_mapping'][$name])) {
         try {
           $data_definition = $metadata_state->fetchDefinitionByPropertyPath($this->configuration['context_mapping'][$name]);
+
+          $this->isDataTypeCompatible($definition->getDataDefinition(), $data_definition);
         }
         catch (RulesIntegrityException $e) {
           $violation = new IntegrityViolation();
@@ -93,6 +96,11 @@ trait IntegrityCheckTrait {
     }
 
     return $violation_list;
+  }
+
+  protected function isDataTypeCompatible(DataDefinitionInterface $expected, DataDefinitionInterface $provided) {
+    $expected_class = $expected->getClass();
+    $provided_class = $provided->getClass();
   }
 
 }
