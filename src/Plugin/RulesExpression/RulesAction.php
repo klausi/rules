@@ -167,11 +167,11 @@ class RulesAction extends ExpressionBase implements ContainerFactoryPluginInterf
   public function checkIntegrity(ExecutionMetadataStateInterface $metadata_state) {
     $violation_list = new IntegrityViolationList();
     if (empty($this->configuration['action_id'])) {
-      $violation_list->addMessage($this->t('Action plugin ID is missing'));
+      $violation_list->addViolationWithMessage($this->t('Action plugin ID is missing'));
       return $violation_list;
     }
     if (!$this->actionManager->hasDefinition($this->configuration['action_id'])) {
-      $violation_list->addMessage($this->t('Action plugin %plugin_id does not exist', [
+      $violation_list->addViolationWithMessage($this->t('Action plugin %plugin_id does not exist', [
         '%plugin_id' => $this->configuration['action_id'],
       ]));
       return $violation_list;

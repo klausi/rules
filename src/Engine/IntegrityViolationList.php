@@ -36,7 +36,7 @@ class IntegrityViolationList extends \ArrayIterator {
    * @param \Drupal\Core\StringTranslation\TranslatableMarkup $message
    *   The violation message.
    */
-  public function addMessage(TranslatableMarkup $message) {
+  public function addViolationWithMessage(TranslatableMarkup $message) {
     $violation = new IntegrityViolation();
     $violation->setMessage($message);
     $this[] = $violation;

@@ -182,11 +182,11 @@ class RulesCondition extends ExpressionBase implements ConditionExpressionInterf
   public function checkIntegrity(ExecutionMetadataStateInterface $metadata_state) {
     $violation_list = new IntegrityViolationList();
     if (empty($this->configuration['condition_id'])) {
-      $violation_list->addMessage($this->t('Condition plugin ID is missing'));
+      $violation_list->addViolationWithMessage($this->t('Condition plugin ID is missing'));
       return $violation_list;
     }
     if (!$this->conditionManager->hasDefinition($this->configuration['condition_id'])) {
-      $violation_list->addMessage($this->t('Condition plugin %plugin_id does not exist', [
+      $violation_list->addViolationWithMessage($this->t('Condition plugin %plugin_id does not exist', [
         '%plugin_id' => $this->configuration['condition_id'],
       ]));
       return $violation_list;
