@@ -242,4 +242,49 @@ class IntegrityCheckTest extends RulesEntityIntegrationTestBase {
     );
   }
 
+  /**
+   * Tests that a complex data context is assigned something that matches.
+   */
+  public function testComplexTypeViolation() {
+    $rule = $this->rulesExpressionManager->createRule();
+
+    // The condition expects a node context but gets a list instead which cause
+    // the violation.
+    $rule->addCondition('rules_node_is_of_type', ContextConfig::create()
+      ->map('node', 'list_variable')
+      ->map('types', 'list_variable')
+    );
+
+    $violation_list = RulesComponent::create($rule)
+      ->addContextDefinition('list_variable', ContextDefinition::create('list'))
+      ->checkIntegrity();
+    $this->assertEquals(1, iterator_count($violation_list));
+    $this->assertEquals(
+      'Expected a complex data type for context <em class="placeholder">Node</em> but got a list data type instead.',
+      (string) $violation_list[0]->getMessage()
+    );
+  }
+
+  /**
+   * Tests that an absent required context triggers a violation.
+   */
+  public function testMissingRequiredContext() {
+    $rule = $this->rulesExpressionManager->createRule();
+
+    // The condition is completely unconfigured, missing 2 required contexts.
+    $rule->addCondition('rules_node_is_of_type');
+
+    $violation_list = RulesComponent::create($rule)
+      ->checkIntegrity();
+    $this->assertEquals(2, iterator_count($violation_list));
+    $this->assertEquals(
+      'The required context <em class="placeholder">Node</em> is missing.',
+      (string) $violation_list[0]->getMessage()
+    );
+    $this->assertEquals(
+      'The required context <em class="placeholder">Content types</em> is missing.',
+      (string) $violation_list[1]->getMessage()
+    );
+  }
+
 }

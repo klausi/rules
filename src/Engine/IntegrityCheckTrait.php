@@ -80,6 +80,14 @@ trait IntegrityCheckTrait {
           $violation_list->add($violation);
         }
       }
+      elseif ($context_definition->isRequired()) {
+        $violation = new IntegrityViolation();
+        $violation->setMessage($this->t('The required context %context_name is missing.', [
+          '%context_name' => $context_definition->getLabel(),
+        ]));
+        $violation->setContextName($name);
+        $violation_list->add($violation);
+      }
     }
 
     if ($plugin instanceof ContextProviderInterface) {
