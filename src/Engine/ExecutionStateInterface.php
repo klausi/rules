@@ -83,6 +83,18 @@ interface ExecutionStateInterface {
   public function hasVariable($name);
 
   /**
+   * Deletes a variable.
+   *
+   * @param string $name
+   *   The name of the variable to delete.
+   *
+   * @throws \Drupal\rules\Exception\RulesEvaluationException
+   *   Throws a RulesEvaluationException if the variable does not exist in the
+   *   state.
+   */
+  public function deleteVariable($name);
+
+  /**
    * Returns a value as specified in the selector.
    *
    * @param string $property_path

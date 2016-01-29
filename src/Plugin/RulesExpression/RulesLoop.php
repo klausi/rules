@@ -25,12 +25,18 @@ class RulesLoop extends ActionExpressionContainer {
    * {@inheritdoc}
    */
   public function executeWithState(ExecutionStateInterface $state) {
-    $list = $state->getVariable($this->configuration['list']);
-    foreach ($list as $item) {
+    $list_data = $state->getVariable($this->configuration['list']);
+    foreach ($list_data as $item) {
+      // @todo The loop should specify a variable name for the list item so that
+      // nested loops work.
+      $state->addVariableData('list_item', $item);
       foreach ($this->actions as $action) {
         $action->executeWithState($state);
       }
     }
+    // After the loop the list item is out of scope and cannot be used by any
+    // following actions.
+    $state->deleteVariable('list_item');
   }
 
 }

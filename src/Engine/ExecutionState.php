@@ -134,6 +134,16 @@ class ExecutionState implements ExecutionStateInterface {
   /**
    * {@inheritdoc}
    */
+  public function deleteVariable($name) {
+    if (!$this->hasVariable($name)) {
+      throw new RulesEvaluationException("Unable to delete variable $name, it is not defined.");
+    }
+    unset($this->variables[$name]);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function fetchDataByPropertyPath($property_path, $langcode = NULL) {
     try {
       // Support global context names as variable name by ignoring points in
