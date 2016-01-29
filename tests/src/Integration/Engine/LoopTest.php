@@ -36,7 +36,6 @@ class LoopTest extends RulesEntityIntegrationTestBase {
     $loop->addAction('rules_data_set', ContextConfig::create()
       ->map('data', 'result')
       ->setValue('value', '{{result}} {{list_item}}')
-      //->setValue('value', 'bam')
       ->process('value', 'rules_tokens')
     );
 
