@@ -21,7 +21,6 @@ use Drupal\rules\Engine\ExecutionStateInterface;
  */
 class RulesLoop extends ActionExpressionContainer {
 
-
   /**
    * {@inheritdoc}
    */
