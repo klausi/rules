@@ -197,4 +197,26 @@ class IntegrityCheckTest extends RulesEntityIntegrationTestBase {
     );
   }
 
+  /**
+   * Tests that a primitive context is assigned something that matches.
+   */
+  public function testPrimitiveTypeViolation() {
+    $rule = $this->rulesExpressionManager->createRule();
+
+    // The condition provides a "provided_text" variable.
+    $rule->addCondition('rules_test_string_condition', ContextConfig::create()
+      ->map('text', 'list_variable')
+    );
+
+    $violation_list = RulesComponent::create($rule)
+      ->addContextDefinition('list_variable', ContextDefinition::create('list'))
+      ->checkIntegrity();
+    $this->assertEquals(iterator_count($violation_list), 1);
+    $this->assertEquals(
+      'Expected a primitive data type for context <em class="placeholder">Text to compare</em> but got a list data type instead.',
+      (string) $violation_list[0]->getMessage()
+    );
+
+  }
+
 }
