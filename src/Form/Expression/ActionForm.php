@@ -74,7 +74,7 @@ class ActionForm implements ExpressionFormInterface {
         '#value' => $this->t('Continue'),
         '#name' => 'continue',
         // Only validate the selected action in the first step.
-        '#limit_validation_errors' => ['action'],
+        '#limit_validation_errors' => [['action']],
         '#submit' => [static::class . '::submitFirstStep'],
       ];
 
