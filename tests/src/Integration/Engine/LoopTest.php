@@ -124,4 +124,46 @@ class LoopTest extends RulesEntityIntegrationTestBase {
     );
   }
 
+  /**
+   * Tests that the specified list variable exists in the execution state.
+   */
+  public function testListExists() {
+    $rule = $this->rulesExpressionManager->createRule();
+
+    $loop = $this->rulesExpressionManager->createInstance('rules_loop', [
+      'list' => 'unknown_list',
+    ]);
+
+    $rule->addExpressionObject($loop);
+
+    $violations = RulesComponent::create($rule)
+      ->checkIntegrity();
+
+    $this->assertEquals(1, iterator_count($violations));
+    $this->assertEquals(
+      'List variable <em class="placeholder">unknown_list</em> does not exist.',
+      (string) $violations[0]->getMessage()
+    );
+  }
+
+  /**
+   * Tests that a loop must have a list configured.
+   */
+  public function testMissingList() {
+    $rule = $this->rulesExpressionManager->createRule();
+
+    // Empty loop configuration, 'list' is missing.
+    $loop = $this->rulesExpressionManager->createInstance('rules_loop', []);
+    $rule->addExpressionObject($loop);
+
+    $violations = RulesComponent::create($rule)
+      ->checkIntegrity();
+
+    $this->assertEquals(1, iterator_count($violations));
+    $this->assertEquals(
+      'List variable is missing.',
+      (string) $violations[0]->getMessage()
+    );
+  }
+
 }

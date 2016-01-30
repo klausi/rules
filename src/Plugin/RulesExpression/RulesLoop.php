@@ -49,6 +49,15 @@ class RulesLoop extends ActionExpressionContainer {
   public function checkIntegrity(ExecutionMetadataStateInterface $metadata_state) {
     $violation_list = new IntegrityViolationList();
 
+    if (empty($this->configuration['list'])) {
+      $violation_list->addViolationWithMessage($this->t('List variable is missing.'));
+    }
+    elseif (!$metadata_state->hasDataDefinition($this->configuration['list'])) {
+      $violation_list->addViolationWithMessage($this->t('List variable %list does not exist.', [
+        '%list' => $this->configuration['list'],
+      ]));
+    }
+
     $list_item_name = isset($this->configuration['list_item']) ? $this->configuration['list_item'] : 'list_item';
     if ($metadata_state->hasDataDefinition($list_item_name)) {
       $violation_list->addViolationWithMessage($this->t('List item name %name conflicts with an existing variable.', [
