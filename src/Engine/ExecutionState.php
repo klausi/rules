@@ -135,10 +135,9 @@ class ExecutionState implements ExecutionStateInterface {
    * {@inheritdoc}
    */
   public function deleteVariable($name) {
-    if (!$this->hasVariable($name)) {
-      throw new RulesEvaluationException("Unable to delete variable $name, it is not defined.");
+    if (isset($this->variables[$name])) {
+      unset($this->variables[$name]);
     }
-    unset($this->variables[$name]);
   }
 
   /**
