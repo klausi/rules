@@ -240,6 +240,7 @@ class LoopTest extends RulesIntegrationTestBase {
    * Tests that the loop list item variable is not available after the loop.
    *
    * @expectedException \Drupal\rules\Exception\RulesEvaluationException
+   *
    * @expectedExceptionMessage Unable to get variable list_item, it is not defined.
    */
   public function testOutOfScopeVariableExecution() {
