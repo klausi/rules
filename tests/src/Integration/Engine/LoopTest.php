@@ -10,14 +10,14 @@ namespace Drupal\Tests\rules\Integration\Engine;
 use Drupal\rules\Context\ContextConfig;
 use Drupal\rules\Context\ContextDefinition;
 use Drupal\rules\Engine\RulesComponent;
-use Drupal\Tests\rules\Integration\RulesEntityIntegrationTestBase;
+use Drupal\Tests\rules\Integration\RulesIntegrationTestBase;
 
 /**
  * Test Rules execution with the loop plugin.
  *
  * @group rules
  */
-class LoopTest extends RulesEntityIntegrationTestBase {
+class LoopTest extends RulesIntegrationTestBase {
 
   /**
    * Tests that list items in the loop can be used during execution.
@@ -162,6 +162,53 @@ class LoopTest extends RulesEntityIntegrationTestBase {
     $this->assertEquals(1, iterator_count($violations));
     $this->assertEquals(
       'List variable is missing.',
+      (string) $violations[0]->getMessage()
+    );
+  }
+
+  /**
+   * Tests that a variable used in an action within the loop exists.
+   */
+  public function testWrongVariableInAction() {
+    $rule = $this->rulesExpressionManager->createRule();
+
+    $loop = $this->rulesExpressionManager->createInstance('rules_loop', ['list' => 'string_list']);
+    $loop->addAction('rules_test_string', ContextConfig::create()
+      ->map('text', 'unknown_variable')
+    );
+
+    $rule->addExpressionObject($loop);
+
+    $violations = RulesComponent::create($rule)
+      ->addContextDefinition('string_list', ContextDefinition::create('string')->setMultiple())
+      ->checkIntegrity();
+
+    $this->assertEquals(1, iterator_count($violations));
+    $this->assertEquals(
+      'Data selector <em class="placeholder">unknown_variable</em> for context <em class="placeholder">Text to concatenate</em> is invalid. Unable to get variable unknown_variable, it is not defined.',
+      (string) $violations[0]->getMessage()
+    );
+  }
+
+  /**
+   * Tests that the data type used to loop over is a list.
+   */
+  public function testInvalidListType() {
+    $rule = $this->rulesExpressionManager->createRule();
+
+    $loop = $this->rulesExpressionManager->createInstance('rules_loop', [
+      'list' => 'string_variable',
+    ]);
+
+    $rule->addExpressionObject($loop);
+
+    $violations = RulesComponent::create($rule)
+      ->addContextDefinition('string_variable', ContextDefinition::create('string'))
+      ->checkIntegrity();
+
+    $this->assertEquals(1, iterator_count($violations));
+    $this->assertEquals(
+      'The data type of list variable <em class="placeholder">string_variable</em> is not a list.',
       (string) $violations[0]->getMessage()
     );
   }

@@ -7,6 +7,7 @@
 
 namespace Drupal\rules\Plugin\RulesExpression;
 
+use Drupal\Core\TypedData\ListDataDefinitionInterface;
 use Drupal\rules\Engine\ActionExpressionContainer;
 use Drupal\rules\Engine\ExecutionMetadataStateInterface;
 use Drupal\rules\Engine\ExecutionStateInterface;
@@ -65,6 +66,24 @@ class RulesLoop extends ActionExpressionContainer {
       ]));
     }
 
+    // If there are violations at this point stop checking here since it does
+    // not make sense to check the contained actions.
+    if (iterator_count($violation_list) > 0) {
+      return $violation_list;
+    }
+
+    $list_definition = $metadata_state->getDataDefinition($this->configuration['list']);
+    if ($list_definition instanceof ListDataDefinitionInterface) {
+      $list_item_definition = $list_definition->getItemDefinition();
+      $metadata_state->addDataDefinition($list_item_name, $list_item_definition);
+
+      $violation_list = parent::checkIntegrity($metadata_state);
+      return $violation_list;
+    }
+
+    $violation_list->addViolationWithMessage($this->t('The data type of list variable %list is not a list.', [
+      '%list' => $this->configuration['list'],
+    ]));
     return $violation_list;
   }
 
