@@ -213,4 +213,48 @@ class LoopTest extends RulesIntegrationTestBase {
     );
   }
 
+  /**
+   * Tests that the loop list item variable is not available after the loop.
+   */
+  public function testOutOfScopeVariable() {
+    $rule = $this->rulesExpressionManager->createRule();
+    $loop = $this->rulesExpressionManager->createInstance('rules_loop', ['list' => 'string_list']);
+
+    $rule->addExpressionObject($loop);
+    $rule->addAction('rules_test_string', ContextConfig::create()
+      ->map('text', 'list_item')
+    );
+
+    $violations = RulesComponent::create($rule)
+      ->addContextDefinition('string_list', ContextDefinition::create('string')->setMultiple())
+      ->checkIntegrity();
+
+    $this->assertEquals(1, iterator_count($violations));
+    $this->assertEquals(
+      'Data selector <em class="placeholder">list_item</em> for context <em class="placeholder">Text to concatenate</em> is invalid. Unable to get variable list_item, it is not defined.',
+      (string) $violations[0]->getMessage()
+    );
+  }
+
+  /**
+   * Tests that the loop list item variable is not available after the loop.
+   *
+   * @expectedException \Drupal\rules\Exception\RulesEvaluationException
+   * @expectedExceptionMessage Unable to get variable list_item, it is not defined.
+   */
+  public function testOutOfScopeVariableExecution() {
+    $rule = $this->rulesExpressionManager->createRule();
+    $loop = $this->rulesExpressionManager->createInstance('rules_loop', ['list' => 'string_list']);
+
+    $rule->addExpressionObject($loop);
+    $rule->addAction('rules_test_string', ContextConfig::create()
+      ->map('text', 'list_item')
+    );
+
+    RulesComponent::create($rule)
+      ->addContextDefinition('string_list', ContextDefinition::create('string')->setMultiple())
+      ->setContextValue('string_list', ['one', 'two'])
+      ->execute();
+  }
+
 }

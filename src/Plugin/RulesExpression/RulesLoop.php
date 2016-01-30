@@ -78,6 +78,9 @@ class RulesLoop extends ActionExpressionContainer {
       $metadata_state->addDataDefinition($list_item_name, $list_item_definition);
 
       $violation_list = parent::checkIntegrity($metadata_state);
+
+      // Remove the list item variable after the loop, it is out of scope now.
+      $metadata_state->deleteDataDefinition($list_item_name);
       return $violation_list;
     }
 

@@ -64,6 +64,16 @@ interface ExecutionMetadataStateInterface {
   public function hasDataDefinition($name);
 
   /**
+   * Deletes a data definition from the metadata state.
+   *
+   * @param string $name
+   *   Variable name of the data definition to be deleted.
+   *
+   * @return $this
+   */
+  public function deleteDataDefinition($name);
+
+  /**
    * Applies a data selector and returns the corresponding data definition.
    *
    * @param string $property_path

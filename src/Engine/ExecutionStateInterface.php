@@ -87,6 +87,8 @@ interface ExecutionStateInterface {
    *
    * @param string $name
    *   The name of the variable to delete.
+   *
+   * @return $this
    */
   public function deleteVariable($name);
 
