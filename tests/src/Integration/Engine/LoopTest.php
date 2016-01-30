@@ -99,4 +99,29 @@ class LoopTest extends RulesEntityIntegrationTestBase {
     $this->assertEquals(' Outer 1 Inner 1 Inner 2 Inner 3 Outer 2 Inner 1 Inner 2 Inner 3', $result['result']);
   }
 
+  /**
+   * Test the integrity check for loop item names that conflict with others.
+   */
+  public function testItemNameConflict() {
+    $rule = $this->rulesExpressionManager->createRule();
+
+    $loop = $this->rulesExpressionManager->createInstance('rules_loop', [
+      'list' => 'string_list',
+      'list_item' => 'existing_name',
+    ]);
+
+    $rule->addExpressionObject($loop);
+
+    $violations = RulesComponent::create($rule)
+      ->addContextDefinition('string_list', ContextDefinition::create('string')->setMultiple())
+      ->addContextDefinition('existing_name', ContextDefinition::create('string'))
+      ->checkIntegrity();
+
+    $this->assertEquals(1, iterator_count($violations));
+    $this->assertEquals(
+      'List item name <em class="placeholder">existing_name</em> conflicts with an existing variable.',
+      (string) $violations[0]->getMessage()
+    );
+  }
+
 }
