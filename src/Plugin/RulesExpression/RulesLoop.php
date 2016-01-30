@@ -34,7 +34,7 @@ class RulesLoop extends ActionExpressionContainer {
     $list_item_name = isset($this->configuration['list_item']) ? $this->configuration['list_item'] : 'list_item';
 
     foreach ($list_data as $item) {
-      $state->addVariableData($list_item_name, $item);
+      $state->setVariableData($list_item_name, $item);
       foreach ($this->actions as $action) {
         $action->executeWithState($state);
       }
@@ -75,7 +75,7 @@ class RulesLoop extends ActionExpressionContainer {
     $list_definition = $metadata_state->getDataDefinition($this->configuration['list']);
     if ($list_definition instanceof ListDataDefinitionInterface) {
       $list_item_definition = $list_definition->getItemDefinition();
-      $metadata_state->addDataDefinition($list_item_name, $list_item_definition);
+      $metadata_state->setDataDefinition($list_item_name, $list_item_definition);
 
       $violation_list = parent::checkIntegrity($metadata_state);
 
