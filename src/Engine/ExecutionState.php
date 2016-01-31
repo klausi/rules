@@ -134,7 +134,7 @@ class ExecutionState implements ExecutionStateInterface {
   /**
    * {@inheritdoc}
    */
-  public function deleteVariable($name) {
+  public function removeVariable($name) {
     if (array_key_exists($name, $this->variables)) {
       unset($this->variables[$name]);
     }

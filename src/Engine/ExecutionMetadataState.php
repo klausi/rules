@@ -81,7 +81,7 @@ class ExecutionMetadataState implements ExecutionMetadataStateInterface {
   /**
    * {@inheritdoc}
    */
-  public function deleteDataDefinition($name) {
+  public function removeDataDefinition($name) {
     if (array_key_exists($name, $this->dataDefinitions)) {
       unset($this->dataDefinitions[$name]);
     }

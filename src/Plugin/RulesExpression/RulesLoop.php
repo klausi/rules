@@ -18,8 +18,7 @@ use Drupal\rules\Engine\IntegrityViolationList;
  *
  * @RulesExpression(
  *   id = "rules_loop",
- *   label = @Translation("Action set"),
- *   form_class = "\Drupal\rules\Form\Expression\ActionSetForm"
+ *   label = @Translation("Loop")
  * )
  */
 class RulesLoop extends ActionExpressionContainer {
@@ -41,7 +40,7 @@ class RulesLoop extends ActionExpressionContainer {
     }
     // After the loop the list item is out of scope and cannot be used by any
     // following actions.
-    $state->deleteVariable($list_item_name);
+    $state->removeVariable($list_item_name);
   }
 
   /**
@@ -80,7 +79,7 @@ class RulesLoop extends ActionExpressionContainer {
       $violation_list = parent::checkIntegrity($metadata_state);
 
       // Remove the list item variable after the loop, it is out of scope now.
-      $metadata_state->deleteDataDefinition($list_item_name);
+      $metadata_state->removeDataDefinition($list_item_name);
       return $violation_list;
     }
 
