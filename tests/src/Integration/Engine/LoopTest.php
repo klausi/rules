@@ -7,6 +7,7 @@
 
 namespace Drupal\Tests\rules\Integration\Engine;
 
+use Drupal\Core\Entity\TypedData\EntityDataDefinition;
 use Drupal\Core\Field\FieldItemList;
 use Drupal\node\NodeInterface;
 use Drupal\rules\Context\ContextConfig;
@@ -131,17 +132,27 @@ class LoopTest extends RulesEntityIntegrationTestBase {
 
     $rule->addExpressionObject($loop);
 
-    $field_text = new FieldItemList($this->typedDataManager->createListDataDefinition('string'));
+    $list_definition = $this->typedDataManager->createListDataDefinition('string');
+    $field_text = new FieldItemList($list_definition);
     $field_text->setValue(['Hello', 'world', 'this', 'is', 'the', 'loop']);
 
     $node = $this->prophesizeEntity(NodeInterface::class);
     $node->get('field_text')->willReturn($field_text);
 
-    $result = RulesComponent::create($rule)
-      ->addContextDefinition('node', ContextDefinition::create('entity:node'))
+    $node_definition = $this->prophesize(EntityDataDefinition::class);
+    $node_definition->getPropertyDefinition("field_text")->willReturn($list_definition);
+
+    $context_definition = $this->getContextDefinitionFor('entity:node', $node_definition);
+
+    $component = RulesComponent::create($rule)
+      ->addContextDefinition('node', $context_definition)
       ->provideContext('result')
-      ->setContextValue('node', $node->reveal())
-      ->execute();
+      ->setContextValue('node', $node->reveal());
+
+    $violations = $component->checkIntegrity();
+    $this->assertEquals(0, iterator_count($violations));
+
+    $result = $component->execute();
 
     $this->assertEquals(' Hello world this is the loop', $result['result']);
   }

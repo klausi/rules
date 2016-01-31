@@ -12,6 +12,7 @@ use Drupal\rules\Engine\ActionExpressionContainer;
 use Drupal\rules\Engine\ExecutionMetadataStateInterface;
 use Drupal\rules\Engine\ExecutionStateInterface;
 use Drupal\rules\Engine\IntegrityViolationList;
+use Drupal\rules\Exception\RulesIntegrityException;
 
 /**
  * Holds a set of actions that are executed over the iteration of a list.
@@ -51,11 +52,18 @@ class RulesLoop extends ActionExpressionContainer {
 
     if (empty($this->configuration['list'])) {
       $violation_list->addViolationWithMessage($this->t('List variable is missing.'));
+      return $violation_list;
     }
-    elseif (!$metadata_state->hasDataDefinition($this->configuration['list'])) {
-      $violation_list->addViolationWithMessage($this->t('List variable %list does not exist.', [
+
+    try {
+      $list_definition = $metadata_state->fetchDefinitionByPropertyPath($this->configuration['list']);
+    }
+    catch (RulesIntegrityException $e) {
+      $violation_list->addViolationWithMessage($this->t('List variable %list does not exist. @message', [
         '%list' => $this->configuration['list'],
+        '@message' => $e->getMessage(),
       ]));
+      return $violation_list;
     }
 
     $list_item_name = isset($this->configuration['list_item']) ? $this->configuration['list_item'] : 'list_item';
@@ -63,15 +71,9 @@ class RulesLoop extends ActionExpressionContainer {
       $violation_list->addViolationWithMessage($this->t('List item name %name conflicts with an existing variable.', [
         '%name' => $list_item_name,
       ]));
-    }
-
-    // If there are violations at this point stop checking here since it does
-    // not make sense to check the contained actions.
-    if (iterator_count($violation_list) > 0) {
       return $violation_list;
     }
-
-    $list_definition = $metadata_state->getDataDefinition($this->configuration['list']);
+    
     if ($list_definition instanceof ListDataDefinitionInterface) {
       $list_item_definition = $list_definition->getItemDefinition();
       $metadata_state->setDataDefinition($list_item_name, $list_item_definition);

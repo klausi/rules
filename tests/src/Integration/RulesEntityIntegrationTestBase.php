@@ -84,6 +84,7 @@ abstract class RulesEntityIntegrationTestBase extends RulesIntegrationTestBase {
         'entity_keys' => [
           'bundle' => 'dummy',
         ],
+        'class' => \Drupal\node\Entity\Node::class,
       ],
     ];
 
@@ -92,6 +93,11 @@ abstract class RulesEntityIntegrationTestBase extends RulesIntegrationTestBase {
     foreach ($type_info as $type => $info) {
       $entity_type = new ContentEntityType($info);
       $type_array[$type] = $entity_type;
+
+      $this->entityTypeManager->getDefinition($type)
+        ->willReturn($entity_type);
+      $this->entityManager->getDefinition($type)
+        ->willReturn($entity_type);
     }
 
     // We need a user_role mock as well.
@@ -135,4 +141,23 @@ abstract class RulesEntityIntegrationTestBase extends RulesIntegrationTestBase {
     $this->container->set('plugin.manager.field.field_type', $this->fieldTypeManager);
   }
 
+  protected function getContextDefinitionFor($data_type, $data_definition) {
+    $data_definition->setLabel(Argument::any())->willReturn($data_definition->reveal());
+    $data_definition->setDescription(Argument::any())->willReturn($data_definition->reveal());
+    $data_definition->setRequired(Argument::any())->willReturn($data_definition->reveal());
+    $data_definition->setLabel(Argument::any())->willReturn($data_definition->reveal());
+    $data_definition->getConstraints()->willReturn([]);
+    $data_definition->setConstraints(Argument::any())->willReturn($data_definition->reveal());
+    $data_definition->getDataType()->willReturn($data_type);
+    $data_definition->getClass()->willReturn(\Drupal\Core\Entity\Plugin\DataType\EntityAdapter::class);
+
+    $context_definition = \Drupal\rules\Context\ContextDefinition::create($data_type);
+
+    $typed_data_manager = $this->prophesize(\Drupal\Core\TypedData\TypedDataManagerInterface::class);
+    $typed_data_manager->createDataDefinition($data_type)->willReturn($data_definition->reveal());
+
+    $context_definition->setTypedDataManager($typed_data_manager->reveal());
+
+    return $context_definition;
+  }
 }
