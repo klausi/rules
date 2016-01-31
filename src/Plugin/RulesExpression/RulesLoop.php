@@ -27,7 +27,7 @@ class RulesLoop extends ActionExpressionContainer {
    * {@inheritdoc}
    */
   public function executeWithState(ExecutionStateInterface $state) {
-    $list_data = $state->getVariable($this->configuration['list']);
+    $list_data = $state->fetchDataByPropertyPath($this->configuration['list']);
     // Use a configured list item variable name, otherwise fall back to just
     // 'list_item' as variable name.
     $list_item_name = isset($this->configuration['list_item']) ? $this->configuration['list_item'] : 'list_item';

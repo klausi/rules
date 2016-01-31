@@ -7,9 +7,10 @@
 
 namespace Drupal\Tests\rules\Integration;
 
-use Drupal\Core\Entity\ContentEntityType;
 use Drupal\Core\Config\Entity\ConfigEntityType;
+use Drupal\Core\Entity\ContentEntityType;
 use Drupal\Core\Entity\EntityAccessControlHandlerInterface;
+use Drupal\Core\Field\FieldTypePluginManager;
 use Drupal\Core\Language\LanguageInterface;
 use Drupal\Core\Language\LanguageManagerInterface;
 use Prophecy\Argument;
@@ -36,6 +37,13 @@ abstract class RulesEntityIntegrationTestBase extends RulesIntegrationTestBase {
    * @var \Drupal\Core\Entity\EntityAccessControlHandlerInterface|\Prophecy\Prophecy\ProphecyInterface
    */
   protected $entityAccess;
+
+  /**
+   * The field type manager.
+   *
+   * @var \Drupal\Core\Field\FieldTypePluginManager
+   */
+  protected $fieldTypeManager;
 
   /**
    * {@inheritdoc}
@@ -120,6 +128,11 @@ abstract class RulesEntityIntegrationTestBase extends RulesIntegrationTestBase {
 
     $this->moduleHandler->getImplementations('entity_type_build')
       ->willReturn([]);
+
+    $this->fieldTypeManager = new FieldTypePluginManager(
+      $this->namespaces, $this->cacheBackend, $this->moduleHandler->reveal(), $this->typedDataManager
+    );
+    $this->container->set('plugin.manager.field.field_type', $this->fieldTypeManager);
   }
 
 }

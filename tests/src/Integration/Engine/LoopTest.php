@@ -7,17 +7,27 @@
 
 namespace Drupal\Tests\rules\Integration\Engine;
 
+use Drupal\Core\Field\FieldItemList;
+use Drupal\node\NodeInterface;
 use Drupal\rules\Context\ContextConfig;
 use Drupal\rules\Context\ContextDefinition;
 use Drupal\rules\Engine\RulesComponent;
-use Drupal\Tests\rules\Integration\RulesIntegrationTestBase;
+use Drupal\Tests\rules\Integration\RulesEntityIntegrationTestBase;
 
 /**
  * Test Rules execution with the loop plugin.
  *
  * @group rules
  */
-class LoopTest extends RulesIntegrationTestBase {
+class LoopTest extends RulesEntityIntegrationTestBase {
+
+  /**
+   * {@inheritdoc}
+   */
+  public function setUp() {
+    parent::setUp();
+    $this->enableModule('node');
+  }
 
   /**
    * Tests that list items in the loop can be used during execution.
@@ -97,6 +107,43 @@ class LoopTest extends RulesIntegrationTestBase {
       ->execute();
 
     $this->assertEquals(' Outer 1 Inner 1 Inner 2 Inner 3 Outer 2 Inner 1 Inner 2 Inner 3', $result['result']);
+  }
+
+  /**
+   * Tests that a list can be chosen with a property path selector.
+   */
+  public function testPropertyPathList() {
+    $rule = $this->rulesExpressionManager->createRule();
+    $rule->addAction('rules_variable_add', ContextConfig::create()
+      ->setValue('type', 'string')
+      ->setValue('value', '')
+      ->provideAs('variable_added', 'result')
+    );
+
+    $loop = $this->rulesExpressionManager->createInstance('rules_loop', [
+      'list' => 'node.field_text',
+    ]);
+    $loop->addAction('rules_data_set', ContextConfig::create()
+      ->map('data', 'result')
+      ->setValue('value', '{{result}} {{list_item}}')
+      ->process('value', 'rules_tokens')
+    );
+
+    $rule->addExpressionObject($loop);
+
+    $field_text = new FieldItemList($this->typedDataManager->createListDataDefinition('string'));
+    $field_text->setValue(['Hello', 'world', 'this', 'is', 'the', 'loop']);
+
+    $node = $this->prophesizeEntity(NodeInterface::class);
+    $node->get('field_text')->willReturn($field_text);
+
+    $result = RulesComponent::create($rule)
+      ->addContextDefinition('node', ContextDefinition::create('entity:node'))
+      ->provideContext('result')
+      ->setContextValue('node', $node->reveal())
+      ->execute();
+
+    $this->assertEquals(' Hello world this is the loop', $result['result']);
   }
 
   /**
