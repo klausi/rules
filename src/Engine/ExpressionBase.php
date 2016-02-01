@@ -36,20 +36,17 @@ abstract class ExpressionBase extends PluginBase implements ExpressionInterface 
   protected $configEntityId;
 
   /**
-   * The UUID of this expression in an expression tree.
+   * The UUID of this expression.
    *
-   * @var string|null
+   * @var string
    */
   protected $uuid;
 
   /**
-   * Expression plugins can be configured to have arbitrary context definitions.
+   * Constructor.
    *
    * @param array $configuration
-   *   The plugin configuration, i.e. an array with configuration values keyed
-   *   by configuration option name. The special key 'context_definitions' may
-   *   be used to initialize the context definitions by setting it to an array
-   *   of definitions keyed by context names.
+   *   A configuration array containing information about the plugin instance.
    * @param string $plugin_id
    *   The plugin_id for the plugin instance.
    * @param mixed $plugin_definition
@@ -57,6 +54,7 @@ abstract class ExpressionBase extends PluginBase implements ExpressionInterface 
    */
   public function __construct(array $configuration, $plugin_id, $plugin_definition) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
+    $this->setConfiguration($configuration);
   }
 
   /**
@@ -77,6 +75,7 @@ abstract class ExpressionBase extends PluginBase implements ExpressionInterface 
   public function getConfiguration() {
     return [
       'id' => $this->getPluginId(),
+      'uuid' => $this->uuid,
     ] + $this->configuration;
   }
 
@@ -85,6 +84,9 @@ abstract class ExpressionBase extends PluginBase implements ExpressionInterface 
    */
   public function setConfiguration(array $configuration) {
     $this->configuration = $configuration + $this->defaultConfiguration();
+    if (isset($configuration['uuid'])) {
+      $this->uuid = $configuration['uuid'];
+    }
     return $this;
   }
 
