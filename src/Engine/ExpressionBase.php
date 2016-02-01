@@ -37,6 +37,13 @@ abstract class ExpressionBase extends PluginBase implements ExpressionInterface 
   protected $configEntityId;
 
   /**
+   * The UUID of this expression in an expression tree.
+   *
+   * @var string|null
+   */
+  protected $uuid;
+
+  /**
    * Overrides the parent constructor to populate context definitions.
    *
    * Expression plugins can be configured to have arbitrary context definitions.
@@ -173,6 +180,20 @@ abstract class ExpressionBase extends PluginBase implements ExpressionInterface 
    */
   public function getLabel() {
     return $this->pluginDefinition['label'];
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getUuid() {
+    return $this->uuid;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function setUuid($uuid) {
+    $this->uuid = $uuid;
   }
 
 }

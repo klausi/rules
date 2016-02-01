@@ -55,6 +55,7 @@ abstract class ActionExpressionContainer extends ExpressionBase implements Actio
     foreach ($configuration['actions'] as $uuid => $action_config) {
       $action = $expression_manager->createInstance($action_config['id'], $action_config);
       $this->actions[$uuid] = $action;
+      $action->setUuid($uuid);
     }
   }
 
@@ -74,13 +75,17 @@ abstract class ActionExpressionContainer extends ExpressionBase implements Actio
   /**
    * {@inheritdoc}
    */
-  public function addExpressionObject(ExpressionInterface $expression, $return_uuid = FALSE) {
+  public function addExpressionObject(ExpressionInterface $expression) {
     if (!$expression instanceof ActionExpressionInterface) {
-      throw new InvalidExpressionException();
+      throw new InvalidExpressionException('Only action expressions can be added to an action container.');
+    }
+    if ($expression->getUuid()) {
+      throw new InvalidExpressionException('The action to be added already has a UUID in a different container.');
     }
     $uuid = $this->uuidService->generate();
     $this->actions[$uuid] = $expression;
-    return $return_uuid ? $uuid : $this;
+    $expression->setUuid($uuid);
+    return $this;
   }
 
   /**

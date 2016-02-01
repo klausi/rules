@@ -54,17 +54,26 @@ abstract class RulesUnitTestBase extends UnitTestCase {
     parent::setUp();
 
     $this->trueConditionExpression = $this->prophesize(ConditionExpressionInterface::class);
+    // Ignore UUID calls in the unit tests.
+    $this->trueConditionExpression->getUuid()->willReturn(NULL);
+    $this->trueConditionExpression->setUuid(Argument::type('string'))->willReturn(NULL);
 
     $this->trueConditionExpression->execute()->willReturn(TRUE);
     $this->trueConditionExpression->executeWithState(
       Argument::type(ExecutionStateInterface::class))->willReturn(TRUE);
 
     $this->falseConditionExpression = $this->prophesize(ConditionExpressionInterface::class);
+    // Ignore UUID calls in the unit tests.
+    $this->falseConditionExpression->getUuid()->willReturn(NULL);
+    $this->falseConditionExpression->setUuid(Argument::type('string'))->willReturn(NULL);
     $this->falseConditionExpression->execute()->willReturn(FALSE);
     $this->falseConditionExpression->executeWithState(
       Argument::type(ExecutionStateInterface::class))->willReturn(FALSE);
 
     $this->testActionExpression = $this->prophesize(ActionExpressionInterface::class);
+    // Ignore UUID calls in the unit tests.
+    $this->testActionExpression->getUuid()->willReturn(NULL);
+    $this->testActionExpression->setUuid(Argument::type('string'))->willReturn(NULL);
 
     $this->expressionManager = $this->prophesize(ExpressionManagerInterface::class);
   }
