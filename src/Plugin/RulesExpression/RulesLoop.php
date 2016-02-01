@@ -73,7 +73,7 @@ class RulesLoop extends ActionExpressionContainer {
       ]));
       return $violation_list;
     }
-    
+
     if ($list_definition instanceof ListDataDefinitionInterface) {
       $list_item_definition = $list_definition->getItemDefinition();
       $metadata_state->setDataDefinition($list_item_name, $list_item_definition);

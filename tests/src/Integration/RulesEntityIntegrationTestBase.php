@@ -13,7 +13,10 @@ use Drupal\Core\Entity\EntityAccessControlHandlerInterface;
 use Drupal\Core\Field\FieldTypePluginManager;
 use Drupal\Core\Language\LanguageInterface;
 use Drupal\Core\Language\LanguageManagerInterface;
+use Drupal\Core\TypedData\TypedDataManagerInterface;
+use Drupal\rules\Context\ContextDefinition;
 use Prophecy\Argument;
+use Prophecy\Prophecy\ProphecyInterface;
 
 /**
  * Base class for Rules integration tests with entities.
@@ -84,7 +87,6 @@ abstract class RulesEntityIntegrationTestBase extends RulesIntegrationTestBase {
         'entity_keys' => [
           'bundle' => 'dummy',
         ],
-        'class' => \Drupal\node\Entity\Node::class,
       ],
     ];
 
@@ -141,23 +143,40 @@ abstract class RulesEntityIntegrationTestBase extends RulesIntegrationTestBase {
     $this->container->set('plugin.manager.field.field_type', $this->fieldTypeManager);
   }
 
-  protected function getContextDefinitionFor($data_type, $data_definition) {
+  /**
+   * Helper to mock a context definition with a mocked data definition.
+   *
+   * @param string $data_type
+   *   The data type, example "entity:node".
+   * @param \Prophecy\Prophecy\ProphecyInterface $data_definition
+   *   A prophecy that represents a data definition object.
+   *
+   * @return \Drupal\rules\Context\ContextDefinition
+   *   The context definition with the data definition prophecy in it.
+   */
+  protected function getContextDefinitionFor($data_type, ProphecyInterface $data_definition) {
+    // Mock all the setter calls on the data definition that can be ignored.
     $data_definition->setLabel(Argument::any())->willReturn($data_definition->reveal());
     $data_definition->setDescription(Argument::any())->willReturn($data_definition->reveal());
     $data_definition->setRequired(Argument::any())->willReturn($data_definition->reveal());
     $data_definition->setLabel(Argument::any())->willReturn($data_definition->reveal());
-    $data_definition->getConstraints()->willReturn([]);
     $data_definition->setConstraints(Argument::any())->willReturn($data_definition->reveal());
+
+    $data_definition->getConstraints()->willReturn([]);
     $data_definition->getDataType()->willReturn($data_type);
-    $data_definition->getClass()->willReturn(\Drupal\Core\Entity\Plugin\DataType\EntityAdapter::class);
 
-    $context_definition = \Drupal\rules\Context\ContextDefinition::create($data_type);
+    $original_definition = $this->typedDataManager->getDefinition($data_type);
+    $data_definition->getClass()->willReturn($original_definition['class']);
 
-    $typed_data_manager = $this->prophesize(\Drupal\Core\TypedData\TypedDataManagerInterface::class);
+    $context_definition = ContextDefinition::create($data_type);
+
+    // Inject a fake typed data manger that will return our data definition
+    // prophecy if asked for it in the ContextDefinition class.
+    $typed_data_manager = $this->prophesize(TypedDataManagerInterface::class);
     $typed_data_manager->createDataDefinition($data_type)->willReturn($data_definition->reveal());
-
     $context_definition->setTypedDataManager($typed_data_manager->reveal());
 
     return $context_definition;
   }
+
 }

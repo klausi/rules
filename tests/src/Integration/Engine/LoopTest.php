@@ -132,6 +132,7 @@ class LoopTest extends RulesEntityIntegrationTestBase {
 
     $rule->addExpressionObject($loop);
 
+    // Create a fake field for the fake node for testing.
     $list_definition = $this->typedDataManager->createListDataDefinition('string');
     $field_text = new FieldItemList($list_definition);
     $field_text->setValue(['Hello', 'world', 'this', 'is', 'the', 'loop']);
@@ -139,6 +140,9 @@ class LoopTest extends RulesEntityIntegrationTestBase {
     $node = $this->prophesizeEntity(NodeInterface::class);
     $node->get('field_text')->willReturn($field_text);
 
+    // We cannot use EntityDataDefinitionInterface here because the context
+    // system in core violates the interface and relies on the actuoal class.
+    // @see https://www.drupal.org/node/2660216
     $node_definition = $this->prophesize(EntityDataDefinition::class);
     $node_definition->getPropertyDefinition("field_text")->willReturn($list_definition);
 
@@ -199,7 +203,7 @@ class LoopTest extends RulesEntityIntegrationTestBase {
 
     $this->assertEquals(1, iterator_count($violations));
     $this->assertEquals(
-      'List variable <em class="placeholder">unknown_list</em> does not exist.',
+      'List variable <em class="placeholder">unknown_list</em> does not exist. Unable to get variable unknown_list, it is not defined.',
       (string) $violations[0]->getMessage()
     );
   }
