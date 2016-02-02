@@ -74,6 +74,7 @@ class ActionForm implements ExpressionFormInterface {
         '#value' => $this->t('Continue'),
         '#name' => 'continue',
         '#submit' => [static::class . '::submitFirstStep'],
+        '#validate' => [],
       ];
 
       return $form;
@@ -107,6 +108,15 @@ class ActionForm implements ExpressionFormInterface {
   }
 
   /**
+   * {@inheritdoc}
+   */
+  public function validateForm(array $form, FormStateInterface $form_state) {
+    if ($form_state->get('action')) {
+      $this->submitForm($form, $form_state);
+    }
+  }
+
+  /**
    * Submit callback: save the selected action in the first step.
    */
   public function submitFirstStep(array &$form, FormStateInterface $form_state) {
@@ -131,5 +141,4 @@ class ActionForm implements ExpressionFormInterface {
     $configuration['action_id'] = $form_state->getValue('action');
     $this->actionExpression->setConfiguration($configuration);
   }
-
 }
