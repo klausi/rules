@@ -141,4 +141,5 @@ class ActionForm implements ExpressionFormInterface {
     $configuration['action_id'] = $form_state->getValue('action');
     $this->actionExpression->setConfiguration($configuration);
   }
+
 }
