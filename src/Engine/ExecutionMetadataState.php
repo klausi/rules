@@ -113,4 +113,17 @@ class ExecutionMetadataState implements ExecutionMetadataStateInterface {
     }
   }
 
+  /**
+   * {@inheritdoc}
+   */
+  public function autocomplete($partial_property_path) {
+    $results = [];
+    foreach ($this->dataDefinitions as $variable_name => $data_definition) {
+      if (stripos($variable_name, $partial_property_path) === 0) {
+        $results[] = $variable_name;
+      }
+    }
+    return $results;
+  }
+
 }
