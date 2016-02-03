@@ -72,6 +72,6 @@ before_script:
 
 script:
   # Run the PHPUnit tests which also include the kernel tests.
-  - ./vendor/phpunit/phpunit/phpunit -c ./core/phpunit.xml.dist ./modules/rules
+  - ./vendor/bin/phpunit -c ./core/phpunit.xml.dist ./modules/rules
   # Check for coding standards violations
   - cd modules/rules && ~/.composer/vendor/bin/phpcs
