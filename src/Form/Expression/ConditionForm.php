@@ -9,7 +9,7 @@ namespace Drupal\rules\Form\Expression;
 
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
-use Drupal\rules\Condition\ConditionManager;
+use Drupal\rules\Core\ConditionManager;
 use Drupal\rules\Context\ContextConfig;
 use Drupal\rules\Engine\ConditionExpressionInterface;
 use Drupal\rules\Form\Expression\ExpressionFormInterface;
@@ -25,7 +25,7 @@ class ConditionForm implements ExpressionFormInterface {
   /**
    * The condition plugin manager.
    *
-   * @var \Drupal\rules\Condition\ConditionManager
+   * @var \Drupal\rules\Core\ConditionManager
    */
   protected $conditionManager;
 
@@ -74,6 +74,8 @@ class ConditionForm implements ExpressionFormInterface {
         '#type' => 'submit',
         '#value' => $this->t('Continue'),
         '#name' => 'continue',
+        // Only validate the selected condition in the first step.
+        '#limit_validation_errors' => [['condition']],
         '#submit' => [static::class . '::submitFirstStep'],
       ];
 

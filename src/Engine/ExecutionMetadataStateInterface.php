@@ -32,17 +32,17 @@ interface ExecutionMetadataStateInterface {
   public static function create($data_definitions = []);
 
   /**
-   * Adds a data definition to the configuration state.
+   * Sets a data definition in the execution metadata state.
    *
    * @param string $name
    *   Variable name of the data definition.
    * @param \Drupal\Core\TypedData\DataDefinitionInterface $definition
    *   The data definition that represents the variable.
    */
-  public function addDataDefinition($name, DataDefinitionInterface $definition);
+  public function setDataDefinition($name, DataDefinitionInterface $definition);
 
   /**
-   * Retrieve a data definition in this configuration state.
+   * Retrieve a data definition in this execution metadata state.
    *
    * @param string $name
    *   The variable name to get the data definition for.
@@ -59,9 +59,19 @@ interface ExecutionMetadataStateInterface {
    *   The variable name.
    *
    * @return bool
-   *   TRUE if the config state has that variable, FALSE otherwise.
+   *   TRUE if the state has that variable, FALSE otherwise.
    */
   public function hasDataDefinition($name);
+
+  /**
+   * Removes a data definition from the metadata state.
+   *
+   * @param string $name
+   *   Variable name of the data definition to be removed.
+   *
+   * @return $this
+   */
+  public function removeDataDefinition($name);
 
   /**
    * Applies a data selector and returns the corresponding data definition.

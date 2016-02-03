@@ -8,10 +8,9 @@
 namespace Drupal\rules\Engine;
 
 use Drupal\Core\Plugin\PluginBase;
-use Drupal\rules\Context\ContextDefinition;
 
 /**
- * Base class for rules actions.
+ * Base class for rules expressions.
  */
 abstract class ExpressionBase extends PluginBase implements ExpressionInterface {
 
@@ -37,44 +36,25 @@ abstract class ExpressionBase extends PluginBase implements ExpressionInterface 
   protected $configEntityId;
 
   /**
-   * Overrides the parent constructor to populate context definitions.
+   * The UUID of this expression.
    *
-   * Expression plugins can be configured to have arbitrary context definitions.
+   * @var string
+   */
+  protected $uuid;
+
+  /**
+   * Constructor.
    *
    * @param array $configuration
-   *   The plugin configuration, i.e. an array with configuration values keyed
-   *   by configuration option name. The special key 'context_definitions' may
-   *   be used to initialize the context definitions by setting it to an array
-   *   of definitions keyed by context names.
+   *   A configuration array containing information about the plugin instance.
    * @param string $plugin_id
    *   The plugin_id for the plugin instance.
    * @param mixed $plugin_definition
    *   The plugin implementation definition.
    */
   public function __construct(array $configuration, $plugin_id, $plugin_definition) {
-    if (isset($configuration['context_definitions'])) {
-      $plugin_definition['context'] = $this->createContextDefinitions($configuration['context_definitions']);
-    }
-    if (isset($configuration['provided_definitions'])) {
-      $plugin_definition['provides'] = $this->createContextDefinitions($configuration['provided_definitions']);
-    }
     parent::__construct($configuration, $plugin_id, $plugin_definition);
-  }
-
-  /**
-   * Converts a context definition configuration array into objects.
-   *
-   * @param array $configuration
-   *   The configuration properties for populating the context definition
-   *   object.
-   *
-   * @return \Drupal\Core\Plugin\Context\ContextDefinitionInterface[]
-   *   A list of context definitions with the same keys.
-   */
-  protected function createContextDefinitions(array $configuration) {
-    return array_map(function ($definition_array) {
-      return ContextDefinition::createFromArray($definition_array);
-    }, $configuration);
+    $this->setConfiguration($configuration);
   }
 
   /**
@@ -92,16 +72,10 @@ abstract class ExpressionBase extends PluginBase implements ExpressionInterface 
   /**
    * {@inheritdoc}
    */
-  public function refineContextDefinitions() {
-    // Do not refine anything by default.
-  }
-
-  /**
-   * {@inheritdoc}
-   */
   public function getConfiguration() {
     return [
       'id' => $this->getPluginId(),
+      'uuid' => $this->uuid,
     ] + $this->configuration;
   }
 
@@ -110,6 +84,9 @@ abstract class ExpressionBase extends PluginBase implements ExpressionInterface 
    */
   public function setConfiguration(array $configuration) {
     $this->configuration = $configuration + $this->defaultConfiguration();
+    if (isset($configuration['uuid'])) {
+      $this->uuid = $configuration['uuid'];
+    }
     return $this;
   }
 
@@ -173,6 +150,20 @@ abstract class ExpressionBase extends PluginBase implements ExpressionInterface 
    */
   public function getLabel() {
     return $this->pluginDefinition['label'];
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getUuid() {
+    return $this->uuid;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function setUuid($uuid) {
+    $this->uuid = $uuid;
   }
 
 }

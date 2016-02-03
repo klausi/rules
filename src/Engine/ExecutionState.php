@@ -78,19 +78,19 @@ class ExecutionState implements ExecutionStateInterface {
   /**
    * {@inheritdoc}
    */
-  public function addVariable($name, ContextDefinitionInterface $definition, $value) {
+  public function setVariable($name, ContextDefinitionInterface $definition, $value) {
     $data = $this->getTypedDataManager()->create(
       $definition->getDataDefinition(),
       $value
     );
-    $this->addVariableData($name, $data);
+    $this->setVariableData($name, $data);
     return $this;
   }
 
   /**
    * {@inheritdoc}
    */
-  public function addVariableData($name, TypedDataInterface $data) {
+  public function setVariableData($name, TypedDataInterface $data) {
     $this->variables[$name] = $data;
     return $this;
   }
@@ -126,9 +126,19 @@ class ExecutionState implements ExecutionStateInterface {
       if (!array_key_exists($name, $contexts)) {
         return FALSE;
       }
-      $this->addVariableData($name, $contexts[$name]->getContextData());
+      $this->setVariableData($name, $contexts[$name]->getContextData());
     }
     return TRUE;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function removeVariable($name) {
+    if (array_key_exists($name, $this->variables)) {
+      unset($this->variables[$name]);
+    }
+    return $this;
   }
 
   /**
