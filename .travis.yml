@@ -56,7 +56,7 @@ before_script:
   - ln -s $TESTDIR modules/rules
 
   # Run composer install for Drupal 8.1
-  - if ["$DRUPAL_CORE" = "8.1.x" ]; then composer install; fi
+  - if [ "$DRUPAL_CORE" = "8.1.x" ]; then composer install; fi
 
   # Start a web server on port 8888, run in the background; wait for
   # initialization.
