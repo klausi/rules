@@ -55,11 +55,9 @@ before_script:
   # Reference rules in build site.
   - ln -s $TESTDIR modules/rules
 
-  # We need an up-to-date composer when installing Drupal 8.1.
-  - composer self-update
-
-  # Run composer install for Drupal 8.1.
-  - if [ "$DRUPAL_CORE" = "8.1.x" ]; then composer install; fi
+  # Run composer install for Drupal 8.1. We need an up-to-date composer when
+  # installing Drupal 8.1.
+  - if [ "$DRUPAL_CORE" = "8.1.x" ]; then composer self-update && composer install; fi
 
   # Start a web server on port 8888, run in the background; wait for
   # initialization.
