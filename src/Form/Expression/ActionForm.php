@@ -120,7 +120,7 @@ class ActionForm implements ExpressionFormInterface {
   /**
    * Submit callback: save the selected action in the first step.
    */
-  public function submitFirstStep(array &$form, FormStateInterface $form_state) {
+  public static function submitFirstStep(array &$form, FormStateInterface $form_state) {
     $form_state->set('action', $form_state->getValue('action'));
     $form_state->setRebuild();
   }
