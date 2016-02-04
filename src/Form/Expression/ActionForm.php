@@ -76,7 +76,6 @@ class ActionForm implements ExpressionFormInterface {
         // Only validate the selected action in the first step.
         '#limit_validation_errors' => [['action']],
         '#submit' => [static::class . '::submitFirstStep'],
-        '#validate' => [],
       ];
 
       return $form;
