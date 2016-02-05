@@ -15,6 +15,7 @@ use Drupal\rules\Engine\ConditionExpressionInterface;
 use Drupal\rules\Engine\ExecutionMetadataStateInterface;
 use Drupal\rules\Engine\ExecutionStateInterface;
 use Drupal\rules\Engine\ExpressionBase;
+use Drupal\rules\Engine\ExpressionInterface;
 use Drupal\rules\Engine\IntegrityCheckTrait;
 use Drupal\rules\Engine\IntegrityViolationList;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -202,10 +203,13 @@ class RulesCondition extends ExpressionBase implements ConditionExpressionInterf
   /**
    * {@inheritdoc}
    */
-  public function prepareExecutionMetadataState(ExecutionMetadataStateInterface $metadata_state) {
+  public function prepareExecutionMetadataState(ExecutionMetadataStateInterface $metadata_state, ExpressionInterface $until = NULL) {
     $condition = $this->actionManager->createInstance($this->configuration['condition_id']);
     $this->doPrepareExecutionMetadataState($condition, $metadata_state);
-    return FALSE;
+    if ($until) {
+      return FALSE;
+    }
+    return TRUE;
   }
 
 }
