@@ -2,7 +2,7 @@
 
 /**
  * @file
- * Contains \Drupal\rules\Tests\EventIntegrationTest.
+ * Contains \Drupal\Tests\rules\Kernel\EventIntegrationTest.
  */
 
 namespace Drupal\Tests\rules\Kernel;
@@ -59,8 +59,6 @@ class EventIntegrationTest extends RulesDrupalTestBase {
     ]);
     $config_entity->save();
 
-    // Rebuild the container so that the newly configured event gets picked up.
-    $this->container->get('kernel')->rebuildContainer();
     // The logger instance has changed, refresh it.
     $this->logger = $this->container->get('logger.channel.rules');
 
@@ -88,8 +86,6 @@ class EventIntegrationTest extends RulesDrupalTestBase {
     ]);
     $config_entity->save();
 
-    // Rebuild the container so that the newly configured event gets picked up.
-    $this->container->get('kernel')->rebuildContainer();
     // The logger instance has changed, refresh it.
     $this->logger = $this->container->get('logger.channel.rules');
 
@@ -117,8 +113,6 @@ class EventIntegrationTest extends RulesDrupalTestBase {
     ]);
     $config_entity->save();
 
-    // Rebuild the container so that the newly configured event gets picked up.
-    $this->container->get('kernel')->rebuildContainer();
     // The logger instance has changed, refresh it.
     $this->logger = $this->container->get('logger.channel.rules');
 
@@ -145,8 +139,6 @@ class EventIntegrationTest extends RulesDrupalTestBase {
     ]);
     $config_entity->save();
 
-    // Rebuild the container so that the newly configured event gets picked up.
-    $this->container->get('kernel')->rebuildContainer();
     // The logger instance has changed, refresh it.
     $this->logger = $this->container->get('logger.channel.rules');
 
@@ -174,8 +166,6 @@ class EventIntegrationTest extends RulesDrupalTestBase {
     ]);
     $config_entity->save();
 
-    // Rebuild the container so that the newly configured event gets picked up.
-    $this->container->get('kernel')->rebuildContainer();
     // The logger instance has changed, refresh it.
     $this->logger = $this->container->get('logger.channel.rules');
 
