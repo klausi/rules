@@ -199,4 +199,12 @@ class RulesCondition extends ExpressionBase implements ConditionExpressionInterf
     return $this->doCheckIntegrity($condition, $metadata_state);
   }
 
+  /**
+   * {@inheritdoc}
+   */
+  public function prepareExecutionMetadataState(ExecutionMetadataStateInterface $metadata_state) {
+    $condition = $this->actionManager->createInstance($this->configuration['condition_id']);
+    $this->doPrepareExecutionMetadataState($condition, $metadata_state);
+  }
+
 }

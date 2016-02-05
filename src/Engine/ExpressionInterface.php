@@ -114,4 +114,6 @@ interface ExpressionInterface extends ExecutableInterface, ConfigurablePluginInt
    */
   public function setUuid($uuid);
 
+  public function prepareExecutionMetadataState(ExecutionMetadataStateInterface $metadata_state);
+
 }

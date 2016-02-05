@@ -165,4 +165,13 @@ abstract class ActionExpressionContainer extends ExpressionBase implements Actio
     return $violation_list;
   }
 
+  /**
+   * {@inheritdoc}
+   */
+  public function prepareExecutionMetadataState(ExecutionMetadataStateInterface $metadata_state) {
+    foreach ($this->actions as $action) {
+      $action->prepareExecutionMetadataState($metadata_state);
+    }
+  }
+
 }

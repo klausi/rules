@@ -193,4 +193,13 @@ abstract class ConditionExpressionContainer extends ExpressionBase implements Co
     return $violation_list;
   }
 
+  /**
+   * {@inheritdoc}
+   */
+  public function prepareExecutionMetadataState(ExecutionMetadataStateInterface $metadata_state) {
+    foreach ($this->conditions as $condition) {
+      $condition->prepareExecutionMetadataState($metadata_state);
+    }
+  }
+
 }

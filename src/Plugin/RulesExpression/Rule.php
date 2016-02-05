@@ -223,4 +223,12 @@ class Rule extends ExpressionBase implements RuleInterface, ContainerFactoryPlug
     return $violation_list;
   }
 
+  /**
+   * {@inheritdoc}
+   */
+  public function prepareExecutionMetadataState(ExecutionMetadataStateInterface $metadata_state) {
+    $this->conditions->prepareExecutionMetadataState($metadata_state);
+    $this->actions->prepareExecutionMetadataState($metadata_state);
+  }
+
 }

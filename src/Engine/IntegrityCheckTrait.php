@@ -166,4 +166,28 @@ trait IntegrityCheckTrait {
     }
   }
 
+  /**
+   *
+   */
+  public function doPrepareExecutionMetadataState(CoreContextAwarePluginInterface $plugin, ExecutionMetadataStateInterface $metadata_state) {
+    if ($plugin instanceof ContextProviderInterface) {
+      $provided_context_definitions = $plugin->getProvidedContextDefinitions();
+
+      foreach ($provided_context_definitions as $name => $context_definition) {
+        if (isset($this->configuration['provides_mapping'][$name])) {
+          // Populate the state with the new variable that is provided by this
+          // plugin. That is necessary so that the integrity check in subsequent
+          // actions knows about the variable and does not throw violations.
+          $metadata_state->setDataDefinition(
+            $this->configuration['provides_mapping'][$name],
+            $context_definition->getDataDefinition()
+          );
+        }
+        else {
+          $metadata_state->setDataDefinition($name, $context_definition->getDataDefinition());
+        }
+      }
+    }
+  }
+
 }

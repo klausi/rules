@@ -182,4 +182,12 @@ class RulesAction extends ExpressionBase implements ContainerFactoryPluginInterf
     return $this->doCheckIntegrity($action, $metadata_state);
   }
 
+  /**
+   * {@inheritdoc}
+   */
+  public function prepareExecutionMetadataState(ExecutionMetadataStateInterface $metadata_state) {
+    $action = $this->actionManager->createInstance($this->configuration['action_id']);
+    $this->doPrepareExecutionMetadataState($action, $metadata_state);
+  }
+
 }

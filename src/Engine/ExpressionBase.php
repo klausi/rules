@@ -166,4 +166,11 @@ abstract class ExpressionBase extends PluginBase implements ExpressionInterface 
     $this->uuid = $uuid;
   }
 
+  /**
+   * {@inheritdoc}
+   */
+  public function prepareExecutionMetadataState(ExecutionMetadataStateInterface $metadata_state) {
+    // Empty default implementation that does not add any variables.
+  }
+
 }
