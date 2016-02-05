@@ -54,6 +54,7 @@ trait IntegrityCheckTrait {
             '@message' => $e->getMessage(),
           ]));
           $violation->setContextName($name);
+          $violation->setUuid($this->getUuid());
           $violation_list->add($violation);
         }
 
@@ -65,6 +66,7 @@ trait IntegrityCheckTrait {
             '%context_name' => $context_definition->getLabel(),
           ]));
           $violation->setContextName($name);
+          $violation->setUuid($this->getUuid());
           $violation_list->add($violation);
         }
       }
@@ -77,6 +79,7 @@ trait IntegrityCheckTrait {
             '%context_name' => $context_definition->getLabel(),
           ]));
           $violation->setContextName($name);
+          $violation->setUuid($this->getUuid());
           $violation_list->add($violation);
         }
       }
@@ -86,6 +89,7 @@ trait IntegrityCheckTrait {
           '%context_name' => $context_definition->getLabel(),
         ]));
         $violation->setContextName($name);
+        $violation->setUuid($this->getUuid());
         $violation_list->add($violation);
       }
     }
@@ -102,6 +106,7 @@ trait IntegrityCheckTrait {
             '%name' => $this->configuration['provides_mapping'][$name],
           ]));
           $violation->setContextName($name);
+          $violation->setUuid($this->getUuid());
           $violation_list->add($violation);
         }
       }
@@ -155,6 +160,7 @@ trait IntegrityCheckTrait {
         '@provided_type' => $provided->getDataType(),
       ]));
       $violation->setContextName($context_name);
+      $violation->setUuid($this->getUuid());
       $violation_list->add($violation);
     }
   }
