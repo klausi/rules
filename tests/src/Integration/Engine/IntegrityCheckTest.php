@@ -318,4 +318,25 @@ class IntegrityCheckTest extends RulesEntityIntegrationTestBase {
     $this->assertEquals($condition->getUuid(), $violation_list[1]->getUuid());
   }
 
+  /**
+   * Make sure that nested expression violations have the correct UUID.
+   */
+  public function testNestedExpressionUuids() {
+    $rule = $this->rulesExpressionManager->createRule();
+    $action_set = $this->rulesExpressionManager->createInstance('rules_action_set');
+    // The most inner action will trigger a violation for an unknown variable.
+    $action = $this->rulesExpressionManager->createAction('rules_entity_save', ContextConfig::create()
+      ->map('entity', 'unknown_variable')
+      ->toArray()
+    );
+    $action_set->addExpressionObject($action);
+    $rule->addExpressionObject($action_set);
+
+    $violation_list = RulesComponent::create($rule)
+      ->checkIntegrity();
+    $this->assertEquals(1, iterator_count($violation_list));
+    // UUID must be that of the most inner action.
+    $this->assertEquals($action->getUuid(), $violation_list[0]->getUuid());
+  }
+
 }
