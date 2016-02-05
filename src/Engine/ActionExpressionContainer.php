@@ -168,10 +168,23 @@ abstract class ActionExpressionContainer extends ExpressionBase implements Actio
   /**
    * {@inheritdoc}
    */
-  public function prepareExecutionMetadataState(ExecutionMetadataStateInterface $metadata_state) {
-    foreach ($this->actions as $action) {
-      $action->prepareExecutionMetadataState($metadata_state);
+  public function prepareExecutionMetadataState(ExecutionMetadataStateInterface $metadata_state, ExpressionInterface $until = NULL) {
+    if ($until && $this->getUuid() === $until->getUuid()) {
+      return TRUE;
     }
+    foreach ($this->actions as $action) {
+      if ($until && $action->getUuid() === $until->getUuid()) {
+        return TRUE;
+      }
+      $found = $action->prepareExecutionMetadataState($metadata_state);
+      if ($found) {
+        return TRUE;
+      }
+    }
+    if ($until) {
+      return FALSE;
+    }
+    return TRUE;
   }
 
 }

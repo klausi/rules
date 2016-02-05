@@ -30,8 +30,38 @@ class PrepareMetadataTest extends RulesEntityIntegrationTestBase {
     );
 
     $state = ExecutionMetadataState::create();
-    $rule->prepareExecutionMetadataState($state);
+    $found = $rule->prepareExecutionMetadataState($state);
     $this->assertTrue($state->hasDataDefinition('result'));
+    $this->assertTrue($found);
   }
+
+  /**
+   * Tests partial state setup until an expression is reached in the tree.
+   */
+  /*public function testPreparingUntil() {
+    // Setup a rule with 2 actions.
+    $rule = $this->rulesExpressionManager->createRule();
+    $rule->addAction('rules_variable_add', ContextConfig::create()
+      ->setValue('type', 'string')
+      ->setValue('value', '')
+      ->provideAs('variable_added', 'result1')
+    );
+    $second_action = $this->rulesExpressionManager->createAction('rules_variable_add')
+      ->setConfiguration(ContextConfig::create()
+        ->setValue('type', 'string')
+        ->setValue('value', '')
+        ->provideAs('variable_added', 'result2')
+        ->toArray()
+      );
+    $rule->addExpressionObject($second_action);
+
+    $state = ExecutionMetadataState::create();
+    // Preparing the state until the second action means the variable of the
+    // first action is available, but the second is not yet.
+    $found = $rule->prepareExecutionMetadataState($state, $second_action);
+    $this->assertTrue($state->hasDataDefinition('result1'));
+    $this->assertFalse($state->hasDataDefinition('result2'));
+    $this->assertTrue($found);
+  }*/
 
 }
