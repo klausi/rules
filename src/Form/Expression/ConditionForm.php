@@ -114,7 +114,11 @@ class ConditionForm implements ExpressionFormInterface {
    * {@inheritdoc}
    */
   public function validateForm(array $form, FormStateInterface $form_state) {
+    // Only if there is a conditoon selected already we can validate something.
     if ($form_state->get('condition')) {
+      // Invoke the submission handler which will setup the expression being
+      // edited in the form. That way the expression is ready for other
+      // validation handlers.
       $this->submitForm($form, $form_state);
     }
   }
