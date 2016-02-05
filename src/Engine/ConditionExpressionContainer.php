@@ -204,8 +204,8 @@ abstract class ConditionExpressionContainer extends ExpressionBase implements Co
       if ($until && $condition->getUuid() === $until->getUuid()) {
         return TRUE;
       }
-      $found = $condition->prepareExecutionMetadataState($metadata_state);
-      if ($found) {
+      $found = $condition->prepareExecutionMetadataState($metadata_state, $until);
+      if ($until && $found) {
         return TRUE;
       }
     }

@@ -176,8 +176,8 @@ abstract class ActionExpressionContainer extends ExpressionBase implements Actio
       if ($until && $action->getUuid() === $until->getUuid()) {
         return TRUE;
       }
-      $found = $action->prepareExecutionMetadataState($metadata_state);
-      if ($found) {
+      $found = $action->prepareExecutionMetadataState($metadata_state, $until);
+      if ($until && $found) {
         return TRUE;
       }
     }

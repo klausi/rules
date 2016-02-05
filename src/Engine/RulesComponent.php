@@ -228,13 +228,23 @@ class RulesComponent {
    *   A list object containing \Drupal\rules\Engine\IntegrityViolation objects.
    */
   public function checkIntegrity() {
+    $metadata_state = $this->getMetadataState();
+    return $this->expression->checkIntegrity($metadata_state);
+  }
+
+  /**
+   * Gets the metadata state.
+   *
+   * @return \Drupal\rules\Engine\ExecutionMetadataStateInterface
+   *   The populated execution metadata state.
+   */
+  public function getMetadataState() {
     $data_definitions = [];
     foreach ($this->contextDefinitions as $name => $context_definition) {
       $data_definitions[$name] = $context_definition->getDataDefinition();
     }
 
-    $metadata_state = ExecutionMetadataState::create($data_definitions);
-    return $this->expression->checkIntegrity($metadata_state);
+    return ExecutionMetadataState::create($data_definitions);
   }
 
 }

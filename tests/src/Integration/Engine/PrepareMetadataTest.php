@@ -8,7 +8,9 @@
 namespace Drupal\Tests\rules\Integration\Engine;
 
 use Drupal\rules\Context\ContextConfig;
+use Drupal\rules\Context\ContextDefinition;
 use Drupal\rules\Engine\ExecutionMetadataState;
+use Drupal\rules\Engine\RulesComponent;
 use Drupal\Tests\rules\Integration\RulesEntityIntegrationTestBase;
 
 /**
@@ -38,7 +40,7 @@ class PrepareMetadataTest extends RulesEntityIntegrationTestBase {
   /**
    * Tests partial state setup until an expression is reached in the tree.
    */
-  /*public function testPreparingUntil() {
+  public function testPreparingUntil() {
     // Setup a rule with 2 actions.
     $rule = $this->rulesExpressionManager->createRule();
     $rule->addAction('rules_variable_add', ContextConfig::create()
@@ -62,6 +64,31 @@ class PrepareMetadataTest extends RulesEntityIntegrationTestBase {
     $this->assertTrue($state->hasDataDefinition('result1'));
     $this->assertFalse($state->hasDataDefinition('result2'));
     $this->assertTrue($found);
-  }*/
+  }
+
+  /**
+   * Tests that state preparation also works for actions in a loop.
+   */
+  public function testPrepareInLoop() {
+    $rule = $this->rulesExpressionManager->createRule();
+
+    $loop = $this->rulesExpressionManager->createInstance('rules_loop', ['list' => 'string_list']);
+    $action = $this->rulesExpressionManager->createAction('rules_test_string')
+      ->setConfiguration(ContextConfig::create()
+        ->setValue('text', 'x')
+        ->toArray()
+      );
+    $loop->addExpressionObject($action);
+
+    $rule->addExpressionObject($loop);
+
+    $state = RulesComponent::create($rule)
+      ->addContextDefinition('string_list', ContextDefinition::create('string')->setMultiple())
+      ->getMetadataState();
+
+    $found = $rule->prepareExecutionMetadataState($state, $action);
+    $this->assertTrue($state->hasDataDefinition('list_item'));
+    $this->assertTrue($found);
+  }
 
 }
