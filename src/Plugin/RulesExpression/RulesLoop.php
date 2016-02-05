@@ -111,22 +111,26 @@ class RulesLoop extends ActionExpressionContainer {
       // item definition to the state.
     }
 
-    foreach ($this->actions as $action) {
-      if ($until && $action->getUuid() === $until->getUuid()) {
-        return TRUE;
-      }
-      $found = $action->prepareExecutionMetadataState($metadata_state, $until);
-      if ($until && $found) {
-        return TRUE;
-      }
-    }
-
-    // Remove the list item variable after the loop, it is out of scope now.
-    $metadata_state->removeDataDefinition($list_item_name);
-
     if ($until) {
+      foreach ($this->actions as $action) {
+        if ($action->getUuid() === $until->getUuid()) {
+          return TRUE;
+        }
+        $found = $action->prepareExecutionMetadataState($metadata_state, $until);
+        if ($found) {
+          return TRUE;
+        }
+      }
+      // Remove the list item variable after the loop, it is out of scope now.
+      $metadata_state->removeDataDefinition($list_item_name);
       return FALSE;
     }
+
+    foreach ($this->actions as $action) {
+      $action->prepareExecutionMetadataState($metadata_state);
+    }
+    // Remove the list item variable after the loop, it is out of scope now.
+    $metadata_state->removeDataDefinition($list_item_name);
     return TRUE;
   }
 

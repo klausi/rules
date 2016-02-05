@@ -227,13 +227,15 @@ class Rule extends ExpressionBase implements RuleInterface, ContainerFactoryPlug
    * {@inheritdoc}
    */
   public function prepareExecutionMetadataState(ExecutionMetadataStateInterface $metadata_state, ExpressionInterface $until = NULL) {
-    $found = $this->conditions->prepareExecutionMetadataState($metadata_state, $until);
-    if (!$found || !$until) {
-      $found = $this->actions->prepareExecutionMetadataState($metadata_state, $until);
-    }
     if ($until) {
+      $found = $this->conditions->prepareExecutionMetadataState($metadata_state, $until);
+      if (!$found) {
+        $found = $this->actions->prepareExecutionMetadataState($metadata_state, $until);
+      }
       return $found;
     }
+    $this->conditions->prepareExecutionMetadataState($metadata_state);
+    $this->actions->prepareExecutionMetadataState($metadata_state);
     return TRUE;
   }
 

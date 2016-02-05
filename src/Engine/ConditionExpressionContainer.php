@@ -197,20 +197,24 @@ abstract class ConditionExpressionContainer extends ExpressionBase implements Co
    * {@inheritdoc}
    */
   public function prepareExecutionMetadataState(ExecutionMetadataStateInterface $metadata_state, ExpressionInterface $until = NULL) {
-    if ($until && $this->getUuid() === $until->getUuid()) {
-      return TRUE;
-    }
-    foreach ($this->conditions as $condition) {
-      if ($until && $condition->getUuid() === $until->getUuid()) {
-        return TRUE;
-      }
-      $found = $condition->prepareExecutionMetadataState($metadata_state, $until);
-      if ($until && $found) {
-        return TRUE;
-      }
-    }
     if ($until) {
+      if ($this->getUuid() === $until->getUuid()) {
+        return TRUE;
+      }
+      foreach ($this->conditions as $condition) {
+        if ($condition->getUuid() === $until->getUuid()) {
+          return TRUE;
+        }
+        $found = $condition->prepareExecutionMetadataState($metadata_state, $until);
+        if ($found) {
+          return TRUE;
+        }
+      }
       return FALSE;
+    }
+
+    foreach ($this->conditions as $condition) {
+      $condition->prepareExecutionMetadataState($metadata_state);
     }
     return TRUE;
   }
