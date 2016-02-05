@@ -111,9 +111,19 @@ class ConditionForm implements ExpressionFormInterface {
   }
 
   /**
+   * {@inheritdoc}
+   */
+  public function validateForm(array $form, FormStateInterface $form_state) {
+    if ($form_state->get('condition')) {
+      $this->submitForm($form, $form_state);
+    }
+  }
+
+
+  /**
    * Submit callback: save the selected condition in the first step.
    */
-  public function submitFirstStep(array &$form, FormStateInterface $form_state) {
+  public static function submitFirstStep(array &$form, FormStateInterface $form_state) {
     $form_state->set('condition', $form_state->getValue('condition'));
     $form_state->setRebuild();
   }
