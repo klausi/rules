@@ -20,6 +20,11 @@
     <exclude name="Drupal.Commenting.DocComment.MissingShort"/>
   </rule>
 
+  <rule ref="DrupalPractice">
+    <!-- Remove this temporary exclusion once Coder 8.2.7 is released. -->
+    <exclude-pattern>tests/src/Integration/Action/EntityFetchByFieldTest.php</exclude-pattern>
+  </rule>
+
   <!-- We always want short array syntax only. -->
   <rule ref="Generic.Arrays.DisallowLongArraySyntax" />
 </ruleset>
