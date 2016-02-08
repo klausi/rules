@@ -2,7 +2,7 @@
 
 /**
  * @file
- * Contains \Drupal\Tests\rules\Integration\Engine\PrepareMetadataTest.
+ * Contains \Drupal\Tests\rules\Integration\Engine\PrepareExecutionMetadataStateTest.
  */
 
 namespace Drupal\Tests\rules\Integration\Engine;
@@ -18,7 +18,7 @@ use Drupal\Tests\rules\Integration\RulesEntityIntegrationTestBase;
  *
  * @group rules
  */
-class PrepareMetadataTest extends RulesEntityIntegrationTestBase {
+class PrepareExecutionMetadataStateTest extends RulesEntityIntegrationTestBase {
 
   /**
    * Tests that a variable can be added by an action and is then available.
