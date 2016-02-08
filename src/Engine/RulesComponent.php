@@ -233,10 +233,13 @@ class RulesComponent {
   }
 
   /**
-   * Gets the metadata state.
+   * Gets the metadata state with all context definitions as variables in it.
+   *
+   * Describes the metadata state before execution - only context definitions
+   * are set as variables.
    *
    * @return \Drupal\rules\Engine\ExecutionMetadataStateInterface
-   *   The populated execution metadata state.
+   *   The execution metadata state populated with context definitions.
    */
   public function getMetadataState() {
     $data_definitions = [];

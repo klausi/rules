@@ -112,9 +112,9 @@ trait IntegrityCheckTrait {
       }
     }
 
-    // Make sure that all proived variables by this plugin are added to the
+    // Make sure that all provided variables by this plugin are added to the
     // execution metadata state.
-    $this->doPrepareExecutionMetadataState($plugin, $metadata_state);
+    $this->addProvidedVariablesToExecutionMetadataState($plugin, $metadata_state);
 
     return $violation_list;
   }
@@ -173,7 +173,7 @@ trait IntegrityCheckTrait {
    * @param \Drupal\rules\Engine\ExecutionMetadataStateInterface $metadata_state
    *   The excution metadata state to add variables to.
    */
-  public function doPrepareExecutionMetadataState(CoreContextAwarePluginInterface $plugin, ExecutionMetadataStateInterface $metadata_state) {
+  public function addProvidedVariablesToExecutionMetadataState(CoreContextAwarePluginInterface $plugin, ExecutionMetadataStateInterface $metadata_state) {
     if ($plugin instanceof ContextProviderInterface) {
       $provided_context_definitions = $plugin->getProvidedContextDefinitions();
 

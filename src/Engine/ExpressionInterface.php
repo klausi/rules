@@ -115,13 +115,18 @@ interface ExpressionInterface extends ExecutableInterface, ConfigurablePluginInt
   public function setUuid($uuid);
 
   /**
-   * Prepares the execution metadata state.
+   * Prepares the execution metadata state by adding variables to it.
    *
    * If this expression contains other expressions then the metadata state is
    * set up recursively. If a $until expression is specified then the setup will
    * stop right before that expression. This is useful for inspecting the state
    * at a certain point in the expression tree, for example to do autocompletion
    * of available variables in the state.
+   *
+   * The difference to fully preparing the state is that not all variables are
+   * available in the middle of the expression tree. Preparing with
+   * $until = NULL reflects the execution metadata state at the end of the
+   * expression.
    *
    * @param \Drupal\rules\Engine\ExecutionMetadataStateInterface $metadata_state
    *   The execution metadata state to populate variables in.

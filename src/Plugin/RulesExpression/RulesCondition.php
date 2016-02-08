@@ -205,7 +205,7 @@ class RulesCondition extends ExpressionBase implements ConditionExpressionInterf
    */
   public function prepareExecutionMetadataState(ExecutionMetadataStateInterface $metadata_state, ExpressionInterface $until = NULL) {
     $condition = $this->actionManager->createInstance($this->configuration['condition_id']);
-    $this->doPrepareExecutionMetadataState($condition, $metadata_state);
+    $this->addProvidedVariablesToExecutionMetadataState($condition, $metadata_state);
     if ($until) {
       return FALSE;
     }

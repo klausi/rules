@@ -188,7 +188,7 @@ class RulesAction extends ExpressionBase implements ContainerFactoryPluginInterf
    */
   public function prepareExecutionMetadataState(ExecutionMetadataStateInterface $metadata_state, ExpressionInterface $until = NULL) {
     $action = $this->actionManager->createInstance($this->configuration['action_id']);
-    $this->doPrepareExecutionMetadataState($action, $metadata_state);
+    $this->addProvidedVariablesToExecutionMetadataState($action, $metadata_state);
     if ($until) {
       return FALSE;
     }
