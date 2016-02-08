@@ -32,7 +32,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  *
  * @RulesExpression(
  *   id = "rules_rule",
- *   label = @Translation("A rule, executing actions when conditions are met."),
+ *   label = @Translation("Rule"),
  *   form_class = "\Drupal\rules\Form\Expression\ReactionRuleForm"
  * )
  */
