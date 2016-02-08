@@ -91,4 +91,29 @@ class PrepareMetadataTest extends RulesEntityIntegrationTestBase {
     $this->assertTrue($found);
   }
 
+  /**
+   * Tests that the loop list item is removed after the loop.
+   */
+  public function testPrepareAfterLoop() {
+    $rule = $this->rulesExpressionManager->createRule();
+
+    $loop = $this->rulesExpressionManager->createInstance('rules_loop', ['list' => 'string_list']);
+    $action = $this->rulesExpressionManager->createAction('rules_test_string')
+      ->setConfiguration(ContextConfig::create()
+        ->setValue('text', 'x')
+        ->toArray()
+      );
+    $loop->addExpressionObject($action);
+
+    $rule->addExpressionObject($loop);
+
+    $state = RulesComponent::create($rule)
+      ->addContextDefinition('string_list', ContextDefinition::create('string')->setMultiple())
+      ->getMetadataState();
+
+    $found = $rule->prepareExecutionMetadataState($state);
+    $this->assertFalse($state->hasDataDefinition('list_item'));
+    $this->assertTrue($found);
+  }
+
 }
