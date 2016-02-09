@@ -105,6 +105,13 @@ class RulesComponentConfig extends ConfigEntityBase {
   protected $context_definitions = [];
 
   /**
+   * Array of provided context definition arrays, keyed by context name.
+   *
+   * @var array[]
+   */
+  protected $provided_context_definitions = [];
+
+  /**
    * The expression plugin specific configuration as nested array.
    *
    * @var array
@@ -209,6 +216,36 @@ class RulesComponentConfig extends ConfigEntityBase {
     $this->context_definitions = [];
     foreach ($definitions as $name => $definition) {
       $this->context_definitions[$name] = $definition->toArray();
+    }
+    return $this;
+  }
+
+  /**
+   * Gets the provided definitions of the used context.
+   *
+   * @return \Drupal\rules\Context\ContextDefinitionInterface[]
+   *   The array of provided context definitions, keyed by context name.
+   */
+  public function getProvidedContextDefinitions() {
+    $definitions = [];
+    foreach ($this->provided_context_definitions as $name => $definition) {
+      $definitions[$name] = ContextDefinition::createFromArray($definition);
+    }
+    return $definitions;
+  }
+
+  /**
+   * Sets the provided definitions of the used context.
+   *
+   * @param \Drupal\rules\Context\ContextDefinitionInterface[] $definitions
+   *   The array of provided context definitions, keyed by context name.
+   *
+   * @return $this
+   */
+  public function setProvidedContextDefinitions($definitions) {
+    $this->provided_context_definitions = [];
+    foreach ($definitions as $name => $definition) {
+      $this->provided_context_definitions[$name] = $definition->toArray();
     }
     return $this;
   }
