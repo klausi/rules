@@ -8,8 +8,9 @@
 namespace Drupal\rules\Plugin\RulesAction;
 
 use Drupal\Core\Entity\EntityStorageInterface;
-use Drupal\rules\Core\RulesActionBase;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
+use Drupal\rules\Core\RulesActionBase;
+use Drupal\rules\Engine\RulesComponent;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -72,7 +73,17 @@ class RulesComponentAction extends RulesActionBase implements ContainerFactoryPl
    * {@inheritdoc}
    */
   public function execute() {
-    // @todo
+    $rules_component = $this->storage->load($this->componentId);
+    $expression = $rules_component->getExpression();
+
+    // Setup an isolated execution state for this expression and pass on the
+    // necessary context.
+    $rules_component = RulesComponent::create($expression);
+    foreach ($this->getContextDefinitions() as $context_name => $context_definition) {
+      $rules_component->addContextDefinition($context_name, $context_definition);
+      $rules_component->setContextValue($context_name, $this->getContextValue($context_name));
+    }
+    $rules_component->execute();
   }
 
 }
