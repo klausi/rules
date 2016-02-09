@@ -68,7 +68,6 @@ class ConfigEntityDefaultsTest extends RulesDrupalTestBase {
     $result = $config_entity
       ->getComponent()
       ->setContextValue('user', $user)
-      ->provideContext('concatenated')
       ->execute();
 
     // Test that the action was executed correctly.

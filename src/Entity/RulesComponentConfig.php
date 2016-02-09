@@ -41,6 +41,7 @@ use Drupal\rules\Engine\ExpressionInterface;
  *     "core",
  *     "expression_id",
  *     "context_definitions",
+ *     "provided_context_definitions",
  *     "configuration",
  *   },
  *   links = {
@@ -173,6 +174,9 @@ class RulesComponentConfig extends ConfigEntityBase {
     foreach ($this->context_definitions as $name => $definition) {
       $component->addContextDefinition($name, ContextDefinition::createFromArray($definition));
     }
+    foreach ($this->provided_context_definitions as $name => $definition) {
+      $component->provideContext($name);
+    }
     return $component;
   }
 
@@ -221,7 +225,7 @@ class RulesComponentConfig extends ConfigEntityBase {
   }
 
   /**
-   * Gets the provided definitions of the used context.
+   * Gets the provided definitions of this component.
    *
    * @return \Drupal\rules\Context\ContextDefinitionInterface[]
    *   The array of provided context definitions, keyed by context name.
@@ -235,7 +239,7 @@ class RulesComponentConfig extends ConfigEntityBase {
   }
 
   /**
-   * Sets the provided definitions of the used context.
+   * Sets the provided definitions of this component.
    *
    * @param \Drupal\rules\Context\ContextDefinitionInterface[] $definitions
    *   The array of provided context definitions, keyed by context name.
