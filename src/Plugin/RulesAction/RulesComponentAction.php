@@ -73,17 +73,19 @@ class RulesComponentAction extends RulesActionBase implements ContainerFactoryPl
    * {@inheritdoc}
    */
   public function execute() {
-    $rules_component = $this->storage->load($this->componentId);
-    $expression = $rules_component->getExpression();
+    $rules_config = $this->storage->load($this->componentId);
 
     // Setup an isolated execution state for this expression and pass on the
     // necessary context.
-    $rules_component = RulesComponent::create($expression);
-    foreach ($this->getContextDefinitions() as $context_name => $context_definition) {
-      $rules_component->addContextDefinition($context_name, $context_definition);
-      $rules_component->setContextValue($context_name, $this->getContextValue($context_name));
+    $rules_component = $rules_config->getComponent();
+    foreach ($this->getContextValues() as $context_name => $context_value) {
+      $rules_component->setContextValue($context_name, $context_value);
     }
-    $rules_component->execute();
+
+    $provided_values = $rules_component->execute();
+    foreach ($provided_values as $name => $provided_value) {
+      $this->setProvidedValue($name, $provided_value);
+    }
   }
 
 }

@@ -108,6 +108,36 @@ class RulesComponentActionTest extends RulesEntityIntegrationTestBase {
   }
 
   /**
+   * Tests that a rules component in an action can also provide variables.
+   */
+  public function testExecutionProvidedVariables() {
+    // Create a rule that produces a provided string variable.
+    $nested_rule = $this->rulesExpressionManager->createRule();
+    $nested_rule->addAction('rules_test_string', ContextConfig::create()
+      ->setValue('text', 'x')
+    );
+
+    $rules_config = new RulesComponentConfig([
+      'id' => 'test_rule',
+      'label' => 'Test rule',
+    ], 'rules_component');
+    $rules_config->setExpression($nested_rule);
+    $rules_config->setProvidedContextDefinitions(['concatenated' => ContextDefinition::create('string')]);
+
+    $this->prophesizeStorage([$rules_config]);
+
+    // Invoke the rules component in another rule.
+    $rule = $this->rulesExpressionManager->createRule();
+    $rule->addAction('rules_component:test_rule');
+
+    $result = RulesComponent::create($rule)
+      ->provideContext('concatenated')
+      ->execute();
+
+    $this->assertEquals('xx', $result['concatenated']);
+  }
+
+  /**
    * Prepares a mocked entity storage that returns the provided Rules configs.
    *
    * @param RulesComponentConfig[] $rules_configs
