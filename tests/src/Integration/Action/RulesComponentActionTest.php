@@ -5,7 +5,7 @@
  * Contains \Drupal\Tests\rules\Integration\Engine\ComponentActionTest.
  */
 
-namespace Drupal\Tests\rules\Integration\Engine;
+namespace Drupal\Tests\rules\Integration\Action;
 
 use Drupal\Core\Config\Entity\ConfigEntityStorageInterface;
 use Drupal\Core\Entity\EntityInterface;
@@ -20,7 +20,7 @@ use Drupal\Tests\rules\Integration\RulesEntityIntegrationTestBase;
  *
  * @group rules
  */
-class ComponentActionTest extends RulesEntityIntegrationTestBase {
+class RulesComponentActionTest extends RulesEntityIntegrationTestBase {
 
   /**
    * Tests that a rule can be used as action.
@@ -74,6 +74,37 @@ class ComponentActionTest extends RulesEntityIntegrationTestBase {
       ->addContextDefinition('entity', ContextDefinition::create('entity'))
       ->setContextValue('entity', $entity->reveal())
       ->execute();
+  }
+
+  /**
+   * Tests that context definitions are available on the derived action.
+   */
+  public function testContextDefinitions() {
+    $rule = $this->rulesExpressionManager->createRule();
+    $rule
+      ->addAction('rules_entity_save', ContextConfig::create()
+        ->map('entity', 'entity')
+      )
+      ->addAction('rules_test_string', ContextConfig::create()
+        ->setValue('text', 'x')
+      );
+
+    $rules_config = new RulesComponentConfig([
+      'id' => 'test_rule',
+      'label' => 'Test rule',
+    ], 'rules_component');
+    $rules_config->setExpression($rule);
+
+    $context_definitions = ['entity' => ContextDefinition::create('entity')];
+    $rules_config->setContextDefinitions($context_definitions);
+    $provided_definitions = ['concatenated' => ContextDefinition::create('string')];
+    $rules_config->setProvidedContextDefinitions($provided_definitions);
+
+    $this->prophesizeStorage([$rules_config]);
+
+    $definition = $this->actionManager->getDefinition('rules_component:test_rule');
+    $this->assertEquals($context_definitions, $definition['context']);
+    $this->assertEquals($provided_definitions, $definition['provides']);
   }
 
   /**
