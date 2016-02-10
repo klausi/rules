@@ -10,7 +10,6 @@ namespace Drupal\rules\Plugin\RulesAction;
 use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\rules\Core\RulesActionBase;
-use Drupal\rules\Engine\RulesComponent;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
