@@ -10,6 +10,7 @@ namespace Drupal\Tests\rules\Kernel;
 use Drupal\rules\Context\ContextConfig;
 use Drupal\rules\Context\ContextDefinition;
 use Drupal\rules\Engine\RulesComponent;
+use Drupal\rules\Entity\RulesComponentConfig;
 use Drupal\user\Entity\User;
 
 /**
@@ -40,7 +41,7 @@ class CoreIntegrationTest extends RulesDrupalTestBase {
   /**
    * Tests that a complex data selector can be applied to entities.
    */
-  public function testEntityPropertyPath() {
+  /*public function testEntityPropertyPath() {
     $entity_type_manager = $this->container->get('entity_type.manager');
     $entity_type_manager->getStorage('node_type')
       ->create(['type' => 'page'])
@@ -83,7 +84,7 @@ class CoreIntegrationTest extends RulesDrupalTestBase {
   /**
    * Tests that an entity is automatically saved after being changed.
    */
-  public function testEntityAutoSave() {
+  /*public function testEntityAutoSave() {
     $entity_type_manager = $this->container->get('entity_type.manager');
     $entity_type_manager->getStorage('node_type')
       ->create(['type' => 'page'])
@@ -117,7 +118,7 @@ class CoreIntegrationTest extends RulesDrupalTestBase {
   /**
    * Tests that tokens in action parameters get replaced.
    */
-  public function testTokenReplacements() {
+  /*public function testTokenReplacements() {
     $entity_type_manager = $this->container->get('entity_type.manager');
     $entity_type_manager->getStorage('node_type')
       ->create(['type' => 'page'])
@@ -166,7 +167,7 @@ class CoreIntegrationTest extends RulesDrupalTestBase {
   /**
    * Tests that tokens used to format entity fields get replaced.
    */
-  public function testTokenFormattingReplacements() {
+  /*public function testTokenFormattingReplacements() {
     $entity_type_manager = $this->container->get('entity_type.manager');
     $entity_type_manager->getStorage('node_type')
       ->create(['type' => 'page'])
@@ -209,7 +210,7 @@ class CoreIntegrationTest extends RulesDrupalTestBase {
   /**
    * Tests that the data set action works on entities.
    */
-  public function testDataSetEntities() {
+  /*public function testDataSetEntities() {
     $entity_type_manager = $this->container->get('entity_type.manager');
     $entity_type_manager->getStorage('node_type')
       ->create(['type' => 'page'])
@@ -245,9 +246,48 @@ class CoreIntegrationTest extends RulesDrupalTestBase {
   }
 
   /**
+   * Tests that auto saving in a component executed as action works.
+   */
+  public function testComponentActionAutoSave() {
+    $entity_type_manager = $this->container->get('entity_type.manager');
+    $entity_type_manager->getStorage('node_type')
+      ->create(['type' => 'page'])
+      ->save();
+
+    $nested_rule = $this->expressionManager->createRule();
+    // Create a node entity with the action.
+    $nested_rule->addAction('rules_entity_create:node', ContextConfig::create()
+      ->setValue('type', 'page')
+    );
+    // Set the title of the new node so that it is marked for auto-saving.
+    $nested_rule->addAction('rules_data_set', ContextConfig::create()
+      ->map('data', 'entity.title')
+      ->setValue('value', 'new title')
+    );
+
+    $rules_config = new RulesComponentConfig([
+      'id' => 'test_rule',
+      'label' => 'Test rule',
+    ], 'rules_component');
+    $rules_config->setExpression($nested_rule);
+    $rules_config->save();
+
+    // Invoke the rules component in another rule.
+    $rule = $this->expressionManager->createRule();
+    $rule->addAction('rules_component:test_rule');
+
+    RulesComponent::create($rule)->execute();
+
+    $nodes = \Drupal\node\Entity\Node::loadMultiple();
+    $node = reset($nodes);
+    $this->assertEquals('new title', $node->getTitle());
+    $this->assertNotNull($node->id(), 'Node ID is set, which means that the node has been auto-saved.');
+  }
+
+  /**
    * Tests using global context.
    */
-  public function testGlobalContext() {
+  /*public function testGlobalContext() {
     $account = User::create([
       'name' => 'hubert',
     ]);
@@ -278,6 +318,6 @@ class CoreIntegrationTest extends RulesDrupalTestBase {
     $component->execute();
     $messages = drupal_set_message();
     $this->assertEquals((string) $messages['status'][0], 'hubert');
-  }
+  }*/
 
 }

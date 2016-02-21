@@ -89,9 +89,19 @@ class EntityCreateDeriver extends DeriverBase implements ContainerDeriverInterfa
           continue;
         }
 
+        // If this is an entity reference then we expect the target type as
+        // context.
+        if ($definition->getType() === 'entity_reference') {
+          $type = 'entity:' . $definition->getSetting('target_type');
+        }
+        else {
+          $type = $definition->getType();
+        }
+
         $is_bundle = ($field_name == $bundle_key);
         $multiple = ($definition->getCardinality() === 1) ? FALSE : TRUE;
-        $context_definition = ContextDefinition::create($definition->getType())
+
+        $context_definition = ContextDefinition::create($type)
           ->setLabel($definition->getLabel())
           ->setRequired($is_bundle)
           ->setMultiple($multiple)
