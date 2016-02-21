@@ -88,13 +88,24 @@ class RulesComponentAction extends RulesActionBase implements ContainerFactoryPl
       $rules_component->setContextValue($context_name, $context_value);
     }
 
+    // We don't use RulesComponent::execute() here since we don't want to
+    // auto-save immedialtely.
     $state = $rules_component->getState();
     $expression = $rules_component->getExpression();
     $expression->executeWithState($state);
 
-    $auto_save_selectors = $state->getAutoSaveSelectors();
-
-    // TODO: how do we distinguish between what to auto save now and what not?
+    // Postpone auto-saving to the parent expression triggering this action.
+    foreach ($state->getAutoSaveSelectors() as $selector) {
+      $parts = explode('.', $selector);
+      $context_name = reset($parts);
+      if (array_key_exists($context_name, $this->context)) {
+        $this->saveLater[] = $context_name;
+      }
+      else {
+        // @todo Otherwise we need to save here since it will not happen in the
+        // parent execution.
+      }
+    }
 
     $provided_context = $rules_component->getProvidedContext();
     foreach ($provided_context as $name) {
@@ -106,20 +117,7 @@ class RulesComponentAction extends RulesActionBase implements ContainerFactoryPl
    * {@inheritdoc}
    */
   public function autoSaveContext() {
-
-
-
-
-    // Saving is done at the root of the typed data tree, for example on the
-    // entity level.
-    $typed_data = $this->getContext('data')->getContextData();
-    $root = $typed_data->getRoot();
-    $value = $root->getValue();
-    // Only save things that are objects and have a save() method.
-    if (is_object($value) && method_exists($value, 'save')) {
-      return ['data'];
-    }
-    return [];
+    return $this->saveLater;
   }
 
 }

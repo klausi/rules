@@ -178,6 +178,9 @@ class ExecutionState implements ExecutionStateInterface {
     return $this;
   }
 
+  /**
+   * {@inheritdoc}
+   */
   public function getAutoSaveSelectors() {
     return array_keys($this->saveLater);
   }
