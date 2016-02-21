@@ -39,6 +39,13 @@ class RulesComponentAction extends RulesActionBase implements ContainerFactoryPl
   protected $componentId;
 
   /**
+   * List of context names that should be saved later.
+   *
+   * @var string[]
+   */
+  protected $saveLater = [];
+
+  /**
    * Constructs an EntityCreate object.
    *
    * @param array $configuration
@@ -81,10 +88,38 @@ class RulesComponentAction extends RulesActionBase implements ContainerFactoryPl
       $rules_component->setContextValue($context_name, $context_value);
     }
 
-    $provided_values = $rules_component->execute();
-    foreach ($provided_values as $name => $provided_value) {
-      $this->setProvidedValue($name, $provided_value);
+    $state = $rules_component->getState();
+    $expression = $rules_component->getExpression();
+    $expression->executeWithState($state);
+
+    $auto_save_selectors = $state->getAutoSaveSelectors();
+
+    // TODO: how do we distinguish between what to auto save now and what not?
+
+    $provided_context = $rules_component->getProvidedContext();
+    foreach ($provided_context as $name) {
+      $this->setProvidedValue($name, $state->getVariableValue($name));
     }
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function autoSaveContext() {
+
+
+
+
+    // Saving is done at the root of the typed data tree, for example on the
+    // entity level.
+    $typed_data = $this->getContext('data')->getContextData();
+    $root = $typed_data->getRoot();
+    $value = $root->getValue();
+    // Only save things that are objects and have a save() method.
+    if (is_object($value) && method_exists($value, 'save')) {
+      return ['data'];
+    }
+    return [];
   }
 
 }

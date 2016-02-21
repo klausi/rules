@@ -138,6 +138,47 @@ class RulesComponentActionTest extends RulesEntityIntegrationTestBase {
   }
 
   /**
+   * Tests that auto saving is only triggered once with nested components.
+   */
+  public function testAutosaveOnlyOnce() {
+    $entity = $this->prophesizeEntity(EntityInterface::class);
+
+    $nested_rule = $this->rulesExpressionManager->createRule();
+    $nested_rule->addAction('rules_data_set', ContextConfig::create()
+      ->map('data', 'entity')
+      ->setValue('value', $entity->reveal())
+    );
+
+    $rules_config = new RulesComponentConfig([
+      'id' => 'test_rule',
+      'label' => 'Test rule',
+    ], 'rules_component');
+    $rules_config->setExpression($nested_rule);
+    $rules_config->setContextDefinitions(['entity' => ContextDefinition::create('entity')]);
+
+    $this->prophesizeStorage([$rules_config]);
+
+    // Create a rule with a nested rule. Overall there are 2 actions to set the
+    // entity then.
+    $rule = $this->rulesExpressionManager->createRule();
+    $rule->addAction('rules_component:test_rule', ContextConfig::create()
+      ->map('entity', 'entity')
+    );
+    $rule->addAction('rules_data_set', ContextConfig::create()
+      ->map('data', 'entity')
+      ->setValue('value', $entity->reveal())
+    );
+
+    // Auto-saving should only be triggered once on the entity.
+    $entity->save()->shouldBeCalledTimes(1);
+
+    RulesComponent::create($rule)
+      ->addContextDefinition('entity', ContextDefinition::create('entity'))
+      ->setContextValue('entity', $entity->reveal())
+      ->execute();
+  }
+
+  /**
    * Prepares a mocked entity storage that returns the provided Rules configs.
    *
    * @param RulesComponentConfig[] $rules_configs
