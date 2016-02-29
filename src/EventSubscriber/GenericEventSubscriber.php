@@ -95,7 +95,7 @@ class GenericEventSubscriber implements EventSubscriberInterface {
     if (is_subclass_of($handler_class, RulesConfigurableEventHandlerInterface::class)) {
       $qualified_event_suffixes = $handler_class::determineQualifiedEvents($event, $event_name, $event_definition);
       foreach ($qualified_event_suffixes as $qualified_event_suffix) {
-        $triggered_event[] = "$event_name--$qualified_event_suffix";
+        $triggered_events[] = "$event_name--$qualified_event_suffix";
       }
     }
 
@@ -125,7 +125,7 @@ class GenericEventSubscriber implements EventSubscriberInterface {
     // another rule.
     foreach ($triggered_events as $triggered_event) {
       // @todo Only load active reaction rules here.
-      $configs = $storage->loadByProperties(['event' => $triggered_event]);
+      $configs = $storage->loadByProperties(['events.*.event_name' => $triggered_event]);
 
       // Loop over all rules and execute them.
       foreach ($configs as $config) {

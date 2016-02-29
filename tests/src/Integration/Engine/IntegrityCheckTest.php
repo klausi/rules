@@ -166,7 +166,7 @@ class IntegrityCheckTest extends RulesEntityIntegrationTestBase {
   }
 
   /**
-   * Tests the input restrction on contexts.
+   * Tests the input restriction on contexts.
    */
   public function testInputRestriction() {
     $rule = $this->rulesExpressionManager->createRule();
@@ -299,7 +299,7 @@ class IntegrityCheckTest extends RulesEntityIntegrationTestBase {
   public function testMissingRequiredContext() {
     $rule = $this->rulesExpressionManager->createRule();
 
-    // The condition is completely unconfigured, missing 2 required contexts.
+    // The condition is completely un-configured, missing 2 required contexts.
     $condition = $this->rulesExpressionManager->createCondition('rules_node_is_of_type');
     $rule->addExpressionObject($condition);
 
@@ -337,6 +337,26 @@ class IntegrityCheckTest extends RulesEntityIntegrationTestBase {
     $this->assertEquals(1, iterator_count($violation_list));
     // UUID must be that of the most inner action.
     $this->assertEquals($action->getUuid(), $violation_list[0]->getUuid());
+  }
+
+  /**
+   * Tests using provided variables in sub-sequent actions passes checks.
+   */
+  public function testUsingProvidedVariables() {
+    $rule = $this->rulesExpressionManager->createRule();
+
+    $rule->addAction('rules_variable_add', ContextConfig::create()
+      ->setValue('type', 'any')
+      ->setValue('value', 'foo')
+    );
+    $rule->addAction('rules_variable_add', ContextConfig::create()
+      ->setValue('type', 'any')
+      ->map('value', 'variable_added')
+    );
+
+    $violation_list = RulesComponent::create($rule)
+      ->checkIntegrity();
+    $this->assertEquals(0, iterator_count($violation_list));
   }
 
 }
