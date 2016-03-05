@@ -116,8 +116,7 @@ class RulesComponentAction extends RulesActionBase implements ContainerFactoryPl
       }
     }
 
-    $provided_context = $rules_component->getProvidedContext();
-    foreach ($provided_context as $name) {
+    foreach ($rules_config->getProvidedContextDefinitions() as $name => $definition) {
       $this->setProvidedValue($name, $state->getVariableValue($name));
     }
   }
