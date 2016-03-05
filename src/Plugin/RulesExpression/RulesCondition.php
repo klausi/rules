@@ -8,7 +8,6 @@
 namespace Drupal\rules\Plugin\RulesExpression;
 
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
-use Drupal\rules\Context\ContextHandlerTrait;
 use Drupal\rules\Context\DataProcessorManager;
 use Drupal\rules\Core\ConditionManager;
 use Drupal\rules\Engine\ConditionExpressionInterface;
@@ -16,7 +15,7 @@ use Drupal\rules\Engine\ExecutionMetadataStateInterface;
 use Drupal\rules\Engine\ExecutionStateInterface;
 use Drupal\rules\Engine\ExpressionBase;
 use Drupal\rules\Engine\ExpressionInterface;
-use Drupal\rules\Engine\IntegrityCheckTrait;
+use Drupal\rules\Context\ContextHandlerIntegrityTrait;
 use Drupal\rules\Engine\IntegrityViolationList;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -34,8 +33,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  */
 class RulesCondition extends ExpressionBase implements ConditionExpressionInterface, ContainerFactoryPluginInterface {
 
-  use ContextHandlerTrait;
-  use IntegrityCheckTrait;
+  use ContextHandlerIntegrityTrait;
 
   /**
    * The condition manager used to instantiate the condition plugin.
@@ -112,21 +110,12 @@ class RulesCondition extends ExpressionBase implements ConditionExpressionInterf
       'negate' => $this->configuration['negate'],
     ]);
 
-    // We have to forward the context values from our configuration to the
-    // condition plugin.
-    $this->mapContext($condition, $state);
-
-    $condition->refineContextDefinitions();
-
-    // Send the context values through configured data processors before
-    // evaluating the condition.
-    $this->processData($condition, $state);
-
+    $this->prepareContext($condition, $state);
     $result = $condition->evaluate();
 
     // Now that the condition has been executed it can provide additional
     // context which we will have to pass back in the evaluation state.
-    $this->mapProvidedContext($condition, $state);
+    $this->addProvidedContext($condition, $state);
 
     if ($this->isNegated()) {
       $result = !$result;
@@ -182,20 +171,28 @@ class RulesCondition extends ExpressionBase implements ConditionExpressionInterf
     $condition = $this->conditionManager->createInstance($this->configuration['condition_id'], [
       'negate' => $this->configuration['negate'],
     ]);
-
-    return $this->doCheckIntegrity($condition, $metadata_state);
+    // Prepare and refine the context before checking integrity, such that any
+    // context definition changes are respected while checking.
+    $this->prepareContextWithMetadata($condition, $metadata_state);
+    $result = $this->checkContextConfigIntegrity($condition, $metadata_state);
+    $this->prepareExecutionMetadataState($metadata_state);
+    return $result;
   }
 
   /**
    * {@inheritdoc}
    */
   public function prepareExecutionMetadataState(ExecutionMetadataStateInterface $metadata_state, ExpressionInterface $until = NULL) {
-    $condition = $this->actionManager->createInstance($this->configuration['condition_id']);
-    $this->addProvidedVariablesToExecutionMetadataState($condition, $metadata_state);
-    if ($until) {
-      return FALSE;
+    if ($until && $this->getUuid() === $until->getUuid()) {
+      return TRUE;
     }
-    return TRUE;
+    $condition = $this->conditionManager->createInstance($this->configuration['condition_id'], [
+      'negate' => $this->configuration['negate'],
+    ]);
+    // Make sure to refine context first, such that possibly refined definitions
+    // of provided context are respected.
+    $this->prepareContextWithMetadata($condition, $metadata_state);
+    $this->addProvidedContextDefinitions($condition, $metadata_state);
   }
 
 }

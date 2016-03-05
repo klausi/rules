@@ -101,11 +101,11 @@ class RulesConditionTest extends UnitTestCase {
     // Mock some original old value that will be replaced by the data processor.
     $this->trueCondition->getContextValue('test')
       ->willReturn('old_value')
-      ->shouldBeCalledTimes(1);
+      ->shouldBeCalled();
 
     // The outcome of the data processor needs to get set on the condition.
     $this->trueCondition->setContextValue('test', 'new_value')->shouldBeCalledTimes(1);
-    $this->trueCondition->refineContextDefinitions()->shouldBeCalledTimes(1);
+    $this->trueCondition->refineContextDefinitions([])->shouldBeCalledTimes(1);
 
     $data_processor = $this->prophesize(DataProcessorInterface::class);
     $data_processor->process('old_value', Argument::any())
@@ -130,7 +130,7 @@ class RulesConditionTest extends UnitTestCase {
    */
   public function testNegation() {
     $this->trueCondition->getContextDefinitions()->willReturn([]);
-    $this->trueCondition->refineContextDefinitions()->shouldBeCalledTimes(1);
+    $this->trueCondition->refineContextDefinitions([])->shouldBeCalledTimes(1);
     $this->trueCondition->getProvidedContextDefinitions()
       ->willReturn([])
       ->shouldBeCalledTimes(1);

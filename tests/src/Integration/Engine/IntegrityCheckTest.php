@@ -235,7 +235,7 @@ class IntegrityCheckTest extends RulesEntityIntegrationTestBase {
       ->checkIntegrity();
     $this->assertEquals(1, iterator_count($violation_list));
     $this->assertEquals(
-      'Expected a primitive data type for context <em class="placeholder">Text to compare</em> but got a list data type instead.',
+      'Expected a string data type for context <em class="placeholder">Text to compare</em> but got a list data type instead.',
       (string) $violation_list[0]->getMessage()
     );
     $this->assertEquals($condition->getUuid(), $violation_list[0]->getUuid());
@@ -287,7 +287,7 @@ class IntegrityCheckTest extends RulesEntityIntegrationTestBase {
       ->checkIntegrity();
     $this->assertEquals(1, iterator_count($violation_list));
     $this->assertEquals(
-      'Expected a complex data type for context <em class="placeholder">Node</em> but got a list data type instead.',
+      'Expected a entity:node data type for context <em class="placeholder">Node</em> but got a list data type instead.',
       (string) $violation_list[0]->getMessage()
     );
     $this->assertEquals($condition->getUuid(), $violation_list[0]->getUuid());
@@ -354,6 +354,69 @@ class IntegrityCheckTest extends RulesEntityIntegrationTestBase {
       ->map('value', 'variable_added')
     );
 
+    $violation_list = RulesComponent::create($rule)
+      ->checkIntegrity();
+    $this->assertEquals(0, iterator_count($violation_list));
+  }
+
+  /**
+   * Tests that refined context is respected when checking context.
+   */
+  public function testRefinedContextViolation() {
+    $rule = $this->rulesExpressionManager->createRule();
+    $rule->addAction('rules_variable_add', ContextConfig::create()
+      ->setValue('type', 'integer')
+      ->map('value', 'text')
+    );
+
+    $violation_list = RulesComponent::create($rule)
+      ->addContextDefinition('text', ContextDefinition::create('string'))
+      ->checkIntegrity();
+    $this->assertEquals(1, iterator_count($violation_list));
+  }
+
+  /**
+   * Tests context can be refined based upon mapped context.
+   */
+  public function testRefiningContextBasedonMappedContext() {
+    // DataComparision condition refines context based on selected data. Thus
+    // it for the test and ensure checking integrity passes when the comparison
+    // value is of a compatible type and fails else.
+    $rule = $this->rulesExpressionManager->createRule();
+    $rule->addCondition('rules_data_comparison', ContextConfig::create()
+      ->map('data', 'text')
+      ->map('value', 'text2')
+    );
+
+    $violation_list = RulesComponent::create($rule)
+      ->addContextDefinition('text', ContextDefinition::create('string'))
+      ->addContextDefinition('text2', ContextDefinition::create('string'))
+      ->checkIntegrity();
+    $this->assertEquals(0, iterator_count($violation_list));
+
+    $violation_list = RulesComponent::create($rule)
+      ->addContextDefinition('text', ContextDefinition::create('string'))
+      ->addContextDefinition('text2', ContextDefinition::create('integer'))
+      ->checkIntegrity();
+    $this->assertEquals(1, iterator_count($violation_list));
+  }
+
+  /**
+   * Tests using provided variables with refined context.
+   */
+  public function testUsingRefinedProvidedVariables() {
+    $rule = $this->rulesExpressionManager->createRule();
+
+    $rule->addAction('rules_variable_add', ContextConfig::create()
+      ->setValue('type', 'string')
+      ->setValue('value', 'foo')
+    );
+    $rule->addAction('rules_system_message', ContextConfig::create()
+      ->map('message', 'variable_added')
+      ->setValue('type', 'status')
+    );
+    // The message action requires a string, thus if the context is not refined
+    // it will end up as "any" and integrity check would fail.
     $violation_list = RulesComponent::create($rule)
       ->checkIntegrity();
     $this->assertEquals(0, iterator_count($violation_list));
