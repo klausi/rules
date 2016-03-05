@@ -61,7 +61,9 @@ class RulesComponentActionDeriver extends DeriverBase implements ContainerDerive
     $rules_components = $this->storage->loadMultiple();
     foreach ($rules_components as $rules_component) {
 
-      $expression_definition = $this->expressionManager->getDefinition($rules_component->get('expression_id'));
+      $component_config = $rules_component->get('component');
+      $expression_definition = $this->expressionManager->getDefinition($component_config['expression']['id']);
+
       $this->derivatives[$rules_component->id()] = [
         'label' => $this->t('@expression_type: @label', [
           '@expression_type' => $expression_definition['label'],
