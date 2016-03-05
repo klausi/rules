@@ -48,8 +48,7 @@ class EntityCreateTest extends RulesEntityIntegrationTestBase {
     // information.
     $bundle_field_definition->getCardinality()->willReturn(1)
       ->shouldBeCalledTimes(1);
-    $bundle_field_definition->getType()->willReturn('string')
-      ->shouldBeCalledTimes(1);
+    $bundle_field_definition->getType()->willReturn('string');
     $bundle_field_definition->getLabel()->willReturn('Bundle')
       ->shouldBeCalledTimes(1);
     $bundle_field_definition->getDescription()
@@ -58,8 +57,7 @@ class EntityCreateTest extends RulesEntityIntegrationTestBase {
 
     $bundle_field_definition_required->getCardinality()->willReturn(1)
       ->shouldBeCalledTimes(1);
-    $bundle_field_definition_required->getType()->willReturn('string')
-      ->shouldBeCalledTimes(1);
+    $bundle_field_definition_required->getType()->willReturn('string');
     $bundle_field_definition_required->getLabel()->willReturn('Required field')
       ->shouldBeCalledTimes(1);
     $bundle_field_definition_required->getDescription()

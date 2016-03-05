@@ -83,6 +83,8 @@ class EntityCreateDeriver extends DeriverBase implements ContainerDeriverInterfa
       // other required base fields. This matches the storage create() behavior,
       // where only the bundle requirement is enforced.
       $bundle_key = $entity_type->getKey('bundle');
+      $this->derivatives[$entity_type_id]['bundle_key'] = $bundle_key;
+
       $base_field_definitions = $this->entityFieldManager->getBaseFieldDefinitions($entity_type_id);
       foreach ($base_field_definitions as $field_name => $definition) {
         if ($field_name != $bundle_key && !$definition->isRequired()) {
