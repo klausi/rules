@@ -9,11 +9,12 @@ namespace Drupal\rules\Plugin\RulesAction;
 
 use Drupal\Component\Plugin\Derivative\DeriverBase;
 use Drupal\Core\Entity\ContentEntityTypeInterface;
-use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Entity\EntityFieldManagerInterface;
+use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Plugin\Discovery\ContainerDeriverInterface;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\Core\StringTranslation\TranslationInterface;
+use Drupal\Core\TypedData\DataReferenceDefinitionInterface;
 use Drupal\rules\Context\ContextDefinition;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -91,14 +92,15 @@ class EntityCreateDeriver extends DeriverBase implements ContainerDeriverInterfa
           continue;
         }
 
+        $item_definition = $definition->getItemDefinition();
+        $type_definition = $item_definition->getPropertyDefinition($item_definition->getMainPropertyName());
+
         // If this is an entity reference then we expect the target type as
         // context.
-        if ($definition->getType() === 'entity_reference') {
-          $type = 'entity:' . $definition->getSetting('target_type');
+        if ($type_definition instanceof DataReferenceDefinitionInterface) {
+          $type_definition->getTargetDefinition();
         }
-        else {
-          $type = $definition->getType();
-        }
+        $type = $type_definition->getDataType();
 
         $is_bundle = ($field_name == $bundle_key);
         $multiple = ($definition->getCardinality() === 1) ? FALSE : TRUE;
