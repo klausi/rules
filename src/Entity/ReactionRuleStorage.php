@@ -7,15 +7,16 @@
 
 namespace Drupal\rules\Entity;
 
+use Drupal\Component\Uuid\UuidInterface;
+use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Config\Entity\ConfigEntityStorage;
 use Drupal\Core\DrupalKernelInterface;
-use Drupal\Core\State\StateInterface;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityTypeInterface;
-use Drupal\Core\Config\ConfigFactoryInterface;
-use Drupal\Component\Uuid\UuidInterface;
 use Drupal\Core\Language\LanguageManagerInterface;
+use Drupal\Core\State\StateInterface;
 use Drupal\rules\Core\RulesEventManager;
+use Drupal\rules\Engine\RegisteredEventsList;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 
@@ -87,22 +88,18 @@ class ReactionRuleStorage extends ConfigEntityStorage {
   }
 
   /**
-   * Returns a list of event names that are used by active reaction rules.
+   * Rebuilds the list of registered events from all active reaction rules.
    *
-   * @return string[]
-   *   The list of event names keyed by event name.
+   * @return \Drupal\rules\Engine\RegisteredEventsList
+   *   The list of registered events.
    */
-  protected function getRegisteredEvents() {
-    $events = [];
+  protected function rebuildRegisteredEvents() {
+    $registered_events = new RegisteredEventsList();
+    // @todo filter by active rules.
     foreach ($this->loadMultiple() as $rules_config) {
-      foreach ($rules_config->getEventNames() as $event_name) {
-        $event_name = $this->eventManager->getEventBaseName($event_name);
-        if (!isset($events[$event_name])) {
-          $events[$event_name] = $event_name;
-        }
-      }
+      $this->registerEventsFrom($rules_config, $registered_events);
     }
-    return $events;
+    return $registered_events;
   }
 
   /**
@@ -112,21 +109,24 @@ class ReactionRuleStorage extends ConfigEntityStorage {
     // We need to get the registered events before the rule is saved, in order
     // to be able to check afterwards if we need to rebuild the container or
     // not.
-    $events_before = $this->getRegisteredEvents();
+    $registered_events = $this->stateService->get('rules.registered_events', new RegisteredEventsList());
     $return = parent::save($entity);
-
-    // Update the state of registered events.
-    $this->stateService->set('rules.registered_events', $this->getRegisteredEvents());
 
     // After the reaction rule is saved, we need to rebuild the container,
     // otherwise the reaction rule will not fire. However, we can do an
     // optimization: if every event was already registered before, we do not
     // have to rebuild the container.
-    foreach ($entity->getEventNames() as $event_name) {
-      if (empty($events_before[$event_name])) {
-        $this->drupalKernel->rebuildContainer();
-        break;
-      }
+    $container_rebuild = FALSE;
+    if (!$this->hasEventsRegisteredFrom($entity)) {
+      $container_rebuild = TRUE;
+    }
+    // Update the state of registered events.
+    // @todo filter by active rules.
+    $this->registerEventsFrom($entity, $registered_events);
+    $this->stateService->set('rules.registered_events', $registered_events);
+
+    if ($container_rebuild) {
+      $this->drupalKernel->rebuildContainer();
     }
 
     return $return;
@@ -136,22 +136,48 @@ class ReactionRuleStorage extends ConfigEntityStorage {
    * {@inheritdoc}
    */
   public function delete(array $entities) {
+    $registered_events = $this->stateService->get('rules.registered_events', new RegisteredEventsList());
     // After deleting a set of reaction rules, sometimes we may need to rebuild
     // the container, to clean it up, so that the generic subscriber is not
     // registered in the container for the rule events which we do not use
     // anymore. So we do that if there is any change in the registered events,
     // after the reaction rules are deleted.
-    $events_before = $this->getRegisteredEvents();
-    $return = parent::delete($entities);
-    $events_after = $this->getRegisteredEvents();
+    $events_before = $registered_events->getEventNames();
+    parent::delete($entities);
+
+    foreach ($entities as $entity) {
+      foreach ($entity->getEventNames() as $event_name) {
+        $registered_events->remove($event_name, $entity->id());
+      }
+    }
+    $this->stateService->set('rules.registered_events', $registered_events);
+
+    $events_after = $registered_events->getEventNames();
 
     // Update the state of registered events and rebuild the container.
     if ($events_before != $events_after) {
-      $this->stateService->set('rules.registered_events', $events_after);
       $this->drupalKernel->rebuildContainer();
     }
+  }
 
-    return $return;
+  protected function registerEventsFrom(ReactionRuleConfig $rules_config, RegisteredEventsList $registered_events) {
+    // Cleanup: make sure any old events from an old version of this rule are
+    // removed.
+    $registered_events->removeRule($rules_config->id());
+    foreach ($rules_config->getEventNames() as $event_name) {
+      $event_base_name = $this->eventManager->getEventBaseName($event_name);
+      $registered_events->set($event_base_name, $rules_config->id(), $event_name);
+    }
+  }
+
+  protected function hasEventsRegisteredFrom(ReactionRuleConfig $rules_config, RegisteredEventsList $registered_events) {
+    foreach ($rules_config->getEventNames() as $event_name) {
+      $event_base_name = $this->eventManager->getEventBaseName($event_name);
+      if (!$registered_events->hasEvent($event_base_name)) {
+        return FALSE;
+      }
+    }
+    return TRUE;
   }
 
 }

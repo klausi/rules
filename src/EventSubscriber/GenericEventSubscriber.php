@@ -70,7 +70,7 @@ class GenericEventSubscriber implements EventSubscriberInterface {
     $state = \Drupal::state();
     $registered_event_names = $state->get('rules.registered_events');
     if (!empty($registered_event_names)) {
-      foreach ($registered_event_names as $event_name) {
+      foreach ($registered_event_names->getEventNames() as $event_name) {
         $events[$event_name][] = $callback;
       }
     }
@@ -123,7 +123,7 @@ class GenericEventSubscriber implements EventSubscriberInterface {
     // @todo: Improve this by cloning the state after each rule, such that added
     // variables added by one rule are not interfering with the variables of
     // another rule.
-    foreach ($triggered_events as $triggered_event) {
+    foreach ($qualified_events as $triggered_event) {
       // @todo Only load active reaction rules here.
       $configs = $storage->loadByProperties(['events.*.event_name' => $triggered_event]);
 
