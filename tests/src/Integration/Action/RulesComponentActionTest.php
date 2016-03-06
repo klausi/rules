@@ -144,9 +144,8 @@ class RulesComponentActionTest extends RulesEntityIntegrationTestBase {
     $entity = $this->prophesizeEntity(EntityInterface::class);
 
     $nested_rule = $this->rulesExpressionManager->createRule();
-    $nested_rule->addAction('rules_data_set', ContextConfig::create()
-      ->map('data', 'entity')
-      ->setValue('value', $entity->reveal())
+    $nested_rule->addAction('rules_entity_save', ContextConfig::create()
+      ->map('entity', 'entity')
     );
 
     $rules_config = new RulesComponentConfig([
@@ -164,9 +163,8 @@ class RulesComponentActionTest extends RulesEntityIntegrationTestBase {
     $rule->addAction('rules_component:test_rule', ContextConfig::create()
       ->map('entity', 'entity')
     );
-    $rule->addAction('rules_data_set', ContextConfig::create()
-      ->map('data', 'entity')
-      ->setValue('value', $entity->reveal())
+    $rule->addAction('rules_entity_save', ContextConfig::create()
+      ->map('entity', 'entity')
     );
 
     // Auto-saving should only be triggered once on the entity.
