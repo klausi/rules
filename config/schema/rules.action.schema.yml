@@ -1,12 +1,9 @@
-# For undefined context values just pretend this is a list of strings.
-# We need this to make
-# Drupal\Tests\rules\Kernel\CoreIntegrationTest::testComponentActionAutoSave
-# work.
+# Per default the schema of arbitrary context values of an action cannot be
+# typed. Actions that need translatability or other features of the config
+# system must specify their context value schema explicitly, see examples below.
 rules.action.context_values.*:
-  type: sequence
+  type: ignore
   label: Context values
-  sequence:
-    type: string
 
 rules.action.context_values.rules_system_message:
   type: mapping
