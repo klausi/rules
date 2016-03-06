@@ -84,12 +84,14 @@ class RulesComponentAction extends RulesActionBase implements ContainerFactoryPl
     // Setup an isolated execution state for this expression and pass on the
     // necessary context.
     $rules_component = $rules_config->getComponent();
-    foreach ($this->getContextValues() as $context_name => $context_value) {
-      $rules_component->setContextValue($context_name, $context_value);
+    foreach ($this->getContexts() as $context_name => $context) {
+      // Pass through the already existing typed data objects to avoid creating
+      // them from scratch.
+      $rules_component->getState()->setVariableData($context_name, $context->getContextData());
     }
 
     // We don't use RulesComponent::execute() here since we don't want to
-    // auto-save immedialtely.
+    // auto-save immediately.
     $state = $rules_component->getState();
     $expression = $rules_component->getExpression();
     $expression->executeWithState($state);
@@ -116,8 +118,8 @@ class RulesComponentAction extends RulesActionBase implements ContainerFactoryPl
       }
     }
 
-    foreach ($rules_config->getProvidedContextDefinitions() as $name => $definition) {
-      $this->setProvidedValue($name, $state->getVariableValue($name));
+    foreach ($this->getProvidedContextDefinitions() as $name => $definition) {
+      $this->setProvidedValue($name, $state->getVariable($name));
     }
   }
 
