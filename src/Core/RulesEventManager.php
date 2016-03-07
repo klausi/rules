@@ -2,10 +2,10 @@
 
 /**
  * @file
- * Contains \Drupal\rules\Engine\RulesEventManager.
+ * Contains \Drupal\rules\Core\RulesEventManager.
  */
 
-namespace Drupal\rules\Engine;
+namespace Drupal\rules\Core;
 
 use Drupal\Component\Plugin\CategorizingPluginManagerInterface;
 use Drupal\Core\Extension\ModuleHandlerInterface;
@@ -15,8 +15,6 @@ use Drupal\Core\Plugin\Discovery\ContainerDerivativeDiscoveryDecorator;
 use Drupal\Core\Plugin\Discovery\YamlDiscovery;
 use Drupal\Core\Plugin\Factory\ContainerFactory;
 use Drupal\rules\Context\ContextDefinition;
-use Drupal\rules\Core\RulesDefaultEventHandler;
-use Drupal\rules\Core\RulesEventHandlerInterface;
 
 /**
  * Plugin manager for Rules events that can be triggered.
@@ -60,6 +58,26 @@ class RulesEventManager extends DefaultPluginManager implements CategorizingPlug
     foreach ($definition['context'] as $context_name => $values) {
       $definition['context'][$context_name] = ContextDefinition::createFromArray($values);
     }
+  }
+
+  /**
+   * Gets the base name of a configured event name.
+   *
+   * For a configured event name like {EVENT_NAME}--{SUFFIX}, the base event
+   * name {EVENT_NAME} is returned.
+   *
+   * @return string
+   *   The event base name.
+   *
+   * @see \Drupal\rules\Core\RulesConfigurableEventHandlerInterface::getEventNameSuffix()
+   */
+  public function getEventBaseName($event_name) {
+    // Cut off any suffix from a configured event name.
+    if (strpos($event_name, '--') !== FALSE) {
+      $parts = explode('--', $event_name, 2);
+      return $parts[0];
+    }
+    return $event_name;
   }
 
 }

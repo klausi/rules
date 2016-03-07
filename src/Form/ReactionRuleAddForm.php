@@ -8,7 +8,7 @@
 namespace Drupal\rules\Form;
 
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\rules\Engine\RulesEventManager;
+use Drupal\rules\Core\RulesEventManager;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -19,14 +19,14 @@ class ReactionRuleAddForm extends RulesComponentFormBase {
   /**
    * The Rules event manager.
    *
-   * @var \Drupal\rules\Engine\RulesEventManager
+   * @var \Drupal\rules\Core\RulesEventManager
    */
   protected $eventManager;
 
   /**
    * Constructs a new reaction rule form.
    *
-   * @param \Drupal\rules\Engine\RulesEventManager $event_manager
+   * @param \Drupal\rules\Core\RulesEventManager $event_manager
    *   The Rules event manager.
    */
   public function __construct(RulesEventManager $event_manager) {
@@ -65,7 +65,8 @@ class ReactionRuleAddForm extends RulesComponentFormBase {
       }
     }
 
-    $form['event'] = [
+    $form['events']['#tree'] = TRUE;
+    $form['events'][]['event_name'] = [
       '#type' => 'select',
       '#title' => $this->t('React on event'),
       '#options' => $options,

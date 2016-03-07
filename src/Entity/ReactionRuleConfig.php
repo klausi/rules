@@ -8,7 +8,9 @@
 namespace Drupal\rules\Entity;
 
 use Drupal\Core\Config\Entity\ConfigEntityBase;
+use Drupal\rules\Ui\RulesUiComponentProviderInterface;
 use Drupal\rules\Engine\ExpressionInterface;
+use Drupal\rules\Engine\RulesComponent;
 
 /**
  * Reaction rule configuration entity to persistently store configuration.
@@ -22,8 +24,7 @@ use Drupal\rules\Engine\ExpressionInterface;
  *     "form" = {
  *        "add" = "\Drupal\rules\Form\ReactionRuleAddForm",
  *        "edit" = "\Drupal\rules\Form\ReactionRuleEditForm",
- *        "delete" = "\Drupal\Core\Entity\EntityDeleteForm",
- *        "break_lock" = "\Drupal\rules\Form\BreakLockForm"
+ *        "delete" = "\Drupal\Core\Entity\EntityDeleteForm"
  *      }
  *   },
  *   admin_permission = "administer rules",
@@ -36,23 +37,22 @@ use Drupal\rules\Engine\ExpressionInterface;
  *   config_export = {
  *     "id",
  *     "label",
- *     "event",
+ *     "events",
  *     "module",
  *     "description",
  *     "tag",
  *     "core",
- *     "expression_id",
- *     "configuration",
+ *     "expression",
  *   },
  *   links = {
  *     "collection" = "/admin/config/workflow/rules",
  *     "edit-form" = "/admin/config/workflow/rules/reactions/edit/{rules_reaction_rule}",
  *     "delete-form" = "/admin/config/workflow/rules/reactions/delete/{rules_reaction_rule}",
- *     "break-lock-form" = "/admin/config/workflow/rules/reactions/break-lock/{rules_reaction_rule}"
+ *     "break-lock-form" = "/admin/config/workflow/rules/reactions/edit/break-lock/{rules_reaction_rule}"
  *   }
  * )
  */
-class ReactionRuleConfig extends ConfigEntityBase {
+class ReactionRuleConfig extends ConfigEntityBase implements RulesUiComponentProviderInterface {
 
   /**
    * The unique ID of the Reaction Rule.
@@ -93,25 +93,20 @@ class ReactionRuleConfig extends ConfigEntityBase {
   protected $core = \Drupal::CORE_COMPATIBILITY;
 
   /**
-   * The Rules expression plugin ID that the configuration is for.
-   *
-   * @var string
-   */
-  protected $expression_id = 'rules_rule';
-
-  /**
    * The expression plugin specific configuration as nested array.
    *
    * @var array
    */
-  protected $configuration = [];
+  protected $expression = [
+    'id' => 'rules_rule',
+  ];
 
   /**
    * Stores a reference to the executable expression version of this component.
    *
    * @var \Drupal\rules\Engine\ExpressionInterface
    */
-  protected $expression;
+  protected $expressionObject;
 
   /**
    * The module implementing this Reaction rule.
@@ -121,11 +116,16 @@ class ReactionRuleConfig extends ConfigEntityBase {
   protected $module = 'rules';
 
   /**
-   * The event name this reaction rule is reacting on.
+   * The events this reaction rule is reacting on.
    *
-   * @var string
+   * Events array. The array is numerically indexed and contains arrays with the
+   * following structure:
+   *   - event_name: String with the event machine name.
+   *   - configuration: An array containing the event configuration.
+   *
+   * @var array
    */
-  protected $event;
+  protected $events = [];
 
   /**
    * Sets a Rules expression instance for this Reaction rule.
@@ -136,12 +136,10 @@ class ReactionRuleConfig extends ConfigEntityBase {
    * @return $this
    */
   public function setExpression(ExpressionInterface $expression) {
-    $this->expression = $expression;
-    $this->expression_id = $expression->getPluginId();
-    $this->configuration = $expression->getConfiguration();
+    $this->expressionObject = $expression;
+    $this->expression = $expression->getConfiguration();
     return $this;
   }
-
 
   /**
    * Gets a Rules expression instance for this Reaction rule.
@@ -151,12 +149,33 @@ class ReactionRuleConfig extends ConfigEntityBase {
    */
   public function getExpression() {
     // Ensure that an executable Rules expression is available.
-    if (!isset($this->expression)) {
-      $this->expression = $this->getExpressionManager()->createInstance($this->expression_id, $this->configuration);
-      $this->expression->setConfigEntityId($this->id());
+    if (!isset($this->expressionObject)) {
+      $this->expressionObject = $this->getExpressionManager()->createInstance($this->expression['id'], $this->expression);
     }
+    return $this->expressionObject;
+  }
 
-    return $this->expression;
+  /**
+   * {@inheritdoc}
+   *
+   * Gets the Rules component that is invoked when the events are dispatched.
+   * The returned component has the definitions of the available event context
+   * set.
+   */
+  public function getComponent() {
+    $component = RulesComponent::create($this->getExpression());
+    $component->addContextDefinitionsForEvents($this->getEventNames());
+    return $component;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function updateFromComponent(RulesComponent $component) {
+    // Note that the available context definitions stem from the configured
+    // events, which are handled separately.
+    $this->setExpression($component->getExpression());
+    return $this;
   }
 
   /**
@@ -177,7 +196,7 @@ class ReactionRuleConfig extends ConfigEntityBase {
    */
   public function createDuplicate() {
     $duplicate = parent::createDuplicate();
-    unset($duplicate->expression);
+    unset($duplicate->expressionObject);
     return $duplicate;
   }
 
@@ -208,10 +227,30 @@ class ReactionRuleConfig extends ConfigEntityBase {
   }
 
   /**
-   * Returns the event on which this rule will trigger.
+   * Gets configuration of all events the rule is reacting on.
+   *
+   * @return array
+   *   The events array. The array is numerically indexed and contains arrays
+   *   with the following structure:
+   *     - event_name: String with the event machine name.
+   *     - configuration: An array containing the event configuration.
    */
-  public function getEvent() {
-    return $this->event;
+  public function getEvents() {
+    return $this->events;
+  }
+
+  /**
+   * Gets fully qualified names of all events the rule is reacting on.
+   *
+   * @return string[]
+   *   The array of fully qualified event names of the rule.
+   */
+  public function getEventNames() {
+    $names = [];
+    foreach ($this->events as $event) {
+      $names[] = $event['event_name'];
+    }
+    return $names;
   }
 
   /**
@@ -235,7 +274,7 @@ class ReactionRuleConfig extends ConfigEntityBase {
   public function __clone() {
     // Remove the reference to the expression object in the clone so that the
     // expression object tree is created from scratch.
-    unset($this->expression);
+    unset($this->expressionObject);
   }
 
 }

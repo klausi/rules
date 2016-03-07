@@ -7,14 +7,16 @@
 
 namespace Drupal\rules\Engine;
 
-use Drupal\Core\Config\Entity\ConfigEntityInterface;
+use Drupal\Core\Entity\DependencyTrait;
+use Drupal\rules\Context\ContextDefinition;
 use Drupal\rules\Context\ContextDefinitionInterface;
-use Drupal\rules\Entity\ReactionRuleConfig;
 
 /**
  * Handles executable Rules components.
  */
 class RulesComponent {
+
+  use DependencyTrait;
 
   /**
    * The rules execution state.
@@ -57,6 +59,32 @@ class RulesComponent {
   }
 
   /**
+   * Creates a component based on the given configuration array.
+   *
+   * @param array $configuration
+   *   The component configuration, as returned from ::getConfiguration().
+   *
+   * @return static
+   */
+  public static function createFromConfiguration(array $configuration) {
+    $configuration += [
+      'context_definitions' => [],
+      'provided_context_definitions' => [],
+    ];
+    // @todo: Can we improve this use dependency injection somehow?
+    $expression_manager = \Drupal::service('plugin.manager.rules_expression');
+    $expression = $expression_manager->createInstance($configuration['expression']['id'], $configuration['expression']);
+    $component = static::create($expression);
+    foreach ($configuration['context_definitions'] as $name => $definition) {
+      $component->addContextDefinition($name, ContextDefinition::createFromArray($definition));
+    }
+    foreach ($configuration['provided_context_definitions'] as $name => $definition) {
+      $component->provideContext($name);
+    }
+    return $component;
+  }
+
+  /**
    * Constructs the object.
    *
    * @param \Drupal\rules\Engine\ExpressionInterface $expression
@@ -75,6 +103,27 @@ class RulesComponent {
    */
   public function getExpression() {
     return $this->expression;
+  }
+
+  /**
+   * Gets the configuration array of this component.
+   *
+   * @return array
+   *   The configuration of this component. It contains the following keys:
+   *   - expression: The configuration of the contained expression, including a
+   *     nested 'id' key.
+   *   - context_definitions: Array of context definition arrays, keyed by
+   *     context name.
+   *   - provided_context: The names of the context that is provided back.
+   */
+  public function getConfiguration() {
+    return [
+      'expression' => $this->expression->getConfiguration(),
+      'context_definitions' => array_map(function (ContextDefinitionInterface $definition) {
+        return $definition->toArray();
+      }, $this->contextDefinitions),
+      'provided_context_definitions' => $this->providedContext,
+    ];
   }
 
   /**
@@ -113,19 +162,16 @@ class RulesComponent {
   }
 
   /**
-   * Adds the configured context definitions from the config entity.
+   * Adds the available event context for the given events.
    *
-   * Example: for a reaction rule config all context definitions of the event
-   * will be added.
-   *
-   * @param \Drupal\Core\Config\Entity\ConfigEntityInterface $rules_config
-   *   The config entity.
+   * @param string[] $event_names
+   *   The event names; e.g., as configured for a reaction rule.
    *
    * @return $this
    */
-  public function addContextDefinitionsFrom(ConfigEntityInterface $rules_config) {
-    if ($rules_config instanceof ReactionRuleConfig) {
-      $event_name = $rules_config->getEvent();
+  public function addContextDefinitionsForEvents(array $event_names) {
+    foreach ($event_names as $event_name) {
+      // @todo: Correctly handle multiple events to intersect available context.
       // @todo Use setter injection for the service.
       $event_definition = \Drupal::service('plugin.manager.rules_event')->getDefinition($event_name);
       foreach ($event_definition['context'] as $context_name => $context_definition) {
@@ -228,13 +274,51 @@ class RulesComponent {
    *   A list object containing \Drupal\rules\Engine\IntegrityViolation objects.
    */
   public function checkIntegrity() {
+    $metadata_state = $this->getMetadataState();
+    return $this->expression->checkIntegrity($metadata_state);
+  }
+
+  /**
+   * Gets the metadata state with all context definitions as variables in it.
+   *
+   * Describes the metadata state before execution - only context definitions
+   * are set as variables.
+   *
+   * @return \Drupal\rules\Engine\ExecutionMetadataStateInterface
+   *   The execution metadata state populated with context definitions.
+   */
+  public function getMetadataState() {
     $data_definitions = [];
     foreach ($this->contextDefinitions as $name => $context_definition) {
       $data_definitions[$name] = $context_definition->getDataDefinition();
     }
 
-    $metadata_state = ExecutionMetadataState::create($data_definitions);
-    return $this->expression->checkIntegrity($metadata_state);
+    return ExecutionMetadataState::create($data_definitions);
+  }
+
+  /**
+   * Calculates dependencies for the component.
+   *
+   * @return array
+   *   An array of dependencies grouped by type (config, content, module,
+   *   theme).
+   *
+   * @see \Drupal\Component\Plugin\DependentPluginInterface::calculateDependencies()
+   */
+  public function calculateDependencies() {
+    // @todo: Complete implementation and add test coverage.
+    $this->addDependency('module', 'rules');
+    $this->addDependencies($this->getExpression()->calculateDependencies());
+    return $this->dependencies;
+  }
+
+  /**
+   * PHP magic __clone function.
+   */
+  public function __clone() {
+    // Implement a deep clone.
+    $this->state = clone $this->state;
+    $this->expression = clone $this->expression;
   }
 
   /**

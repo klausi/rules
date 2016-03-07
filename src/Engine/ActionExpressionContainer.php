@@ -10,12 +10,11 @@ namespace Drupal\rules\Engine;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\rules\Context\ContextConfig;
 use Drupal\rules\Exception\InvalidExpressionException;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Container for actions.
  */
-abstract class ActionExpressionContainer extends ExpressionBase implements ActionExpressionContainerInterface, ContainerFactoryPluginInterface {
+abstract class ActionExpressionContainer extends ExpressionContainerBase implements ActionExpressionContainerInterface, ContainerFactoryPluginInterface {
 
   /**
    * List of actions that will be executed.
@@ -50,18 +49,6 @@ abstract class ActionExpressionContainer extends ExpressionBase implements Actio
   /**
    * {@inheritdoc}
    */
-  public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
-    return new static(
-      $configuration,
-      $plugin_id,
-      $plugin_definition,
-      $container->get('plugin.manager.rules_expression')
-    );
-  }
-
-  /**
-   * {@inheritdoc}
-   */
   public function addExpressionObject(ExpressionInterface $expression) {
     if (!$expression instanceof ActionExpressionInterface) {
       throw new InvalidExpressionException('Only action expressions can be added to an action container.');
@@ -71,15 +58,6 @@ abstract class ActionExpressionContainer extends ExpressionBase implements Actio
     }
     $this->actions[] = $expression;
     return $this;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function addExpression($plugin_id, ContextConfig $config = NULL) {
-    return $this->addExpressionObject(
-      $this->expressionManager->createInstance($plugin_id, $config ? $config->toArray() : [])
-    );
   }
 
   /**
@@ -112,6 +90,16 @@ abstract class ActionExpressionContainer extends ExpressionBase implements Actio
    */
   public function getIterator() {
     return new \ArrayIterator($this->actions);
+  }
+
+  /**
+   * PHP magic __clone function.
+   */
+  public function __clone() {
+    // Implement a deep clone.
+    foreach ($this->actions as &$action) {
+      $action = clone $action;
+    }
   }
 
   /**
@@ -148,21 +136,6 @@ abstract class ActionExpressionContainer extends ExpressionBase implements Actio
       }
     }
     return FALSE;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function checkIntegrity(ExecutionMetadataStateInterface $metadata_state) {
-    $violation_list = new IntegrityViolationList();
-    foreach ($this->actions as $action) {
-      $action_violations = $action->checkIntegrity($metadata_state);
-      foreach ($action_violations as $violation) {
-        $violation->setUuid($action->getUuid());
-      }
-      $violation_list->addAll($action_violations);
-    }
-    return $violation_list;
   }
 
 }

@@ -27,11 +27,19 @@ class RulesLoop extends ActionExpressionContainer {
   /**
    * {@inheritdoc}
    */
+  public function defaultConfiguration() {
+    return [
+      // Default to 'list_item' as variable name for the list item.
+      'list_item' => 'list_item',
+    ];
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function executeWithState(ExecutionStateInterface $state) {
     $list_data = $state->fetchDataByPropertyPath($this->configuration['list']);
-    // Use a configured list item variable name, otherwise fall back to just
-    // 'list_item' as variable name.
-    $list_item_name = isset($this->configuration['list_item']) ? $this->configuration['list_item'] : 'list_item';
+    $list_item_name = $this->configuration['list_item'];
 
     foreach ($list_data as $item) {
       $state->setVariableData($list_item_name, $item);
@@ -47,7 +55,7 @@ class RulesLoop extends ActionExpressionContainer {
   /**
    * {@inheritdoc}
    */
-  public function checkIntegrity(ExecutionMetadataStateInterface $metadata_state) {
+  public function checkIntegrity(ExecutionMetadataStateInterface $metadata_state, $apply_assertions = TRUE) {
     $violation_list = new IntegrityViolationList();
 
     if (empty($this->configuration['list'])) {
@@ -74,21 +82,50 @@ class RulesLoop extends ActionExpressionContainer {
       return $violation_list;
     }
 
-    if ($list_definition instanceof ListDataDefinitionInterface) {
-      $list_item_definition = $list_definition->getItemDefinition();
-      $metadata_state->setDataDefinition($list_item_name, $list_item_definition);
-
-      $violation_list = parent::checkIntegrity($metadata_state);
-
-      // Remove the list item variable after the loop, it is out of scope now.
-      $metadata_state->removeDataDefinition($list_item_name);
+    if (!$list_definition instanceof ListDataDefinitionInterface) {
+      $violation_list->addViolationWithMessage($this->t('The data type of list variable %list is not a list.', [
+        '%list' => $this->configuration['list'],
+      ]));
       return $violation_list;
     }
 
-    $violation_list->addViolationWithMessage($this->t('The data type of list variable %list is not a list.', [
-      '%list' => $this->configuration['list'],
-    ]));
+    // So far all ok, so continue with checking integrity in contained actions.
+    // The parent implementation will take care of invoking pre/post traversal
+    // metadata state preparations.
+    $violation_list = parent::checkIntegrity($metadata_state, $apply_assertions);
     return $violation_list;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  protected function allowsMetadataAssertions() {
+    // As the list can be empty, we cannot ensure child expressions are
+    // executed at all - thus no assertions can be added.
+    return FALSE;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  protected function prepareExecutionMetadataStateBeforeTraversal(ExecutionMetadataStateInterface $metadata_state) {
+    try {
+      $list_definition = $metadata_state->fetchDefinitionByPropertyPath($this->configuration['list']);
+      $list_item_definition = $list_definition->getItemDefinition();
+      $metadata_state->setDataDefinition($this->configuration['list_item'], $list_item_definition);
+    }
+    catch (RulesIntegrityException $e) {
+      // Silently eat the exception: we just continue without adding the list
+      // item definition to the state.
+    }
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  protected function prepareExecutionMetadataStateAfterTraversal(ExecutionMetadataStateInterface $metadata_state) {
+    // Remove the list item variable after the loop, it is out of scope now.
+    $metadata_state->removeDataDefinition($this->configuration['list_item']);
   }
 
 }

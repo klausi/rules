@@ -8,6 +8,7 @@
 namespace Drupal\rules\Engine;
 
 use Drupal\Component\Plugin\ConfigurablePluginInterface;
+use Drupal\Component\Plugin\PluginInspectionInterface;
 use Drupal\Core\Executable\ExecutableInterface;
 
 /**
@@ -15,7 +16,7 @@ use Drupal\Core\Executable\ExecutableInterface;
  *
  * @see \Drupal\rules\Engine\ExpressionManager
  */
-interface ExpressionInterface extends ExecutableInterface, ConfigurablePluginInterface {
+interface ExpressionInterface extends ExecutableInterface, ConfigurablePluginInterface, PluginInspectionInterface {
 
   /**
    * Execute the expression with a given Rules state.
@@ -60,43 +61,12 @@ interface ExpressionInterface extends ExecutableInterface, ConfigurablePluginInt
   public function setRoot(ExpressionInterface $root);
 
   /**
-   * Gets the config entity ID this expression is associatedd with.
-   *
-   * @return string|null
-   *   The config entity ID or NULL if the expression is not associated with a
-   *   config entity.
-   */
-  public function getConfigEntityId();
-
-  /**
-   * Sets the config entity this expression is associated with.
-   *
-   * @param string $id
-   *   The config entity ID.
-   */
-  public function setConfigEntityId($id);
-
-  /**
    * The label of this expression element that can be shown in the UI.
    *
    * @return string
    *   The label for display.
    */
   public function getLabel();
-
-  /**
-   * Verifies that this expression is configured correctly.
-   *
-   * Example: all variable names used in the expression are available.
-   *
-   * @param \Drupal\rules\Engine\ExecutionMetadataStateInterface $metadata_state
-   *   The configuration state used to hold available data definitions of
-   *   variables.
-   *
-   * @return \Drupal\rules\Engine\IntegrityViolationList
-   *   A list object containing \Drupal\rules\Engine\IntegrityViolation objects.
-   */
-  public function checkIntegrity(ExecutionMetadataStateInterface $metadata_state);
 
   /**
    * Returns the UUID of this expression if it is nested in another expression.
@@ -113,5 +83,69 @@ interface ExpressionInterface extends ExecutableInterface, ConfigurablePluginInt
    *   The UUID to set.
    */
   public function setUuid($uuid);
+
+  /**
+   * Verifies that this expression is configured correctly.
+   *
+   * Example: All configured data selectors must be valid.
+   *
+   * Note that for checking integrity the execution metadata state must be
+   * passed prepared as achieved by ::prepareExecutionMetadataState() and the
+   * expression must apply all metadata state preparations during its integrity
+   * check as it does in ::prepareExecutionMetadataState().
+   * This allows for efficient integrity checks of expression trees; e.g. see
+   * \Drupal\rules\Engine\ActionExpressionContainer::checkIntegrity().
+   *
+   * @param \Drupal\rules\Engine\ExecutionMetadataStateInterface $metadata_state
+   *   The execution metadata state, prepared until right before this
+   *   expression.
+   * @param bool $apply_assertions
+   *   (optional) Whether to apply metadata assertions while preparing the
+   *   execution metadata state. Defaults to TRUE.
+   *
+   * @return \Drupal\rules\Engine\IntegrityViolationList
+   *   A list object containing \Drupal\rules\Engine\IntegrityViolation objects.
+   *
+   * @see ::prepareExecutionMetadataState()
+   */
+  public function checkIntegrity(ExecutionMetadataStateInterface $metadata_state, $apply_assertions = TRUE);
+
+  /**
+   * Prepares the execution metadata state by adding metadata to it.
+   *
+   * If this expression contains other expressions then the metadata state is
+   * set up recursively. If a $until expression is specified then the setup will
+   * stop right before that expression to calculate the state at this execution
+   * point.
+   * This is useful for inspecting the state at a certain point in the
+   * expression tree as needed during configuration, for example to do
+   * autocompletion of available variables in the state.
+   *
+   * The difference to fully preparing the state is that not necessarily all
+   * variables are available in the middle of the expression tree, as for
+   * example variables being added later are not added yet. Preparing with
+   * $until = NULL reflects the execution metadata state at the end of the
+   * expression execution.
+   *
+   * @param \Drupal\rules\Engine\ExecutionMetadataStateInterface $metadata_state
+   *   The execution metadata state, prepared until right before this
+   *   expression.
+   * @param \Drupal\rules\Engine\ExpressionInterface $until
+   *   (optional) The expression at which metadata preparation should be
+   *   stopped. The preparation of the state will be stopped right before that
+   *   expression.
+   * @param bool $apply_assertions
+   *   (optional) Whether to apply metadata assertions while preparing the
+   *   execution metadata state. Defaults to TRUE. Metadata assertions should
+   *   be only applied if the expression's execution is required for sub-sequent
+   *   expressions being executed. For example, if a condition is optional as
+   *   it is part of a logical OR expression, its assertions may not be applied.
+   *   Defaults to TRUE.
+   *
+   * @return true|null
+   *   True if the metadata has been prepared and the $until expression was
+   *   found in the tree. Null otherwise.
+   */
+  public function prepareExecutionMetadataState(ExecutionMetadataStateInterface $metadata_state, ExpressionInterface $until = NULL, $apply_assertions = TRUE);
 
 }

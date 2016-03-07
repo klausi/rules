@@ -9,11 +9,12 @@ namespace Drupal\rules\Plugin\RulesAction;
 
 use Drupal\Component\Plugin\Derivative\DeriverBase;
 use Drupal\Core\Entity\ContentEntityTypeInterface;
-use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Entity\EntityFieldManagerInterface;
+use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Plugin\Discovery\ContainerDeriverInterface;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\Core\StringTranslation\TranslationInterface;
+use Drupal\Core\TypedData\DataReferenceDefinitionInterface;
 use Drupal\rules\Context\ContextDefinition;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -68,7 +69,7 @@ class EntityCreateDeriver extends DeriverBase implements ContainerDeriverInterfa
         continue;
       }
 
-      $this->derivatives["entity:$entity_type_id"] = [
+      $this->derivatives[$entity_type_id] = [
         'label' => $this->t('Create a new @entity_type', ['@entity_type' => $entity_type->getLowercaseLabel()]),
         'category' => $entity_type->getLabel(),
         'entity_type_id' => $entity_type_id,
@@ -83,15 +84,28 @@ class EntityCreateDeriver extends DeriverBase implements ContainerDeriverInterfa
       // other required base fields. This matches the storage create() behavior,
       // where only the bundle requirement is enforced.
       $bundle_key = $entity_type->getKey('bundle');
+      $this->derivatives[$entity_type_id]['bundle_key'] = $bundle_key;
+
       $base_field_definitions = $this->entityFieldManager->getBaseFieldDefinitions($entity_type_id);
       foreach ($base_field_definitions as $field_name => $definition) {
         if ($field_name != $bundle_key && !$definition->isRequired()) {
           continue;
         }
 
+        $item_definition = $definition->getItemDefinition();
+        $type_definition = $item_definition->getPropertyDefinition($item_definition->getMainPropertyName());
+
+        // If this is an entity reference then we expect the target type as
+        // context.
+        if ($type_definition instanceof DataReferenceDefinitionInterface) {
+          $type_definition->getTargetDefinition();
+        }
+        $type = $type_definition->getDataType();
+
         $is_bundle = ($field_name == $bundle_key);
         $multiple = ($definition->getCardinality() === 1) ? FALSE : TRUE;
-        $context_definition = ContextDefinition::create($definition->getType())
+
+        $context_definition = ContextDefinition::create($type)
           ->setLabel($definition->getLabel())
           ->setRequired($is_bundle)
           ->setMultiple($multiple)
@@ -101,7 +115,7 @@ class EntityCreateDeriver extends DeriverBase implements ContainerDeriverInterfa
           $context_definition->setAssignmentRestriction(ContextDefinition::ASSIGNMENT_RESTRICTION_INPUT);
         }
 
-        $this->derivatives["entity:$entity_type_id"]['context'][$field_name] = $context_definition;
+        $this->derivatives[$entity_type_id]['context'][$field_name] = $context_definition;
       }
     }
 

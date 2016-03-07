@@ -9,7 +9,9 @@ namespace Drupal\rules\Entity;
 
 use Drupal\Core\Config\Entity\ConfigEntityBase;
 use Drupal\rules\Context\ContextDefinition;
+use Drupal\rules\Ui\RulesUiComponentProviderInterface;
 use Drupal\rules\Engine\ExpressionInterface;
+use Drupal\rules\Engine\RulesComponent;
 
 /**
  * Rules component configuration entity to persistently store configuration.
@@ -39,9 +41,7 @@ use Drupal\rules\Engine\ExpressionInterface;
  *     "description",
  *     "tag",
  *     "core",
- *     "expression_id",
- *     "context_definitions",
- *     "configuration",
+ *     "component",
  *   },
  *   links = {
  *     "collection" = "/admin/config/workflow/rules/components",
@@ -50,7 +50,7 @@ use Drupal\rules\Engine\ExpressionInterface;
  *   }
  * )
  */
-class RulesComponentConfig extends ConfigEntityBase {
+class RulesComponentConfig extends ConfigEntityBase implements RulesUiComponentProviderInterface {
 
   /**
    * The unique ID of the Rules component.
@@ -91,32 +91,20 @@ class RulesComponentConfig extends ConfigEntityBase {
   protected $core = \Drupal::CORE_COMPATIBILITY;
 
   /**
-   * The Rules expression plugin ID that the configuration is for.
+   * The component configuration as nested array.
    *
-   * @var string
-   */
-  protected $expression_id;
-
-  /**
-   * Array of context definition arrays, keyed by context name.
-   *
-   * @var array[]
-   */
-  protected $context_definitions = [];
-
-  /**
-   * The expression plugin specific configuration as nested array.
+   * See \Drupal\rules\Engine\RulesComponent::getConfiguration()
    *
    * @var array
    */
-  protected $configuration = [];
+  protected $component = [];
 
   /**
-   * Stores a reference to the executable expression version of this component.
+   * Stores a reference to the component object.
    *
-   * @var \Drupal\rules\Engine\ExpressionInterface
+   * @var \Drupal\rules\Engine\RulesComponent
    */
-  protected $expression;
+  protected $componentObject;
 
   /**
    * The module implementing this Rules component.
@@ -132,12 +120,7 @@ class RulesComponentConfig extends ConfigEntityBase {
    *   A Rules expression instance.
    */
   public function getExpression() {
-    // Ensure that an executable Rules expression is available.
-    if (!isset($this->expression)) {
-      $this->expression = $this->getExpressionManager()->createInstance($this->expression_id, $this->configuration);
-    }
-
-    return $this->expression;
+    return $this->getComponent()->getExpression();
   }
 
   /**
@@ -149,37 +132,27 @@ class RulesComponentConfig extends ConfigEntityBase {
    * @return $this
    */
   public function setExpression(ExpressionInterface $expression) {
-    $this->expression = $expression;
-    $this->expression_id = $expression->getPluginId();
-    $this->configuration = $expression->getConfiguration();
+    $this->component['expression'] = $expression->getConfiguration();
+    unset($this->componentObject);
     return $this;
   }
 
   /**
-   * Gets the configured component.
-   *
-   * @return \Drupal\rules\Engine\RulesComponent
-   *   The component.
+   * {@inheritdoc}
    */
   public function getComponent() {
-    $component = \Drupal\rules\Engine\RulesComponent::create($this->getExpression());
-    foreach ($this->context_definitions as $name => $definition) {
-      $component->addContextDefinition($name, ContextDefinition::createFromArray($definition));
+    if (!isset($this->componentObject)) {
+      $this->componentObject = RulesComponent::createFromConfiguration($this->component);
     }
-    return $component;
+    return $this->componentObject;
   }
 
   /**
-   * Sets the Rules component to be stored.
-   *
-   * @param \Drupal\rules\Engine\RulesComponent $component
-   *   The component.
-   *
-   * @return $this
+   * {@inheritdoc}
    */
-  public function setComponent(\Drupal\rules\Engine\RulesComponent $component) {
-    $this->setExpression($component->getExpression());
-    $this->setContextDefinitions($component->getContextDefinitions());
+  public function updateFromComponent(RulesComponent $component) {
+    $this->component = $component->getConfiguration();
+    $this->componentObject = $component;
     return $this;
   }
 
@@ -191,8 +164,10 @@ class RulesComponentConfig extends ConfigEntityBase {
    */
   public function getContextDefinitions() {
     $definitions = [];
-    foreach ($this->context_definitions as $name => $definition) {
-      $definitions[$name] = ContextDefinition::createFromArray($definition);
+    if (!empty($this->component['context_definitions'])) {
+      foreach ($this->component['context_definitions'] as $name => $definition) {
+        $definitions[$name] = ContextDefinition::createFromArray($definition);
+      }
     }
     return $definitions;
   }
@@ -206,24 +181,43 @@ class RulesComponentConfig extends ConfigEntityBase {
    * @return $this
    */
   public function setContextDefinitions($definitions) {
-    $this->context_definitions = [];
+    $this->component['context_definitions'] = [];
     foreach ($definitions as $name => $definition) {
-      $this->context_definitions[$name] = $definition->toArray();
+      $this->component['context_definitions'][$name] = $definition->toArray();
     }
     return $this;
   }
 
   /**
-   * Returns the Rules expression manager.
+   * Gets the definitions of the provided context.
    *
-   * @todo Actually we should use dependency injection here, but is that even
-   *   possible with config entities? How?
-   *
-   * @return \Drupal\rules\Engine\ExpressionManager
-   *   The Rules expression manager.
+   * @return \Drupal\rules\Context\ContextDefinitionInterface[]
+   *   The array of context definition, keyed by context name.
    */
-  protected function getExpressionManager() {
-    return \Drupal::service('plugin.manager.rules_expression');
+  public function getProvidedContextDefinitions() {
+    $definitions = [];
+    if (!empty($this->component['provided_context_definitions'])) {
+      foreach ($this->component['provided_context_definitions'] as $name => $definition) {
+        $definitions[$name] = ContextDefinition::createFromArray($definition);
+      }
+    }
+    return $definitions;
+  }
+
+  /**
+   * Sets the definitions of the provided context.
+   *
+   * @param \Drupal\rules\Context\ContextDefinitionInterface[] $definitions
+   *   The array of context definitions, keyed by context name.
+   *
+   * @return $this
+   */
+  public function setProvidedContextDefinitions($definitions) {
+    $this->component['provided_context_definitions'] = [];
+    foreach ($definitions as $name => $definition) {
+      $this->component['provided_context_definitions'][$name] = $definition->toArray();
+    }
+    return $this;
   }
 
   /**
@@ -231,7 +225,7 @@ class RulesComponentConfig extends ConfigEntityBase {
    */
   public function createDuplicate() {
     $duplicate = parent::createDuplicate();
-    unset($duplicate->expression);
+    unset($duplicate->componentObject);
     return $duplicate;
   }
 
@@ -266,13 +260,7 @@ class RulesComponentConfig extends ConfigEntityBase {
    */
   public function calculateDependencies() {
     parent::calculateDependencies();
-
-    // Ensure that the Rules component is dependent on the module that
-    // implements the component.
-    $this->addDependency('module', $this->module);
-
-    // @todo Handle dependencies of plugins that are provided by various modules
-    //   here.
+    $this->addDependencies($this->getComponent()->calculateDependencies());
     return $this->dependencies;
   }
 

@@ -10,17 +10,16 @@ namespace Drupal\rules\Engine;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\rules\Context\ContextConfig;
 use Drupal\rules\Exception\InvalidExpressionException;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Container for conditions.
  */
-abstract class ConditionExpressionContainer extends ExpressionBase implements ConditionExpressionContainerInterface, ContainerFactoryPluginInterface {
+abstract class ConditionExpressionContainer extends ExpressionContainerBase implements ConditionExpressionContainerInterface, ContainerFactoryPluginInterface {
 
   /**
    * List of conditions that are evaluated.
    *
-   * @var \Drupal\rules\Core\RulesConditionInterface[]
+   * @var \Drupal\rules\Engine\ConditionExpressionInterface[]
    */
   protected $conditions = [];
 
@@ -50,36 +49,15 @@ abstract class ConditionExpressionContainer extends ExpressionBase implements Co
   /**
    * {@inheritdoc}
    */
-  public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
-    return new static(
-      $configuration,
-      $plugin_id,
-      $plugin_definition,
-      $container->get('plugin.manager.rules_expression')
-    );
-  }
-
-  /**
-   * {@inheritdoc}
-   */
   public function addExpressionObject(ExpressionInterface $expression) {
     if (!$expression instanceof ConditionExpressionInterface) {
       throw new InvalidExpressionException('Only condition expressions can be added to a condition container.');
     }
     if ($this->getExpression($expression->getUuid())) {
-      throw new InvalidExpressionException('An action with the same UUID already exists in the container.');
+      throw new InvalidExpressionException('A condition with the same UUID already exists in the container.');
     }
     $this->conditions[] = $expression;
     return $this;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function addExpression($plugin_id, ContextConfig $config = NULL) {
-    return $this->addExpressionObject(
-      $this->expressionManager->createInstance($plugin_id, $config ? $config->toArray() : [])
-    );
   }
 
   /**
@@ -143,6 +121,16 @@ abstract class ConditionExpressionContainer extends ExpressionBase implements Co
   }
 
   /**
+   * PHP magic __clone function.
+   */
+  public function __clone() {
+    // Implement a deep clone.
+    foreach ($this->conditions as &$condition) {
+      $condition = clone $condition;
+    }
+  }
+
+  /**
    * {@inheritdoc}
    */
   public function getExpression($uuid) {
@@ -176,21 +164,6 @@ abstract class ConditionExpressionContainer extends ExpressionBase implements Co
       }
     }
     return FALSE;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function checkIntegrity(ExecutionMetadataStateInterface $metadata_state) {
-    $violation_list = new IntegrityViolationList();
-    foreach ($this->conditions as $condition) {
-      $condition_violations = $condition->checkIntegrity($metadata_state);
-      foreach ($condition_violations as $violation) {
-        $violation->setUuid($condition->getUuid());
-      }
-      $violation_list->addAll($condition_violations);
-    }
-    return $violation_list;
   }
 
 }

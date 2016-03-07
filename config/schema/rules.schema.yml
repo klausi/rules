@@ -22,17 +22,8 @@ rules.component.*:
     core:
       type: string
       label: 'Drupal version'
-    expression_id:
-      type: string
-      label: 'Rules expression plugin ID'
-    context_definitions:
-      type: sequence
-      label: 'Context definitions'
-      sequence:
-        - type: rules.context.definition
-    configuration:
-      type: rules_expression.[%parent.expression_id]
-      label: 'Configuration'
+    component:
+      type: rules_component
 
 rules.reaction.*:
   type: config_entity
@@ -44,9 +35,21 @@ rules.reaction.*:
     label:
       type: label
       label: 'Label'
-    event:
-      type: string
-      label: 'Event'
+    events:
+      type: sequence
+      label: 'Events'
+      sequence:
+        type: mapping
+        label: 'Event'
+        mapping:
+          event_name:
+            type: string
+            label: 'Name'
+          configuration:
+            type: sequence
+            label: 'Configuration'
+            sequence:
+              type: mapping
     module:
       type: string
       label: 'Module'
@@ -59,163 +62,16 @@ rules.reaction.*:
     core:
       type: string
       label: 'Drupal version'
-    expression_id:
-      type: string
-      label: 'Rules expression plugin ID'
-    configuration:
-      type: rules_expression.[%parent.expression_id]
-      label: 'Configuration'
-
-rules_expression:
-  type: mapping
-  label: 'Rules expression'
-  id:
-    type: string
-    label: 'Plugin ID'
-  uuid:
-    type: string
-    label: 'UUID'
-
-rules_expression.rules_condition:
-  type: rules_expression
-  label: "Rules condition configuration"
-  mapping:
-    id:
-      type: string
-      label: 'Plugin ID'
-    uuid:
-      type: string
-      label: 'UUID'
-    condition_id:
-      type: string
-      label: 'Condition plugin ID'
-    negate:
-      type: boolean
-      label: 'Negated'
-
-rules_expression.rules_action:
-  type: rules_expression
-  label: "Rules action configuration"
-  mapping:
-    id:
-      type: string
-      label: 'Plugin ID'
-    uuid:
-      type: string
-      label: 'UUID'
-    action_id:
-      type: string
-      label: 'Action plugin ID'
-    context_values:
-      type: sequence
-      label: 'Context values'
-      sequence:
-        - type: string
-    context_mapping:
-      type: sequence
-      label: 'Context mapping'
-      sequence:
-        - type: string
-    context_processors:
-      type: sequence
-      label: 'Context processors'
-      sequence:
-        - type: string
-    provides_mapping:
-      type: sequence
-      label: 'Provided context mapping'
-      sequence:
-        - type: string
-
-rules_expression.rules_and:
-  type: rules_expression
-  label: 'Rules And'
-  mapping:
-    id:
-      type: string
-      label: 'Plugin ID'
-    uuid:
-      type: string
-      label: 'UUID'
-    negate:
-      type: boolean
-      label: 'Negate'
-    conditions:
-      type: sequence
-      label: 'Conditions'
-      sequence:
-        - type: rules_expression.[id]
-
-rules_expression.rules_action_set:
-  type: rules_expression
-  label: 'Action set'
-  mapping:
-    id:
-      type: string
-      label: 'Plugin ID'
-    uuid:
-      type: string
-      label: 'UUID'
-    actions:
-      type: sequence
-      label: 'Actions'
-      sequence:
-        - type: rules_expression.[id]
-
-rules_expression.rules_rule:
-  type: rules_expression
-  label: "Rule"
-  mapping:
-    id:
-      type: string
-      label: 'Plugin ID'
-    uuid:
-      type: string
-      label: 'UUID'
-    conditions:
+    expression:
       type: rules_expression.[id]
-      label: 'Conditions'
-    actions:
-      type: rules_expression.[id]
-      label: 'Actions'
-
-rules_expression.rules_reaction_rule:
-  type: rules_expression
-  label: "Reaction Rule"
-  mapping:
-    id:
-      type: string
-      label: 'Plugin ID'
-    uuid:
-      type: string
-      label: 'UUID'
-    event:
-      type: string
-      label: 'Event'
-    conditions:
-      type: rules_expression.[id]
-      label: 'Conditions'
-    actions:
-      type: rules_expression.[id]
-      label: 'Actions'
-
-rules.context.definition:
-  type: mapping
-  label: 'Context definition'
-  mapping:
-    type:
-      type: string
-      label: 'Type'
-    label:
-      type: string
-      label: 'Label'
+      label: 'Expression configuration'
 
 rules.settings:
   type: config_object
   label: 'Rules settings'
   mapping:
     log_errors:
-      type: integer
+      type: string
       label: 'Logging of Rules evaluation errors'
     debug_log:
       type: boolean
@@ -224,5 +80,5 @@ rules.settings:
       type: boolean
       label: 'Show debug information'
     log_level:
-      type: integer
+      type: string
       label: 'Log level'

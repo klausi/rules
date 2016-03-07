@@ -28,12 +28,10 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  * nest several rules into one rule. This is the functionality of so called
  * "rule sets" in Drupal 7.
  *
- * @todo rename the form class to just RuleForm.
- *
  * @RulesExpression(
  *   id = "rules_rule",
- *   label = @Translation("A rule, executing actions when conditions are met."),
- *   form_class = "\Drupal\rules\Form\Expression\ReactionRuleForm"
+ *   label = @Translation("Rule"),
+ *   form_class = "\Drupal\rules\Form\Expression\RuleForm"
  * )
  */
 class Rule extends ExpressionBase implements RuleInterface, ContainerFactoryPluginInterface {
@@ -105,8 +103,7 @@ class Rule extends ExpressionBase implements RuleInterface, ContainerFactoryPlug
    * {@inheritdoc}
    */
   public function addCondition($condition_id, ContextConfig $config = NULL) {
-    $this->conditions->addCondition($condition_id, $config);
-    return $this;
+    return $this->conditions->addCondition($condition_id, $config);
   }
 
   /**
@@ -128,8 +125,7 @@ class Rule extends ExpressionBase implements RuleInterface, ContainerFactoryPlug
    * {@inheritdoc}
    */
   public function addAction($action_id, ContextConfig $config = NULL) {
-    $this->actions->addAction($action_id, $config);
-    return $this;
+    return $this->actions->addAction($action_id, $config);
   }
 
   /**
@@ -152,10 +148,10 @@ class Rule extends ExpressionBase implements RuleInterface, ContainerFactoryPlug
    */
   public function addExpressionObject(ExpressionInterface $expression) {
     if ($expression instanceof ConditionExpressionInterface) {
-      $result = $this->conditions->addExpressionObject($expression);
+      $this->conditions->addExpressionObject($expression);
     }
     elseif ($expression instanceof ActionExpressionInterface) {
-      $result = $this->actions->addExpressionObject($expression);
+      $this->actions->addExpressionObject($expression);
     }
     else {
       throw new InvalidExpressionException();
@@ -217,10 +213,34 @@ class Rule extends ExpressionBase implements RuleInterface, ContainerFactoryPlug
   /**
    * {@inheritdoc}
    */
-  public function checkIntegrity(ExecutionMetadataStateInterface $metadata_state) {
-    $violation_list = $this->conditions->checkIntegrity($metadata_state);
-    $violation_list->addAll($this->actions->checkIntegrity($metadata_state));
+  public function checkIntegrity(ExecutionMetadataStateInterface $metadata_state, $apply_assertions = TRUE) {
+    $violation_list = $this->conditions->checkIntegrity($metadata_state, $apply_assertions);
+    $violation_list->addAll($this->actions->checkIntegrity($metadata_state, $apply_assertions));
     return $violation_list;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function prepareExecutionMetadataState(ExecutionMetadataStateInterface $metadata_state, ExpressionInterface $until = NULL, $apply_assertions = TRUE) {
+    // @todo: If the rule is nested, we may not pass assertions to following
+    // expressions as we do not know whether the rule fires at all. Should we
+    // clone the metadata state to ensure modifications stay local?
+    $found = $this->conditions->prepareExecutionMetadataState($metadata_state, $until, $apply_assertions);
+    if ($found) {
+      return TRUE;
+    }
+    return $this->actions->prepareExecutionMetadataState($metadata_state, $until, $apply_assertions);
+  }
+
+  /**
+   * PHP magic __clone function.
+   */
+  public function __clone() {
+    $this->actions = clone $this->actions;
+    $this->actions->setRoot($this->getRoot());
+    $this->conditions = clone $this->conditions;
+    $this->conditions->setRoot($this->getRoot());
   }
 
 }
