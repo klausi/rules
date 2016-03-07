@@ -22,7 +22,7 @@ class AutocompleteTest extends RulesEntityIntegrationTestBase {
   /**
    * Tests autocompletion works for a variable in the metadata state.
    */
-  public function testActionAutoSave() {
+  public function testAutocomplete() {
     $rule = $this->rulesExpressionManager->createRule();
     $action = $this->rulesExpressionManager->createAction('rules_action');
     $action->setConfiguration(ContextConfig::create()
@@ -33,7 +33,7 @@ class AutocompleteTest extends RulesEntityIntegrationTestBase {
 
     $results = RulesComponent::create($rule)
       ->addContextDefinition('entity', ContextDefinition::create('entity'))
-      ->autocomplete('e', $action->getUuid());
+      ->autocomplete('e', $action);
 
     $this->assertSame(['entity'], $results);
   }

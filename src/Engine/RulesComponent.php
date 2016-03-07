@@ -328,24 +328,18 @@ class RulesComponent {
    *
    * @param string $partial_selector
    *   The partial data selector.
-   * @param type $expression_uuid
-   *   The UUID of the expression in which the autocompletion will be executed.
-   *   All variables in the exection metadata state up to that point are
-   *   available.
+   * @param \Drupal\rules\Engine\ExpressionInterface $until
+   *   The expression in which the autocompletion will be executed. All
+   *   variables in the exection metadata state up to that point are available.
    *
    * @return string[]
    *   An array of autocomplete suggestions.
    */
-  public function autocomplete($partial_selector, $expression_uuid) {
-    $data_definitions = [];
-    foreach ($this->contextDefinitions as $name => $context_definition) {
-      $data_definitions[$name] = $context_definition->getDataDefinition();
-    }
-
+  public function autocomplete($partial_selector, ExpressionInterface $until) {
     // We use the integrity check to populate the execution metadata state with
     // available variables.
-    $metadata_state = ExecutionMetadataState::create($data_definitions);
-    $this->expression->checkIntegrity($metadata_state, $expression_uuid);
+    $metadata_state = $this->getMetadataState();
+    $this->expression->prepareExecutionMetadataState($metadata_state, $until);
 
     return $metadata_state->autocomplete($partial_selector);
   }
