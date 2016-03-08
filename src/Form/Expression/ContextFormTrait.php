@@ -66,11 +66,8 @@ trait ContextFormTrait {
     ];
 
     if ($mode == 'selector') {
-      $form['context'][$context_name]['setting']['#autocomplete_route_name'] = 'rules.dataselector.autocomplete';
-      /*$form['context'][$context_name]['setting']['#autocomplete_route_parameters'] = [
-        'type' => 'rules_reaction_rule',
-        'rules_config' => '?',
-      ];*/
+      $form['context'][$context_name]['setting'] += $this->getRulesUiHandler()
+        ->getContextAutocomplete($form_state->get('uuid'));
     }
 
     $value = $mode == 'selector' ? $this->t('Switch to the direct input mode') : $this->t('Switch to data selection');

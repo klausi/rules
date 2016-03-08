@@ -106,12 +106,20 @@ class RulesUiRouteSubscriber extends RouteSubscriberBase {
 
     $route = (new Route($base_route->getPath() . '/break-lock'))
       ->addDefaults([
-        '_form' => '\Drupal\rules\Form\\BreakLockForm',
+        '_form' => '\Drupal\rules\Form\BreakLockForm',
         '_title' => 'Break lock',
       ])
       ->addOptions($options)
       ->addRequirements($requirements);
     $collection->add($ui_definition->base_route . '.break_lock', $route);
+
+    $route = (new Route($base_route->getPath() . '/autocomplete/{expression_uuid}'))
+      ->addDefaults([
+        '_controller' => '\Drupal\rules\Controller\AutocompleteController::autocomplete',
+      ])
+      ->addOptions($options)
+      ->addRequirements($requirements);
+    $collection->add($ui_definition->base_route . '.autocomplete', $route);
   }
 
 }

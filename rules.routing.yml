@@ -88,13 +88,3 @@ entity.rules_component.delete_form:
     _rules_ui: rules.components
   requirements:
     _permission: 'administer rules+administer rules components'
-
-rules.dataselector.autocomplete:
-  #path: '/admin/rules/autocomplete/{type}/{rules_config}/{expression}/{selector}'
-  path: '/admin/rules/autocomplete'
-  defaults:
-    _controller: '\Drupal\rules\Controller\AutocompleteController::autocomplete'
-  options:
-    _admin_route: TRUE
-  requirements:
-    _permission: 'administer rules'
