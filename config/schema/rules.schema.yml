@@ -10,18 +10,18 @@ rules.component.*:
     label:
       type: label
       label: 'Label'
-    module:
-      type: string
-      label: 'Module'
     description:
       type: text
       label: 'Administrative description'
-    tag:
+    tags:
+      type: sequence
+      label: Tags
+      sequence:
+        type: string
+        label: 'Tag'
+    config_version:
       type: string
-      label: 'Tag'
-    core:
-      type: string
-      label: 'Drupal version'
+      label: 'Configuration schema version'
     component:
       type: rules_component
 
@@ -50,18 +50,18 @@ rules.reaction.*:
             label: 'Configuration'
             sequence:
               type: mapping
-    module:
-      type: string
-      label: 'Module'
     description:
       type: text
       label: 'Administrative description'
-    tag:
+    tags:
+      type: sequence
+      label: Tags
+      sequence:
+        type: string
+        label: 'Tag'
+    config_version:
       type: string
-      label: 'Tag'
-    core:
-      type: string
-      label: 'Drupal version'
+      label: 'Configuration schema version'
     expression:
       type: rules_expression.[id]
       label: 'Expression configuration'
