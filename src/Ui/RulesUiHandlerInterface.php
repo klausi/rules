@@ -156,10 +156,8 @@ interface RulesUiHandlerInterface extends PluginInspectionInterface {
    * @param string $expression_uuid
    *   The UUID of the expression where the autocomplete is executed in.
    *
-   * @return array
-   *   A partial render array containing the two elements
-   *   #autocomplete_route_name and #autocomplete_route_parameters.
+   * @return Url
    */
-  public function getContextAutocomplete($expression_uuid);
+  public function getContextAutocompleteUrl($expression_uuid);
 
 }
