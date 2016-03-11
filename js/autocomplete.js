@@ -10,77 +10,6 @@
   var autocomplete;
 
   /**
-   * Helper splitting terms from the autocomplete value.
-   *
-   * @function Drupal.autocomplete.splitValues
-   *
-   * @param {string} value
-   *   The value being entered by the user.
-   *
-   * @return {Array}
-   *   Array of values, split by comma.
-   */
-  function autocompleteSplitValues(value) {
-    // We will match the value against comma-separated terms.
-    var result = [];
-    var quote = false;
-    var current = '';
-    var valueLength = value.length;
-    var character;
-
-    for (var i = 0; i < valueLength; i++) {
-      character = value.charAt(i);
-      if (character === '"') {
-        current += character;
-        quote = !quote;
-      }
-      else if (character === ',' && !quote) {
-        result.push(current.trim());
-        current = '';
-      }
-      else {
-        current += character;
-      }
-    }
-    if (value.length > 0) {
-      result.push($.trim(current));
-    }
-
-    return result;
-  }
-
-  /**
-   * Returns the last value of an multi-value textfield.
-   *
-   * @function Drupal.autocomplete.extractLastTerm
-   *
-   * @param {string} terms
-   *   The value of the field.
-   *
-   * @return {string}
-   *   The last value of the input field.
-   */
-  function extractLastTerm(terms) {
-    return autocomplete.splitValues(terms).pop();
-  }
-
-  /**
-   * The search handler is called before a search is performed.
-   *
-   * @function Drupal.autocomplete.options.search
-   *
-   * @param {object} event
-   *   The event triggered.
-   *
-   * @return {bool}
-   *   Whether to perform a search or not.
-   */
-  function searchHandler(event) {
-    // We always want to perform a search.
-    return true;
-  }
-
-  /**
    * JQuery UI autocomplete source callback.
    *
    * @param {object} request
@@ -96,25 +25,6 @@
     }
 
     /**
-     * Filter through the suggestions removing all terms already tagged and
-     * display the available terms to the user.
-     *
-     * @param {object} suggestions
-     *   Suggestions returned by the server.
-     */
-    function showSuggestions(suggestions) {
-      var tagged = autocomplete.splitValues(request.term);
-      var il = tagged.length;
-      for (var i = 0; i < il; i++) {
-        var index = suggestions.indexOf(tagged[i]);
-        if (index >= 0) {
-          suggestions.splice(index, 1);
-        }
-      }
-      response(suggestions);
-    }
-
-    /**
      * Transforms the data object into an array and update autocomplete results.
      *
      * @param {object} data
@@ -123,16 +33,15 @@
     function sourceCallbackHandler(data) {
       autocomplete.cache[elementId][term] = data;
 
-      // Send the new string array of terms to the jQuery UI list.
-      showSuggestions(data);
+      response(data);
     }
 
     // Get the desired term and construct the autocomplete URL for it.
-    var term = autocomplete.extractLastTerm(request.term);
+    var term = request.term;
 
     // Check if the term is already cached.
     if (autocomplete.cache[elementId].hasOwnProperty(term)) {
-      showSuggestions(autocomplete.cache[elementId][term]);
+      response(autocomplete.cache[elementId][term]);
     }
     else {
       var options = $.extend({success: sourceCallbackHandler, data: {q: term}}, autocomplete.ajax);
@@ -147,33 +56,6 @@
    *   Always returns false.
    */
   function focusHandler() {
-    return false;
-  }
-
-  /**
-   * Handles an autocompleteselect event.
-   *
-   * @param {jQuery.Event} event
-   *   The event triggered.
-   * @param {object} ui
-   *   The jQuery UI settings object.
-   *
-   * @return {bool}
-   *   Returns false to indicate the event status.
-   */
-  function selectHandler(event, ui) {
-    var terms = autocomplete.splitValues(event.target.value);
-    // Remove the current input.
-    terms.pop();
-    // Add the selected item.
-    if (ui.item.value.search(',') > 0) {
-      terms.push('"' + ui.item.value + '"');
-    }
-    else {
-      terms.push(ui.item.value);
-    }
-    event.target.value = terms.join(', ');
-    // Return false to tell jQuery UI that we've filled in the value already.
     return false;
   }
 
@@ -209,13 +91,16 @@
       // Act on textfields with the "rules-autocomplete" class.
       var $autocomplete = $(context).find('input.rules-autocomplete').once('autocomplete');
       if ($autocomplete.length) {
+
         var closing = false;
 
         $.extend(autocomplete.options, {
           close: function() {
             // Avoid double-pop-up issue.
             closing = true;
-            setTimeout(function() { closing = false; }, 300);
+            setTimeout(function() {
+              closing = false;
+            }, 300);
           }
         });
         // Use jQuery UI Autocomplete on the textfield.
@@ -247,10 +132,6 @@
    */
   autocomplete = {
     cache: {},
-    // Exposes options to allow overriding by contrib.
-    splitValues: autocompleteSplitValues,
-    extractLastTerm: extractLastTerm,
-    // jQuery UI autocomplete options.
 
     /**
      * JQuery UI option object.
@@ -260,18 +141,12 @@
     options: {
       source: sourceData,
       focus: focusHandler,
-      search: searchHandler,
-      select: selectHandler,
       renderItem: renderItem,
-      minLength: 0,
-      // Custom options, used by Drupal.autocomplete.
-      firstCharacterBlacklist: ''
+      minLength: 0
     },
     ajax: {
       dataType: 'json'
     }
   };
-
-  Drupal.rules_autocomplete = autocomplete;
 
 })(jQuery, Drupal);
