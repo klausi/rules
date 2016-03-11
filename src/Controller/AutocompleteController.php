@@ -22,7 +22,7 @@ class AutocompleteController {
    *
    * @param RulesUiHandlerInterface $rules_ui_handler
    *   The UI handler.
-   * @param string $expression_uuid
+   * @param string $uuid
    *   The UUID of the expression in which the autocomplete is triggered.
    * @param Request $request
    *   The request object providing the autocomplete query parameter.
@@ -33,9 +33,9 @@ class AutocompleteController {
    * @throws NotFoundHttpException
    *   If the expression with the given UUID could not be found.
    */
-  public function autocomplete(RulesUiHandlerInterface $rules_ui_handler, $expression_uuid, Request $request) {
+  public function autocomplete(RulesUiHandlerInterface $rules_ui_handler, $uuid, Request $request) {
     $component = $rules_ui_handler->getComponent();
-    $nested_expression = $component->getExpression()->getExpression($expression_uuid);
+    $nested_expression = $component->getExpression()->getExpression($uuid);
     if ($nested_expression === FALSE) {
       throw new NotFoundHttpException();
     }

@@ -210,7 +210,7 @@
    * @prop {Drupal~behaviorDetach} detach
    *   Detaches the autocomplete behaviors.
    */
-  Drupal.behaviors.autocomplete = {
+  Drupal.behaviors.rules_autocomplete = {
     attach: function (context) {
       // Act on textfields with the "rules-autocomplete" class.
       var $autocomplete = $(context).find('input.rules-autocomplete').once('autocomplete');
@@ -268,6 +268,6 @@
     }
   };
 
-  Drupal.autocomplete = autocomplete;
+  Drupal.rules_autocomplete = autocomplete;
 
 })(jQuery, Drupal);

@@ -113,7 +113,7 @@ class RulesUiRouteSubscriber extends RouteSubscriberBase {
       ->addRequirements($requirements);
     $collection->add($ui_definition->base_route . '.break_lock', $route);
 
-    $route = (new Route($base_route->getPath() . '/autocomplete/{expression_uuid}'))
+    $route = (new Route($base_route->getPath() . '/autocomplete/{uuid}'))
       ->addDefaults([
         '_controller' => '\Drupal\rules\Controller\AutocompleteController::autocomplete',
       ])

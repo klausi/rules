@@ -181,9 +181,7 @@ class RulesUiConfigHandler extends PluginBase implements RulesUiHandlerInterface
    */
   public function getContextAutocompleteUrl($expression_uuid) {
     $url = Url::fromRoute($this->pluginDefinition->base_route . '.autocomplete',
-      $this->currentRouteMatch->getRawParameters()->all() + [
-        'expression_uuid' => $expression_uuid,
-      ]);
+      $this->currentRouteMatch->getRawParameters()->all());
     return $url;
   }
 
