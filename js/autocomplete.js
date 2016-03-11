@@ -76,14 +76,8 @@
    *   Whether to perform a search or not.
    */
   function searchHandler(event) {
-    var options = autocomplete.options;
-    var term = autocomplete.extractLastTerm(event.target.value);
-    // Abort search if the first character is in firstCharacterBlacklist.
-    if (term.length > 0 && options.firstCharacterBlacklist.indexOf(term[0]) !== -1) {
-      return false;
-    }
-    // Only search when the term is at least the minimum length.
-    return term.length >= options.minLength;
+    // We always want to perform a search.
+    return true;
   }
 
   /**
@@ -215,15 +209,25 @@
       // Act on textfields with the "rules-autocomplete" class.
       var $autocomplete = $(context).find('input.rules-autocomplete').once('autocomplete');
       if ($autocomplete.length) {
-        // Allow options to be overriden per instance.
-        var blacklist = $autocomplete.attr('data-autocomplete-first-character-blacklist');
+        var closing = false;
+
         $.extend(autocomplete.options, {
-          firstCharacterBlacklist: (blacklist) ? blacklist : ''
+          close: function() {
+            // Avoid double-pop-up issue.
+            closing = true;
+            setTimeout(function() { closing = false; }, 300);
+          }
         });
         // Use jQuery UI Autocomplete on the textfield.
         $autocomplete.autocomplete(autocomplete.options)
           .each(function() {
             $(this).data('ui-autocomplete')._renderItem = autocomplete.options.renderItem;
+            // Imediately pop out the autocomplete when the field gets focus.
+            $(this).focus(function() {
+              if (!closing) {
+                $(this).autocomplete('search');
+              }
+            });
           });
       }
     },
@@ -259,7 +263,7 @@
       search: searchHandler,
       select: selectHandler,
       renderItem: renderItem,
-      minLength: 1,
+      minLength: 0,
       // Custom options, used by Drupal.autocomplete.
       firstCharacterBlacklist: ''
     },
