@@ -7,7 +7,6 @@
 
 namespace Drupal\Tests\rules\Kernel\Engine;
 
-use Drupal\rules\Context\ContextConfig;
 use Drupal\rules\Context\ContextDefinition;
 use Drupal\rules\Engine\RulesComponent;
 use Drupal\Tests\rules\Kernel\RulesDrupalTestBase;
@@ -18,6 +17,13 @@ use Drupal\Tests\rules\Kernel\RulesDrupalTestBase;
  * @group rules
  */
 class AutocompleteTest extends RulesDrupalTestBase {
+
+  /**
+   * The sample rules component used for testing autocomplete suggestions.
+   *
+   * @var \Drupal\rules\Engine\RulesComponent
+   */
+  protected $component;
 
   /**
    * {@inheritdoc}
@@ -31,6 +37,12 @@ class AutocompleteTest extends RulesDrupalTestBase {
     parent::setUp();
 
     $this->installEntitySchema('user');
+
+    $rule = $this->expressionManager->createRule();
+    $rule->addAction('rules_data_set');
+
+    $this->component = RulesComponent::create($rule)
+      ->addContextDefinition('node', ContextDefinition::create('entity:node'));
   }
 
   /**
@@ -38,11 +50,7 @@ class AutocompleteTest extends RulesDrupalTestBase {
    */
   public function testAutocomplete() {
     $rule = $this->expressionManager->createRule();
-    $action = $this->expressionManager->createAction('rules_action');
-    $action->setConfiguration(ContextConfig::create()
-      ->map('entity', 'entity')
-      ->toArray()
-    );
+    $action = $this->expressionManager->createAction('rules_data_set');
     $rule->addExpressionObject($action);
 
     $results = RulesComponent::create($rule)
@@ -56,17 +64,7 @@ class AutocompleteTest extends RulesDrupalTestBase {
    * Tests that "node.uid.en" returns the suggestion "node.uid.entity".
    */
   public function testNodeFieldAutocomplete() {
-    $rule = $this->expressionManager->createRule();
-    $action = $this->expressionManager->createAction('rules_action');
-    $action->setConfiguration(ContextConfig::create()
-      ->map('node', 'node')
-      ->toArray()
-    );
-    $rule->addExpressionObject($action);
-
-    $results = RulesComponent::create($rule)
-      ->addContextDefinition('node', ContextDefinition::create('entity:node'))
-      ->autocomplete('node.uid.en', $action);
+    $results = $this->component->autocomplete('node.uid.en');
 
     $this->assertSame(['node.uid.entity'], $results);
   }
@@ -75,17 +73,7 @@ class AutocompleteTest extends RulesDrupalTestBase {
    * Tests that "node." returns all available fields on a node.
    */
   public function testAllNodeFields() {
-    $rule = $this->expressionManager->createRule();
-    $action = $this->expressionManager->createAction('rules_action');
-    $action->setConfiguration(ContextConfig::create()
-      ->map('node', 'node')
-      ->toArray()
-    );
-    $rule->addExpressionObject($action);
-
-    $results = RulesComponent::create($rule)
-      ->addContextDefinition('node', ContextDefinition::create('entity:node'))
-      ->autocomplete('node.', $action);
+    $results = $this->component->autocomplete('node.');
 
     $expected = [
       'node.changed',
