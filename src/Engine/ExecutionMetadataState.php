@@ -8,7 +8,9 @@
 namespace Drupal\rules\Engine;
 
 use Drupal\Core\Language\LanguageInterface;
+use Drupal\Core\TypedData\ComplexDataDefinitionInterface;
 use Drupal\Core\TypedData\DataDefinitionInterface;
+use Drupal\Core\TypedData\ListDataDefinitionInterface;
 use Drupal\rules\Context\GlobalContextRepositoryTrait;
 use Drupal\rules\Exception\RulesIntegrityException;
 use Drupal\rules\TypedData\DataFetcherTrait;
@@ -127,6 +129,35 @@ class ExecutionMetadataState implements ExecutionMetadataStateInterface {
         $results[] = $variable_name;
       }
     }
+    if (!empty($results)) {
+      return $results;
+    }
+
+    $parts = explode('.', $partial_property_path);
+    $last_part = array_pop($parts);
+    $prefix_path = implode('.', $parts);
+
+    try {
+      $variable_definition = $this->fetchDefinitionByPropertyPath($prefix_path);
+    } catch (RulesIntegrityException $e) {
+      // Invalid property path, so no suggestions available.
+      return [];
+    }
+
+    // If this is a list but the selector is not an integer, we forward the
+    // selection to the first element in the list.
+    if ($variable_definition instanceof ListDataDefinitionInterface && !ctype_digit($last_part)) {
+      $variable_definition = $variable_definition->getItemDefinition();
+    }
+
+    if ($variable_definition instanceof ComplexDataDefinitionInterface) {
+      foreach ($variable_definition->getPropertyDefinitions() as $property_name => $property_definition) {
+        if (stripos($property_name, $last_part) === 0) {
+          $results[] = "$prefix_path.$property_name";
+        }
+      }
+    }
+
     return $results;
   }
 
