@@ -10,7 +10,6 @@ namespace Drupal\rules\Controller;
 use Drupal\rules\Ui\RulesUiHandlerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 /**
  * Handles autocompletion of data selectors.
@@ -22,22 +21,25 @@ class AutocompleteController {
    *
    * @param RulesUiHandlerInterface $rules_ui_handler
    *   The UI handler.
-   * @param string $uuid
-   *   The UUID of the expression in which the autocomplete is triggered.
    * @param Request $request
    *   The request object providing the autocomplete query parameter.
+   * @param string $uuid
+   *   The UUID of the expression in which the autocomplete is triggered. If the
+   *   UUID is not provided all available variables from the end of the
+   *   expression will be shown.
    *
    * @return JsonResponse
    *   The JSON results.
-   *
-   * @throws NotFoundHttpException
-   *   If the expression with the given UUID could not be found.
    */
-  public function autocomplete(RulesUiHandlerInterface $rules_ui_handler, $uuid, Request $request) {
+  public function autocomplete(RulesUiHandlerInterface $rules_ui_handler, Request $request, $uuid = NULL) {
     $component = $rules_ui_handler->getComponent();
     $nested_expression = $component->getExpression()->getExpression($uuid);
     if ($nested_expression === FALSE) {
-      throw new NotFoundHttpException();
+      // @todo We don't have a UUID when an expression is added. Just show all
+      // variables available in that case. The correct solution would be to get
+      // the form state of the expression form currently being added. That is
+      // very complicated so we don't do it for now.
+      $nested_expression = NULL;
     }
 
     $string = $request->query->get('q');

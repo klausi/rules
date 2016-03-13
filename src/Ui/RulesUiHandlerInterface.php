@@ -150,14 +150,4 @@ interface RulesUiHandlerInterface extends PluginInspectionInterface {
    */
   public function validateLock(array &$form, FormStateInterface $form_state);
 
-  /**
-   * Provides autocomplete render array elements for a context in an expression.
-   *
-   * @param string $expression_uuid
-   *   The UUID of the expression where the autocomplete is executed in.
-   *
-   * @return Url
-   */
-  public function getContextAutocompleteUrl($expression_uuid);
-
 }

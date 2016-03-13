@@ -336,7 +336,7 @@ class RulesComponent {
    * @return string[]
    *   An array of autocomplete suggestions.
    */
-  public function autocomplete($partial_selector, ExpressionInterface $until) {
+  public function autocomplete($partial_selector, ExpressionInterface $until = NULL) {
     // We use the integrity check to populate the execution metadata state with
     // available variables.
     $metadata_state = $this->getMetadataState();

@@ -116,6 +116,7 @@ class RulesUiRouteSubscriber extends RouteSubscriberBase {
     $route = (new Route($base_route->getPath() . '/autocomplete/{uuid}'))
       ->addDefaults([
         '_controller' => '\Drupal\rules\Controller\AutocompleteController::autocomplete',
+        'uuid' => '',
       ])
       ->addOptions($options)
       ->addRequirements($requirements);

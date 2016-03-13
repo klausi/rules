@@ -67,7 +67,7 @@ trait ContextFormTrait {
 
     if ($mode == 'selector') {
       $element = &$form['context'][$context_name]['setting'];
-      $url = $this->getRulesUiHandler()->getContextAutocompleteUrl($form_state->get('uuid'));
+      $url = $this->getRulesUiHandler()->getUrlFromRoute('autocomplete', []);
       $element['#attributes']['class'][] = 'rules-autocomplete';
       $element['#attributes']['data-autocomplete-path'] = $url->toString();
       $element['#attached']['library'][] = 'rules/rules.autocomplete';

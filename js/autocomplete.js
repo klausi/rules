@@ -107,7 +107,7 @@
         $autocomplete.autocomplete(autocomplete.options)
           .each(function() {
             $(this).data('ui-autocomplete')._renderItem = autocomplete.options.renderItem;
-            // Imediately pop out the autocomplete when the field gets focus.
+            // Immediately pop out the autocomplete when the field gets focus.
             $(this).focus(function() {
               if (!closing) {
                 $(this).autocomplete('search');

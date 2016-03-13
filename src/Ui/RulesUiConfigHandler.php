@@ -176,13 +176,4 @@ class RulesUiConfigHandler extends PluginBase implements RulesUiHandlerInterface
     return new EmbeddedComponentForm($this);
   }
 
-  /**
-   * {@inheritdoc}
-   */
-  public function getContextAutocompleteUrl($expression_uuid) {
-    $url = Url::fromRoute($this->pluginDefinition->base_route . '.autocomplete',
-      $this->currentRouteMatch->getRawParameters()->all());
-    return $url;
-  }
-
 }
