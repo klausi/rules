@@ -71,4 +71,42 @@ class AutocompleteTest extends RulesDrupalTestBase {
     $this->assertSame(['node.uid.entity'], $results);
   }
 
+  /**
+   * Tests that "node." returns all available fields on a node.
+   */
+  public function testAllNodeFields() {
+    $rule = $this->expressionManager->createRule();
+    $action = $this->expressionManager->createAction('rules_action');
+    $action->setConfiguration(ContextConfig::create()
+      ->map('node', 'node')
+      ->toArray()
+    );
+    $rule->addExpressionObject($action);
+
+    $results = RulesComponent::create($rule)
+      ->addContextDefinition('node', ContextDefinition::create('entity:node'))
+      ->autocomplete('node.', $action);
+
+    $expected = [
+      'node.changed',
+      'node.created',
+      'node.default_langcode',
+      'node.langcode',
+      'node.nid',
+      'node.promote',
+      'node.revision_log',
+      'node.revision_timestamp',
+      'node.revision_translation_affected',
+      'node.revision_uid',
+      'node.status',
+      'node.sticky',
+      'node.title',
+      'node.type',
+      'node.uid',
+      'node.uuid',
+      'node.vid',
+    ];
+    $this->assertSame($expected, $results);
+  }
+
 }

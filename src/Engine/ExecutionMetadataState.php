@@ -152,13 +152,16 @@ class ExecutionMetadataState implements ExecutionMetadataStateInterface {
 
     if ($variable_definition instanceof ComplexDataDefinitionInterface) {
       foreach ($variable_definition->getPropertyDefinitions() as $property_name => $property_definition) {
-        if (stripos($property_name, $last_part) === 0) {
+        // If the property starts with the part then we have a suggestion. If
+        // the part after the dot is the empty string we include all properties.
+        if (stripos($property_name, $last_part) === 0 || $last_part === '') {
           $results[] = "$prefix_path.$property_name";
         }
       }
     }
 
-    return $results;
+    natsort($results);
+    return array_values($results);
   }
 
 }
