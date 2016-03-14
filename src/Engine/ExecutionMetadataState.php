@@ -8,10 +8,7 @@
 namespace Drupal\rules\Engine;
 
 use Drupal\Core\Language\LanguageInterface;
-use Drupal\Core\TypedData\ComplexDataDefinitionInterface;
 use Drupal\Core\TypedData\DataDefinitionInterface;
-use Drupal\Core\TypedData\DataReferenceDefinitionInterface;
-use Drupal\Core\TypedData\ListDataDefinitionInterface;
 use Drupal\rules\Context\GlobalContextRepositoryTrait;
 use Drupal\rules\Exception\RulesIntegrityException;
 use Drupal\rules\TypedData\DataFetcherTrait;

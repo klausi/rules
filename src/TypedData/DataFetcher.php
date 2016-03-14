@@ -198,7 +198,8 @@ class DataFetcher implements DataFetcherInterface {
     else {
       try {
         $variable_definition = $this->fetchDefinitionByPropertyPath($data_definitions[$first_part], $middle_path);
-      } catch (\InvalidArgumentException $e) {
+      }
+      catch (\InvalidArgumentException $e) {
         // Invalid property path, so no suggestions available.
         return [];
       }
