@@ -110,13 +110,19 @@ class AutocompleteTest extends RulesDrupalTestBase {
     $results = $component->autocomplete('node.uid.entity.na');
     $this->assertSame(['node.uid.entity.name'], $results);
 
-    // A multi -valued field should show numeric indices suggestions.
+    // A multi-valued field should show numeric indices suggestions.
     $results = $component->autocomplete('node.field_integer.');
     $this->assertSame([
       'node.field_integer.0',
       'node.field_integer.1',
       'node.field_integer.2',
       'node.field_integer.value',
+    ], $results);
+
+    // A single-valued field should not show numeric indices suggestions.
+    $results = $component->autocomplete('node.title.');
+    $this->assertSame([
+      'node.title.value',
     ], $results);
   }
 

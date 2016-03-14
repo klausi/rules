@@ -8,6 +8,7 @@
 namespace Drupal\rules\TypedData;
 
 use Drupal\Core\Cache\CacheableDependencyInterface;
+use Drupal\Core\Field\FieldDefinitionInterface;
 use Drupal\Core\Render\AttachmentsInterface;
 use Drupal\Core\Render\BubbleableMetadata;
 use Drupal\Core\TypedData\ComplexDataDefinitionInterface;
@@ -210,17 +211,21 @@ class DataFetcher implements DataFetcherInterface {
     }
 
     if ($variable_definition instanceof ListDataDefinitionInterface) {
+      // Suggest a couple of example indices of a list if there is nothing
+      // selected on it yet. Special case for fields: only make the suggestion
+      // if this is a multi-valued field.
+      if ($last_part === '' && !($variable_definition instanceof FieldDefinitionInterface
+        && $variable_definition->getFieldStorageDefinition()->getCardinality() === 1)
+      ) {
+        $results[] = "$first_part.$middle_path.0";
+        $results[] = "$first_part.$middle_path.1";
+        $results[] = "$first_part.$middle_path.2";
+      }
+
       // If this is a list but the selector is not an integer, we forward the
       // selection to the first element in the list.
       if (!ctype_digit($last_part)) {
         $variable_definition = $variable_definition->getItemDefinition();
-      }
-      // Suggest a couple of example indices of a list if there is nothing
-      // selected on it yet.
-      if ($last_part === '') {
-        $results[] = "$first_part.$middle_path.0";
-        $results[] = "$first_part.$middle_path.1";
-        $results[] = "$first_part.$middle_path.2";
       }
     }
 
