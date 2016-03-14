@@ -164,6 +164,77 @@ class DataFetcher implements DataFetcherInterface {
   }
 
   /**
+   * {@inheritdoc}
+   */
+  public function autocompletePropertyPath(array $data_definitions, $partial_property_path) {
+    // For the empty string we suggest the names of the data definitions.
+    if ($partial_property_path == '') {
+      return array_keys($data_definitions);
+    }
+    $results = [];
+    foreach ($data_definitions as $variable_name => $data_definition) {
+      if (stripos($variable_name, $partial_property_path) === 0) {
+        $results[] = $variable_name;
+      }
+    }
+    if (!empty($results)) {
+      return $results;
+    }
+
+    $parts = explode('.', $partial_property_path);
+    $first_part = array_shift($parts);
+
+    if (!isset($data_definitions[$first_part])) {
+      return [];
+    }
+
+    $last_part = array_pop($parts);
+    $middle_path = implode('.', $parts);
+
+    if ($middle_path === '') {
+      $variable_definition = $data_definitions[$first_part];
+    }
+    else {
+      try {
+        $variable_definition = $this->fetchDefinitionByPropertyPath($data_definitions[$first_part], $middle_path);
+      } catch (\InvalidArgumentException $e) {
+        // Invalid property path, so no suggestions available.
+        return [];
+      }
+    }
+
+    // If the current data is just a reference then directly dereference the
+    // target.
+    if ($variable_definition instanceof DataReferenceDefinitionInterface) {
+      $variable_definition = $variable_definition->getTargetDefinition();
+    }
+
+    // If this is a list but the selector is not an integer, we forward the
+    // selection to the first element in the list.
+    if ($variable_definition instanceof ListDataDefinitionInterface && !ctype_digit($last_part)) {
+      $variable_definition = $variable_definition->getItemDefinition();
+    }
+
+    if ($variable_definition instanceof ComplexDataDefinitionInterface) {
+      foreach ($variable_definition->getPropertyDefinitions() as $property_name => $property_definition) {
+        // If the property starts with the part then we have a suggestion. If
+        // the part after the dot is the empty string we include all properties.
+        if (stripos($property_name, $last_part) === 0 || $last_part === '') {
+          if ($middle_path === '') {
+            $results[] = "$first_part.$property_name";
+          }
+          else {
+            $results[] = "$first_part.$middle_path.$property_name";
+          }
+        }
+      }
+    }
+
+    natsort($results);
+    return array_values($results);
+  }
+
+  /**
    * Adds the bubbleable metadata of the given data.
    *
    * @param \Drupal\Core\TypedData\TypedDataInterface $data
