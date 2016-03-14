@@ -7,6 +7,9 @@
 
 namespace Drupal\Tests\rules\Kernel\Engine;
 
+use Drupal\Core\Field\FieldStorageDefinitionInterface;
+use Drupal\field\Entity\FieldConfig;
+use Drupal\field\Entity\FieldStorageConfig;
 use Drupal\rules\Context\ContextDefinition;
 use Drupal\rules\Engine\RulesComponent;
 use Drupal\Tests\rules\Kernel\RulesDrupalTestBase;
@@ -21,7 +24,7 @@ class AutocompleteTest extends RulesDrupalTestBase {
   /**
    * {@inheritdoc}
    */
-  public static $modules = ['rules', 'node', 'user'];
+  public static $modules = ['field', 'rules', 'node', 'user'];
 
   /**
    * {@inheritdoc}
@@ -30,6 +33,24 @@ class AutocompleteTest extends RulesDrupalTestBase {
     parent::setUp();
 
     $this->installEntitySchema('user');
+
+    $entity_type_manager = $this->container->get('entity_type.manager');
+    $entity_type_manager->getStorage('node_type')
+      ->create(['type' => 'page'])
+      ->save();
+
+    // Create a multi-value integer field for testing.
+    FieldStorageConfig::create([
+      'field_name' => 'field_integer',
+      'type' => 'integer',
+      'entity_type' => 'node',
+      'cardinality' => FieldStorageDefinitionInterface::CARDINALITY_UNLIMITED,
+    ])->save();
+    FieldConfig::create([
+      'field_name' => 'field_integer',
+      'entity_type' => 'node',
+      'bundle' => 'page',
+    ])->save();
   }
 
   /**
@@ -55,7 +76,7 @@ class AutocompleteTest extends RulesDrupalTestBase {
     $rule->addAction('rules_data_set');
 
     $component = RulesComponent::create($rule)
-      ->addContextDefinition('node', ContextDefinition::create('entity:node'));
+      ->addContextDefinition('node', ContextDefinition::create('entity:node:page'));
 
     // Tests that "node.uid.en" returns the suggestion "node.uid.entity".
     $results = $component->autocomplete('node.uid.en');
@@ -67,6 +88,7 @@ class AutocompleteTest extends RulesDrupalTestBase {
       'node.changed',
       'node.created',
       'node.default_langcode',
+      'node.field_integer',
       'node.langcode',
       'node.nid',
       'node.promote',
@@ -87,6 +109,15 @@ class AutocompleteTest extends RulesDrupalTestBase {
     // Tests that "node.uid.entity.na" returns "node.uid.entity.name".
     $results = $component->autocomplete('node.uid.entity.na');
     $this->assertSame(['node.uid.entity.name'], $results);
+
+    // A multi -valued field should show numeric indices suggestions.
+    $results = $component->autocomplete('node.field_integer.');
+    $this->assertSame([
+      'node.field_integer.0',
+      'node.field_integer.1',
+      'node.field_integer.2',
+      'node.field_integer.value',
+    ], $results);
   }
 
 }

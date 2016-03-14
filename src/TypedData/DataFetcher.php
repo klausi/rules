@@ -209,10 +209,19 @@ class DataFetcher implements DataFetcherInterface {
       $variable_definition = $variable_definition->getTargetDefinition();
     }
 
-    // If this is a list but the selector is not an integer, we forward the
-    // selection to the first element in the list.
-    if ($variable_definition instanceof ListDataDefinitionInterface && !ctype_digit($last_part)) {
-      $variable_definition = $variable_definition->getItemDefinition();
+    if ($variable_definition instanceof ListDataDefinitionInterface) {
+      // If this is a list but the selector is not an integer, we forward the
+      // selection to the first element in the list.
+      if (!ctype_digit($last_part)) {
+        $variable_definition = $variable_definition->getItemDefinition();
+      }
+      // Suggest a couple of example indices of a list if there is nothing
+      // selected on it yet.
+      if ($last_part === '') {
+        $results[] = "$first_part.$middle_path.0";
+        $results[] = "$first_part.$middle_path.1";
+        $results[] = "$first_part.$middle_path.2";
+      }
     }
 
     if ($variable_definition instanceof ComplexDataDefinitionInterface) {
