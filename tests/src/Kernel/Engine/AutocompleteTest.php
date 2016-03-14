@@ -19,13 +19,6 @@ use Drupal\Tests\rules\Kernel\RulesDrupalTestBase;
 class AutocompleteTest extends RulesDrupalTestBase {
 
   /**
-   * The sample rules component used for testing autocomplete suggestions.
-   *
-   * @var \Drupal\rules\Engine\RulesComponent
-   */
-  protected $component;
-
-  /**
    * {@inheritdoc}
    */
   public static $modules = ['rules', 'node', 'user'];
@@ -37,12 +30,6 @@ class AutocompleteTest extends RulesDrupalTestBase {
     parent::setUp();
 
     $this->installEntitySchema('user');
-
-    $rule = $this->expressionManager->createRule();
-    $rule->addAction('rules_data_set');
-
-    $this->component = RulesComponent::create($rule)
-      ->addContextDefinition('node', ContextDefinition::create('entity:node'));
   }
 
   /**
@@ -61,20 +48,21 @@ class AutocompleteTest extends RulesDrupalTestBase {
   }
 
   /**
-   * Tests that "node.uid.en" returns the suggestion "node.uid.entity".
+   * Test various node example data selectors.
    */
-  public function testNodeFieldAutocomplete() {
-    $results = $this->component->autocomplete('node.uid.en');
+  public function testNodeAutocomplete() {
+    $rule = $this->expressionManager->createRule();
+    $rule->addAction('rules_data_set');
 
+    $component = RulesComponent::create($rule)
+      ->addContextDefinition('node', ContextDefinition::create('entity:node'));
+
+    // Tests that "node.uid.en" returns the suggestion "node.uid.entity".
+    $results = $component->autocomplete('node.uid.en');
     $this->assertSame(['node.uid.entity'], $results);
-  }
 
-  /**
-   * Tests that "node." returns all available fields on a node.
-   */
-  public function testAllNodeFields() {
-    $results = $this->component->autocomplete('node.');
-
+    // Tests that "node." returns all available fields on a node.
+    $results = $component->autocomplete('node.');
     $expected = [
       'node.changed',
       'node.created',
@@ -95,6 +83,10 @@ class AutocompleteTest extends RulesDrupalTestBase {
       'node.vid',
     ];
     $this->assertSame($expected, $results);
+
+    // Tests that "node.uid.entity.na" returns "node.uid.entity.name".
+    $results = $component->autocomplete('node.uid.entity.na');
+    $this->assertSame(['node.uid.entity.name'], $results);
   }
 
 }

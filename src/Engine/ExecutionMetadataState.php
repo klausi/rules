@@ -10,6 +10,7 @@ namespace Drupal\rules\Engine;
 use Drupal\Core\Language\LanguageInterface;
 use Drupal\Core\TypedData\ComplexDataDefinitionInterface;
 use Drupal\Core\TypedData\DataDefinitionInterface;
+use Drupal\Core\TypedData\DataReferenceDefinitionInterface;
 use Drupal\Core\TypedData\ListDataDefinitionInterface;
 use Drupal\rules\Context\GlobalContextRepositoryTrait;
 use Drupal\rules\Exception\RulesIntegrityException;
@@ -142,6 +143,12 @@ class ExecutionMetadataState implements ExecutionMetadataStateInterface {
     } catch (RulesIntegrityException $e) {
       // Invalid property path, so no suggestions available.
       return [];
+    }
+
+    // If the current data is just a reference then directly dereference the
+    // target.
+    if ($variable_definition instanceof DataReferenceDefinitionInterface) {
+      $variable_definition = $variable_definition->getTargetDefinition();
     }
 
     // If this is a list but the selector is not an integer, we forward the
