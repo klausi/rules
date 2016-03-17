@@ -173,6 +173,8 @@ class DataFetcher implements DataFetcherInterface {
       return array_keys($data_definitions);
     }
     $results = [];
+    // If the supplied path is part of the top level variable names then suggest
+    // them directly.
     foreach ($data_definitions as $variable_name => $data_definition) {
       if (stripos($variable_name, $partial_property_path) === 0) {
         $results[] = $variable_name;
@@ -218,9 +220,16 @@ class DataFetcher implements DataFetcherInterface {
       if ($last_part === '' && !($variable_definition instanceof FieldDefinitionInterface
         && $variable_definition->getFieldStorageDefinition()->getCardinality() === 1)
       ) {
-        $results[] = "$first_part.$middle_path.0";
-        $results[] = "$first_part.$middle_path.1";
-        $results[] = "$first_part.$middle_path.2";
+        if ($middle_path === '') {
+          $results[] = "$first_part.0";
+          $results[] = "$first_part.1";
+          $results[] = "$first_part.2";
+        }
+        else {
+          $results[] = "$first_part.$middle_path.0";
+          $results[] = "$first_part.$middle_path.1";
+          $results[] = "$first_part.$middle_path.2";
+        }
       }
 
       // If this is a list but the selector is not an integer, we forward the

@@ -126,4 +126,24 @@ class AutocompleteTest extends RulesDrupalTestBase {
     ], $results);
   }
 
+  /**
+   * Tests that autocomplete results for a flat list are correct.
+   */
+  public function testListAutocomplete() {
+    $rule = $this->expressionManager->createRule();
+    $rule->addAction('rules_data_set');
+
+    $context_definition = ContextDefinition::create('integer');
+    $context_definition->setMultiple();
+    $component = RulesComponent::create($rule)
+      ->addContextDefinition('list', $context_definition);
+
+    $results = $component->autocomplete('list.');
+    $this->assertSame([
+      'list.0',
+      'list.1',
+      'list.2',
+    ], $results);
+  }
+
 }
