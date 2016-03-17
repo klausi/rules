@@ -177,7 +177,13 @@ class DataFetcher implements DataFetcherInterface {
     // them directly.
     foreach ($data_definitions as $variable_name => $data_definition) {
       if (stripos($variable_name, $partial_property_path) === 0) {
-        $results[] = $variable_name;
+        $results[] = ['value' => $variable_name, 'label' => $variable_name];
+
+        if ($data_definition instanceof ListDataDefinitionInterface
+          || $data_definition instanceof ComplexDataDefinitionInterface
+        ) {
+          $results[] = ['value' => "$variable_name.", 'label' => "$variable_name..."];
+        }
       }
     }
     if (!empty($results)) {
@@ -221,14 +227,14 @@ class DataFetcher implements DataFetcherInterface {
         && $variable_definition->getFieldStorageDefinition()->getCardinality() === 1)
       ) {
         if ($middle_path === '') {
-          $results[] = "$first_part.0";
-          $results[] = "$first_part.1";
-          $results[] = "$first_part.2";
+          $results[] = ['value' => "$first_part.0", 'label' => "$first_part.0"];
+          $results[] = ['value' => "$first_part.1", 'label' => "$first_part.1"];
+          $results[] = ['value' => "$first_part.2", 'label' => "$first_part.2"];
         }
         else {
-          $results[] = "$first_part.$middle_path.0";
-          $results[] = "$first_part.$middle_path.1";
-          $results[] = "$first_part.$middle_path.2";
+          $results[] = ['value' => "$first_part.$middle_path.0", 'label' => "$first_part.$middle_path.0"];
+          $results[] = ['value' => "$first_part.$middle_path.1", 'label' => "$first_part.$middle_path.1"];
+          $results[] = ['value' => "$first_part.$middle_path.2", 'label' => "$first_part.$middle_path.2"];
         }
       }
 
@@ -245,17 +251,19 @@ class DataFetcher implements DataFetcherInterface {
         // the part after the dot is the empty string we include all properties.
         if (stripos($property_name, $last_part) === 0 || $last_part === '') {
           if ($middle_path === '') {
-            $results[] = "$first_part.$property_name";
+            $results[] = ['value' => "$first_part.$property_name", 'label' => "$first_part.$property_name"];
           }
           else {
-            $results[] = "$first_part.$middle_path.$property_name";
+            $results[] = ['value' => "$first_part.$middle_path.$property_name", 'label' => "$first_part.$middle_path.$property_name"];
           }
         }
       }
     }
 
-    natsort($results);
-    return array_values($results);
+    usort($results, function ($a, $b) {
+      return strnatcasecmp($a['value'], $b['value']);
+    });
+    return $results;
   }
 
   /**
