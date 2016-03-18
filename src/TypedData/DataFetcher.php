@@ -177,13 +177,7 @@ class DataFetcher implements DataFetcherInterface {
     // them directly.
     foreach ($data_definitions as $variable_name => $data_definition) {
       if (stripos($variable_name, $partial_property_path) === 0) {
-        $results[] = ['value' => $variable_name, 'label' => $variable_name];
-
-        if ($data_definition instanceof ListDataDefinitionInterface
-          || $data_definition instanceof ComplexDataDefinitionInterface
-        ) {
-          $results[] = ['value' => "$variable_name.", 'label' => "$variable_name..."];
-        }
+        $results = array_merge($results, $this->getAutocompleteSuggestion($data_definition, $variable_name));
       }
     }
     if (!empty($results)) {
@@ -250,12 +244,14 @@ class DataFetcher implements DataFetcherInterface {
         // If the property starts with the part then we have a suggestion. If
         // the part after the dot is the empty string we include all properties.
         if (stripos($property_name, $last_part) === 0 || $last_part === '') {
+
           if ($middle_path === '') {
-            $results[] = ['value' => "$first_part.$property_name", 'label' => "$first_part.$property_name"];
+            $property_path = "$first_part.$property_name";
           }
           else {
-            $results[] = ['value' => "$first_part.$middle_path.$property_name", 'label' => "$first_part.$middle_path.$property_name"];
+            $property_path = "$first_part.$middle_path.$property_name";
           }
+          $results = array_merge($results, $this->getAutocompleteSuggestion($property_definition, $property_path));
         }
       }
     }
@@ -263,6 +259,38 @@ class DataFetcher implements DataFetcherInterface {
     usort($results, function ($a, $b) {
       return strnatcasecmp($a['value'], $b['value']);
     });
+    return $results;
+  }
+
+  /**
+   * Generates autocomplete suggestions for a matched data definition.
+   *
+   * @param DataDefinitionInterface $data_definition
+   *   The data definition to inspect.
+   * @param string $variable_name
+   *   The variable name or property path.
+   *
+   * @return array[]
+   *   A list of autocomplete suggestions - valid property paths for the
+   *   provided data definition. Each entry is an array with the following keys:
+   *   - value: the data selecor property path.
+   *   - label: the human readable label suggestion.
+   */
+  protected function getAutocompleteSuggestion(DataDefinitionInterface $data_definition, $variable_name) {
+    $results[] = ['value' => $variable_name, 'label' => $variable_name];
+
+    // If the data definition is just a reference then directly dereference the
+    // target.
+    if ($data_definition instanceof DataReferenceDefinitionInterface) {
+      $data_definition = $data_definition->getTargetDefinition();
+    }
+
+    if ($data_definition instanceof ListDataDefinitionInterface
+      || $data_definition instanceof ComplexDataDefinitionInterface
+    ) {
+      $results[] = ['value' => "$variable_name.", 'label' => "$variable_name..."];
+    }
+
     return $results;
   }
 

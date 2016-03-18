@@ -108,72 +108,144 @@ class AutocompleteTest extends RulesDrupalTestBase {
         'label' => 'node.changed',
       ],
       [
+        'value' => 'node.changed.',
+        'label' => 'node.changed...',
+      ],
+      [
         'value' => 'node.created',
         'label' => 'node.created',
+      ],
+      [
+        'value' => 'node.created.',
+        'label' => 'node.created...',
       ],
       [
         'value' => 'node.default_langcode',
         'label' => 'node.default_langcode',
       ],
       [
+        'value' => 'node.default_langcode.',
+        'label' => 'node.default_langcode...',
+      ],
+      [
         'value' => 'node.field_integer',
         'label' => 'node.field_integer',
+      ],
+      [
+        'value' => 'node.field_integer.',
+        'label' => 'node.field_integer...',
       ],
       [
         'value' => 'node.langcode',
         'label' => 'node.langcode',
       ],
       [
+        'value' => 'node.langcode.',
+        'label' => 'node.langcode...',
+      ],
+      [
         'value' => 'node.nid',
         'label' => 'node.nid',
+      ],
+      [
+        'value' => 'node.nid.',
+        'label' => 'node.nid...',
       ],
       [
         'value' => 'node.promote',
         'label' => 'node.promote',
       ],
       [
+        'value' => 'node.promote.',
+        'label' => 'node.promote...',
+      ],
+      [
         'value' => 'node.revision_log',
         'label' => 'node.revision_log',
+      ],
+      [
+        'value' => 'node.revision_log.',
+        'label' => 'node.revision_log...',
       ],
       [
         'value' => 'node.revision_timestamp',
         'label' => 'node.revision_timestamp',
       ],
       [
+        'value' => 'node.revision_timestamp.',
+        'label' => 'node.revision_timestamp...',
+      ],
+      [
         'value' => 'node.revision_translation_affected',
         'label' => 'node.revision_translation_affected',
+      ],
+      [
+        'value' => 'node.revision_translation_affected.',
+        'label' => 'node.revision_translation_affected...',
       ],
       [
         'value' => 'node.revision_uid',
         'label' => 'node.revision_uid',
       ],
       [
+        'value' => 'node.revision_uid.',
+        'label' => 'node.revision_uid...',
+      ],
+      [
         'value' => 'node.status',
         'label' => 'node.status',
+      ],
+      [
+        'value' => 'node.status.',
+        'label' => 'node.status...',
       ],
       [
         'value' => 'node.sticky',
         'label' => 'node.sticky',
       ],
       [
+        'value' => 'node.sticky.',
+        'label' => 'node.sticky...',
+      ],
+      [
         'value' => 'node.title',
         'label' => 'node.title',
+      ],
+      [
+        'value' => 'node.title.',
+        'label' => 'node.title...',
       ],
       [
         'value' => 'node.type',
         'label' => 'node.type',
       ],
       [
+        'value' => 'node.type.',
+        'label' => 'node.type...',
+      ],
+      [
         'value' => 'node.uid',
         'label' => 'node.uid',
+      ],
+      [
+        'value' => 'node.uid.',
+        'label' => 'node.uid...',
       ],
       [
         'value' => 'node.uuid',
         'label' => 'node.uuid',
       ],
       [
+        'value' => 'node.uuid.',
+        'label' => 'node.uuid...',
+      ],
+      [
         'value' => 'node.vid',
         'label' => 'node.vid',
+      ],
+      [
+        'value' => 'node.vid.',
+        'label' => 'node.vid...',
       ],
     ];
     $this->assertSame($expected, $results);
@@ -184,6 +256,10 @@ class AutocompleteTest extends RulesDrupalTestBase {
       [
         'value' => 'node.uid.entity.name',
         'label' => 'node.uid.entity.name',
+      ],
+      [
+        'value' => 'node.uid.entity.name.',
+        'label' => 'node.uid.entity.name...',
       ],
     ], $results);
 
