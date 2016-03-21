@@ -271,12 +271,24 @@ class AutocompleteTest extends RulesDrupalTestBase {
         'label' => 'node.field_integer.0',
       ],
       [
+        'value' => 'node.field_integer.0.',
+        'label' => 'node.field_integer.0...',
+      ],
+      [
         'value' => 'node.field_integer.1',
         'label' => 'node.field_integer.1',
       ],
       [
+        'value' => 'node.field_integer.1.',
+        'label' => 'node.field_integer.1...',
+      ],
+      [
         'value' => 'node.field_integer.2',
         'label' => 'node.field_integer.2',
+      ],
+      [
+        'value' => 'node.field_integer.2.',
+        'label' => 'node.field_integer.2...',
       ],
       [
         'value' => 'node.field_integer.value',

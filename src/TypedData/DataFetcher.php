@@ -221,14 +221,14 @@ class DataFetcher implements DataFetcherInterface {
         && $variable_definition->getFieldStorageDefinition()->getCardinality() === 1)
       ) {
         if ($middle_path === '') {
-          $results[] = ['value' => "$first_part.0", 'label' => "$first_part.0"];
-          $results[] = ['value' => "$first_part.1", 'label' => "$first_part.1"];
-          $results[] = ['value' => "$first_part.2", 'label' => "$first_part.2"];
+          $property_path = $first_part;
         }
         else {
-          $results[] = ['value' => "$first_part.$middle_path.0", 'label' => "$first_part.$middle_path.0"];
-          $results[] = ['value' => "$first_part.$middle_path.1", 'label' => "$first_part.$middle_path.1"];
-          $results[] = ['value' => "$first_part.$middle_path.2", 'label' => "$first_part.$middle_path.2"];
+          $property_path = "$first_part.$middle_path";
+        }
+        $item_definition = $variable_definition->getItemDefinition();
+        for ($i = 0; $i < 3; $i++) {
+          $results = array_merge($results, $this->getAutocompleteSuggestion($item_definition, "$property_path.$i"));
         }
       }
 
