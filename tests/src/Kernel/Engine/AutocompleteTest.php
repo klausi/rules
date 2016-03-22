@@ -146,12 +146,12 @@ class AutocompleteTest extends RulesDrupalTestBase {
       [
         'value' => 'node.nid',
         // @todo Remove this once Drupal 8.0.x is unsupported.
-        'label' => version_compare(\Drupal::VERSION, '8.1.0') === -1 ? 'node.nid (Node ID)' : 'node.nid (ID)',
+        'label' => version_compare(substr(\Drupal::VERSION, 0, 5), '8.1.0') === -1 ? 'node.nid (Node ID)' : 'node.nid (ID)',
       ],
       [
         'value' => 'node.nid.',
         // @todo Remove this once Drupal 8.0.x is unsupported.
-        'label' => version_compare(\Drupal::VERSION, '8.1.0') === -1 ? 'node.nid... (Node ID)' : 'node.nid... (ID)',
+        'label' => version_compare(substr(\Drupal::VERSION, 0, 5), '8.1.0') === -1 ? 'node.nid... (Node ID)' : 'node.nid... (ID)',
       ],
       [
         'value' => 'node.promote',
@@ -220,12 +220,12 @@ class AutocompleteTest extends RulesDrupalTestBase {
       [
         'value' => 'node.type',
         // @todo Remove this once Drupal 8.0.x is unsupported.
-        'label' => version_compare(\Drupal::VERSION, '8.1.0') === -1 ? 'node.type (Type)' : 'node.type (Content type)',
+        'label' => version_compare(substr(\Drupal::VERSION, 0, 5), '8.1.0') === -1 ? 'node.type (Type)' : 'node.type (Content type)',
       ],
       [
         'value' => 'node.type.',
         // @todo Remove this once Drupal 8.0.x is unsupported.
-        'label' => version_compare(\Drupal::VERSION, '8.1.0') === -1 ? 'node.type... (Type)' : 'node.type... (Content type)',
+        'label' => version_compare(substr(\Drupal::VERSION, 0, 5), '8.1.0') === -1 ? 'node.type... (Type)' : 'node.type... (Content type)',
       ],
       [
         'value' => 'node.uid',
