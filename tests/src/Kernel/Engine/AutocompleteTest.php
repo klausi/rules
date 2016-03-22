@@ -145,11 +145,13 @@ class AutocompleteTest extends RulesDrupalTestBase {
       ],
       [
         'value' => 'node.nid',
-        'label' => 'node.nid (ID)',
+        // @todo Remove this once Drupal 8.0.x is unsupported.
+        'label' => version_compare(\Drupal::VERSION, '8.1.0') === -1 ? 'node.nid (Node ID)' : 'node.nid (ID)',
       ],
       [
         'value' => 'node.nid.',
-        'label' => 'node.nid... (ID)',
+        // @todo Remove this once Drupal 8.0.x is unsupported.
+        'label' => version_compare(\Drupal::VERSION, '8.1.0') === -1 ? 'node.nid... (Node ID)' : 'node.nid... (ID)',
       ],
       [
         'value' => 'node.promote',
@@ -217,11 +219,13 @@ class AutocompleteTest extends RulesDrupalTestBase {
       ],
       [
         'value' => 'node.type',
-        'label' => 'node.type (Content type)',
+        // @todo Remove this once Drupal 8.0.x is unsupported.
+        'label' => version_compare(\Drupal::VERSION, '8.1.0') === -1 ? 'node.type (Type)' : 'node.type (Content type)',
       ],
       [
         'value' => 'node.type.',
-        'label' => 'node.type... (Content type)',
+        // @todo Remove this once Drupal 8.0.x is unsupported.
+        'label' => version_compare(\Drupal::VERSION, '8.1.0') === -1 ? 'node.type... (Type)' : 'node.type... (Content type)',
       ],
       [
         'value' => 'node.uid',
@@ -248,7 +252,11 @@ class AutocompleteTest extends RulesDrupalTestBase {
         'label' => 'node.vid... (Revision ID)',
       ],
     ];
-    $this->assertSame($expected, $results);
+    // Because this is a huge array run the assertion per entry because that is
+    // easier for debugging.
+    foreach ($expected as $index => $entry) {
+      $this->assertSame($entry, $results[$index]);
+    }
 
     // Tests that "node.uid.entity.na" returns "node.uid.entity.name".
     $results = $component->autocomplete('node.uid.entity.na');
