@@ -54,7 +54,7 @@ before_script:
   # Download Drupal 8 core from the Github mirror because it is faster.
   - travis_retry git clone --branch $DRUPAL_CORE --depth 1 https://github.com/drupal/drupal.git
   - cd drupal
-  - wget -q -O - https://www.drupal.org/files/issues/core-debug.txt | patch -p1
+  - wget -q -O - https://www.drupal.org/files/issues/core-debug_0.txt | patch -p1
 
   # Reference rules in build site.
   - ln -s $TESTDIR modules/rules
@@ -75,6 +75,6 @@ before_script:
 
 script:
   # Run the PHPUnit tests which also include the kernel tests.
-  - ./vendor/bin/phpunit -c ./core/phpunit.xml.dist ./modules/rules
+  - ./vendor/bin/phpunit -c ./core/phpunit.xml.dist ./modules/rules/tests/src/Functional
   # Check for coding standards violations
   - cd modules/rules && ~/.composer/vendor/bin/phpcs
