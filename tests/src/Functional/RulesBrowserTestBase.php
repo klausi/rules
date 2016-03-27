@@ -39,7 +39,7 @@ abstract class RulesBrowserTestBase extends BrowserTestBase {
       }
     }
     if ($this->getSession()->getStatusCode() == 403) {
-      print $this->getSession()->getPage()->getContent() . "\n\n";
+      $this->fail($this->getSession()->getPage()->getContent());
     }
   }
 
