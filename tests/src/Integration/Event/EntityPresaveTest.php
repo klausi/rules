@@ -25,6 +25,11 @@ class EntityPresaveTest extends EventTestBase {
     $context_definition = $plugin_definition['context']['test'];
     $this->assertSame('entity:test', $context_definition->getDataType());
     $this->assertSame('Test', $context_definition->getLabel());
+
+    // Also check that there is a context for the orginal entity.
+    $context_definition = $plugin_definition['context']['test_original'];
+    $this->assertSame('entity:test', $context_definition->getDataType());
+    $this->assertSame('Original Test', (string) $context_definition->getLabel());
   }
 
 }
