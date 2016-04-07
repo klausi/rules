@@ -223,9 +223,14 @@ class EventIntegrationTest extends RulesDrupalTestBase {
   }
 
   /**
-   * Tests that the entity presave event with original entity works.
+   * Tests that the entity presave/update events work with original entities.
+   *
+   * @dataProvider providerTestEntityOriginal
+   *
+   * @param string $event_name
+   *   The event name that should be configured in the test rule..
    */
-  public function testEntityPresave() {
+  public function testEntityOriginal($event_name) {
     // Create a node that we will change and save later.
     $entity_type_manager = $this->container->get('entity_type.manager');
     $entity_type_manager->getStorage('node_type')
@@ -254,7 +259,7 @@ class EventIntegrationTest extends RulesDrupalTestBase {
 
     $config_entity = $this->storage->create([
       'id' => 'test_rule',
-      'events' => [['event_name' => 'rules_entity_presave:node']],
+      'events' => [['event_name' => $event_name]],
       'expression' => $rule->getConfiguration(),
     ]);
     $config_entity->save();
@@ -267,6 +272,16 @@ class EventIntegrationTest extends RulesDrupalTestBase {
     $node->save();
 
     $this->assertRulesLogEntryExists('action called');
+  }
+
+  /**
+   * Provides test data for testentityOrigfinal().
+   */
+  public function providerTestEntityOriginal() {
+    return [
+      ['rules_entity_presave:node'],
+      ['rules_entity_update:node'],
+    ];
   }
 
 }

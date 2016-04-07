@@ -67,6 +67,10 @@ class EntityUpdateDeriver extends DeriverBase implements ContainerDeriverInterfa
             'type' => "entity:$entity_type_id",
             'label' => $entity_type->getLabel(),
           ],
+          $entity_type_id . '_original' => [
+            'type' => "entity:$entity_type_id",
+            'label' => $this->t('Original @entity_type', ['@entity_type' => $entity_type->getLabel()]),
+          ],
         ],
       ] + $base_plugin_definition;
     }
