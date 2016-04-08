@@ -225,10 +225,10 @@ class EventIntegrationTest extends RulesDrupalTestBase {
   /**
    * Tests that the entity presave/update events work with original entities.
    *
-   * @dataProvider providerTestEntityOriginal
-   *
    * @param string $event_name
-   *   The event name that should be configured in the test rule..
+   *   The event name that should be configured in the test rule.
+   *
+   * @dataProvider providerTestEntityOriginal
    */
   public function testEntityOriginal($event_name) {
     // Create a node that we will change and save later.
