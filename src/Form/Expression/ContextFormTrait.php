@@ -9,7 +9,7 @@ namespace Drupal\rules\Form\Expression;
 
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\rules\Context\ContextConfig;
-use Drupal\rules\Context\ContextDefinitionInterface;
+use Drupal\Core\Plugin\Context\ContextDefinitionInterface;
 
 /**
  * Provides form logic for handling contexts when configuring an expression.
@@ -100,12 +100,12 @@ trait ContextFormTrait {
   /**
    * Creates a context config object from the submitted form values.
    *
-   * @param FormStateInterface $form_state
+   * @param \Drupal\Core\Form\FormStateInterface $form_state
    *   The form state containing the submitted values.
-   * @param ContextDefinitionInterface[] $context_definitions
+   * @param \Drupal\Core\Plugin\Context\ContextDefinitionInterface[] $context_definitions
    *   The context definitions of the plugin.
    *
-   * @return ContextConfig
+   * @return \Drupal\rules\Context\ContextConfig
    *   The context config object populated with context mappings/values.
    */
   protected function getContextConfigFromFormValues(FormStateInterface $form_state, array $context_definitions) {

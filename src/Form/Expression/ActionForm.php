@@ -9,7 +9,6 @@ namespace Drupal\rules\Form\Expression;
 
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
-use Drupal\rules\Context\ContextConfig;
 use Drupal\rules\Core\RulesActionManagerInterface;
 use Drupal\rules\Engine\ActionExpressionInterface;
 use Drupal\rules\Ui\RulesUiHandlerTrait;
@@ -132,11 +131,12 @@ class ActionForm implements ExpressionFormInterface {
    * {@inheritdoc}
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
+    $action_id = $form_state->get('action_id');
     // Nothing todo as long as the first step is not completed.
-    if (!$form_state->get('action_id')) {
+    if (!$action_id) {
       return;
     }
-    $action_id = $form_state->get('action_id');
+
     $action_definition = $this->actionManager->getDefinition($action_id);
     $context_config = $this->getContextConfigFromFormValues($form_state, $action_definition['context']);
 
