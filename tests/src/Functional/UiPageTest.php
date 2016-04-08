@@ -31,7 +31,7 @@ class UiPageTest extends RulesBrowserTestBase {
   /**
    * Tests that the reaction rule listing page works.
    */
-  /*public function testReactionRulePage() {
+  public function testReactionRulePage() {
     $account = $this->drupalCreateUser(['administer rules']);
     $this->drupalLogin($account);
 
@@ -45,7 +45,7 @@ class UiPageTest extends RulesBrowserTestBase {
   /**
    * Tests that creating a reaction rule works.
    */
-  /*public function testCreateReactionRule() {
+  public function testCreateReactionRule() {
     $account = $this->drupalCreateUser(['administer rules']);
     $this->drupalLogin($account);
 
@@ -79,7 +79,7 @@ class UiPageTest extends RulesBrowserTestBase {
   /**
    * Tests that cancelling an expression from a rule works.
    */
-  /*public function testCancelExpressionInRule() {
+  public function testCancelExpressionInRule() {
     // Setup a rule with one condition.
     $this->testCreateReactionRule();
 
@@ -103,7 +103,7 @@ class UiPageTest extends RulesBrowserTestBase {
   /**
    * Tests that deleting an expression from a rule works.
    */
-  /*public function testDeleteExpressionInRule() {
+  public function testDeleteExpressionInRule() {
     // Setup a rule with one condition.
     $this->testCreateReactionRule();
 
