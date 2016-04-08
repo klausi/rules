@@ -133,7 +133,7 @@ class ConditionForm implements ExpressionFormInterface {
    * {@inheritdoc}
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
-    $condition_id = $form_state->get('action_id');
+    $condition_id = $form_state->get('condition_id');
     // Nothing todo as long as the first step is not completed.
     if (!$condition_id) {
       return;
