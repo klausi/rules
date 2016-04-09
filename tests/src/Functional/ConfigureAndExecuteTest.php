@@ -128,7 +128,7 @@ class ConfigureAndExecuteTest extends RulesBrowserTestBase {
     $this->pressButton('Save');
 
     // One more save to permanently store the rule.
-    //$this->pressButton('Save');
+    $this->pressButton('Save');
 
     // Add a node now.
     $this->drupalGet('node/add/article');
