@@ -247,7 +247,7 @@ class EventIntegrationTest extends RulesDrupalTestBase {
     $rule = $this->expressionManager->createRule();
     $rule->addCondition('rules_data_comparison', ContextConfig::create()
       ->map('data', 'node.title.value')
-      ->map('value', 'node_original.title.value')
+      ->map('value', 'node_unchanged.title.value')
       ->negateResult()
     );
     $rule->addAction('rules_test_log');

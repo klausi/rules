@@ -120,7 +120,7 @@ class ConfigurableEventHandlerTest extends RulesDrupalTestBase {
     $entity_type_id = $this->node->getEntityTypeId();
     $event = new EntityEvent($this->node, [
       $entity_type_id => $this->node,
-      $entity_type_id . '_original' => $this->node,
+      $entity_type_id . '_unchanged' => $this->node,
     ]);
     $event_dispatcher = \Drupal::service('event_dispatcher');
     $event_dispatcher->dispatch("rules_entity_presave:$entity_type_id", $event);
