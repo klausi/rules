@@ -132,6 +132,11 @@ class UiPageTest extends RulesBrowserTestBase {
     $this->fillField('Action', 'rules_send_email');
     $this->pressButton('Continue');
 
+    // Push the data selection switch 2 times to make sure that also works and
+    // does not throw PHP notices.
+    $this->pressButton('Switch to data selection');
+    $this->pressButton('Switch to data selection');
+
     $this->fillField('context[to][setting]', 'klausi@example.com');
     $this->fillField('context[subject][setting]', 'subject');
     $this->fillField('context[message][setting]', 'message');
