@@ -94,4 +94,53 @@ class ConfigureAndExecuteTest extends RulesBrowserTestBase {
     $this->assertSession()->pageTextContains('Title matched "Test title"!');
   }
 
+  /**
+   * Tests that the recursion prevention works when a node is updated.
+   */
+  public function testRecursionPrevention() {
+    $account = $this->drupalCreateUser([
+      'create article content',
+      'edit own article content',
+      'administer rules',
+      'administer site configuration',
+    ]);
+    $this->drupalLogin($account);
+
+    $this->drupalGet('admin/config/workflow/rules');
+
+    // Set up a rule that will change the tile on update which will trigger
+    // another update.
+    $this->clickLink('Add reaction rule');
+
+    $this->fillField('Label', 'Test rule');
+    $this->fillField('Machine-readable name', 'test_rule');
+    $this->fillField('React on event', 'rules_entity_update:node');
+    $this->pressButton('Save');
+
+    $this->clickLink('Add action');
+    $this->fillField('Action', 'rules_data_set');
+    $this->pressButton('Continue');
+
+    $this->pressButton('Switch to data selection');
+
+    $this->fillField('context[data][setting]', 'node.title.value');
+    $this->fillField('context[value][setting]', 'new title');
+    $this->pressButton('Save');
+
+    // One more save to permanently store the rule.
+    //$this->pressButton('Save');
+
+    // Add a node now.
+    $this->drupalGet('node/add/article');
+    $this->fillField('Title', 'Test title');
+    $this->pressButton('Save');
+
+    // Edit the node now which should trigger the rule.
+    $this->drupalGet('node/1/edit');
+    $this->fillField('Title', 'Whatever');
+    $this->pressButton('Save');
+
+    $this->assertSession()->pageTextContains('Article new title has been updated.');
+  }
+
 }
