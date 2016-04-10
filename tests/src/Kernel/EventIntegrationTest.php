@@ -279,4 +279,41 @@ class EventIntegrationTest extends RulesDrupalTestBase {
     ];
   }
 
+  /**
+   * Tests the presave event does not trigger an auto-save.
+   */
+  public function testSkipAutosave() {
+    // Create a node that we will change and save later.
+    $entity_type_manager = $this->container->get('entity_type.manager');
+    $entity_type_manager->getStorage('node_type')
+      ->create([
+        'type' => 'page',
+        'display_submitted' => FALSE,
+      ])
+      ->save();
+
+    $node = $entity_type_manager->getStorage('node')
+      ->create([
+        'title' => 'test',
+        'type' => 'page',
+      ]);
+    $node->save();
+
+    $rule = $this->expressionManager->createRule();
+    $rule->addAction('rules_data_set', ContextConfig::create()
+      ->map('data', 'node.title.value')
+      ->setValue('value', 'new title')
+    );
+
+    $config_entity = $this->storage->create([
+      'id' => 'test_rule',
+      'events' => [['event_name' => 'rules_entity_presave:node']],
+      'expression' => $rule->getConfiguration(),
+    ]);
+    $config_entity->save();
+
+    $node->save();
+    $this->assertSame('new title', $node->getTitle());
+  }
+
 }
