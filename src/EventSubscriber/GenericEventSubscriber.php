@@ -96,6 +96,7 @@ class GenericEventSubscriber implements EventSubscriberInterface {
 
     // Setup the execution state.
     $state = ExecutionState::create();
+    $context_values = [];
     foreach ($event_definition['context'] as $context_name => $context_definition) {
       // If this is a GenericEvent get the context for the rule from the event
       // arguments.
@@ -112,6 +113,7 @@ class GenericEventSubscriber implements EventSubscriberInterface {
         $context_definition,
         $value
       );
+      $context_values[$context_name] = $value;
     }
 
     // Invoke the rules.
@@ -125,8 +127,12 @@ class GenericEventSubscriber implements EventSubscriberInterface {
       // Loop over all rules and execute them.
       foreach ($configs as $config) {
         /** @var \Drupal\rules\Entity\ReactionRuleConfig $config */
-        $config->getExpression()
-          ->executeWithState($state);
+        if (!ExecutionState::isBlocked($config->uuid(), $context_values)) {
+          ExecutionState::block($config->uuid(), $context_values);
+
+          $config->getExpression()
+            ->executeWithState($state);
+        }
       }
     }
     $state->autoSave();
