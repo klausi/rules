@@ -25,7 +25,10 @@ class ExecutionState implements ExecutionStateInterface {
   /**
    * Globally keeps the ids of rules blocked due to recursion prevention.
    *
-   * @todo Implement recursion prevention from D7.
+   * Keyed by Rules config entity UUIDs, the values are the context values keyed
+   * by context name.
+   *
+   * @var array[]
    */
   static protected $blocked = [];
 
@@ -193,6 +196,38 @@ class ExecutionState implements ExecutionStateInterface {
       $typed_data->getRoot()->getValue()->save();
     }
     return $this;
+  }
+
+  /**
+   * Checks if a rules configuration is blocked to avoid recursion.
+   *
+   * @param string $config_uuid
+   *   The UUID of the Rules config entity to check.
+   * @param array $context_values
+   *   The context values the rule will be executed with, keyed by context name.
+   *
+   * @return bool
+   *   TRUE if the Rules config entity is blocked from being executed, FALSE
+   *   otherwise.
+   */
+  public static function isBlocked($config_uuid, array $context_values) {
+    if (isset(static::$blocked[$config_uuid]) && static::$blocked[$config_uuid] == $context_values) {
+      return TRUE;
+    }
+    return FALSE;
+  }
+
+  /**
+   * Marks a Rules configuration entity as blocked to prevent recursion.
+   *
+   * @param string $config_uuid
+   *   The UUID of the Rules config entity to block.
+   * @param array $context_values
+   *   The list of context values the Rules config is invoked with, keyed by
+   *   context name.
+   */
+  public static function block($config_uuid, array $context_values) {
+    static::$blocked[$config_uuid] = $context_values;
   }
 
 }
