@@ -230,4 +230,17 @@ class ExecutionState implements ExecutionStateInterface {
     static::$blocked[$config_uuid] = $context_values;
   }
 
+  /**
+   * Marks a Rules configuration entity as blocked to prevent recursion.
+   *
+   * @param string $config_uuid
+   *   The UUID of the Rules config entity to block.
+   * @param array $context_values
+   *   The list of context values the Rules config is invoked with, keyed by
+   *   context name.
+   */
+  public static function unblock($config_uuid, array $context_values) {
+    static::$blocked[$config_uuid] = $context_values;
+  }
+
 }

@@ -120,6 +120,7 @@ class GenericEventSubscriber implements EventSubscriberInterface {
     // @todo: Improve this by cloning the state after each rule, such that added
     // variables added by one rule are not interfering with the variables of
     // another rule.
+    $blocked_uuids = [];
     foreach ($triggered_events as $triggered_event) {
       // @todo Only load active reaction rules here.
       $configs = $storage->loadByProperties(['events.*.event_name' => $triggered_event]);
@@ -129,6 +130,7 @@ class GenericEventSubscriber implements EventSubscriberInterface {
         /** @var \Drupal\rules\Entity\ReactionRuleConfig $config */
         if (!ExecutionState::isBlocked($config->uuid(), $context_values)) {
           ExecutionState::block($config->uuid(), $context_values);
+          $blocked_uuids[] = $config->uuid();
 
           $config->getExpression()
             ->executeWithState($state);
@@ -136,6 +138,12 @@ class GenericEventSubscriber implements EventSubscriberInterface {
       }
     }
     $state->autoSave();
+
+    // After auto saving is done we are safe from recursion and can unblock the
+    // Rules again.
+    foreach ($blocked_uuids as $blocked_uuids) {
+
+    }
   }
 
 }
