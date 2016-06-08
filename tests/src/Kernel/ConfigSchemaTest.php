@@ -28,7 +28,7 @@ class ConfigSchemaTest extends RulesDrupalTestBase {
   }
 
   /**
-   * Make sure the system send email config schema works.
+   * Make sure the system send email config schema works on saving.
    */
   public function testMailActionContextSchema() {
     $rule = $this->expressionManager
@@ -43,7 +43,6 @@ class ConfigSchemaTest extends RulesDrupalTestBase {
       'id' => 'test_rule',
     ])->setExpression($rule);
     $config_entity->save();
-    //$this->assertTrue(TRUE, 'Save successful, config schema correct.');
   }
 
 }
