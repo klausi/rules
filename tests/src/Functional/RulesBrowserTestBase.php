@@ -58,7 +58,6 @@ abstract class RulesBrowserTestBase extends BrowserTestBase {
    */
   public function clickLink($locator) {
     $this->getSession()->getPage()->clickLink($locator);
-    $this->processHeaderErrors();
   }
 
   /**
@@ -71,7 +70,6 @@ abstract class RulesBrowserTestBase extends BrowserTestBase {
    */
   public function pressButton($locator) {
     $this->getSession()->getPage()->pressButton($locator);
-    $this->processHeaderErrors();
   }
 
   /**
